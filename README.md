@@ -1,1 +1,1 @@
-# Hardcoded Protein
+Hardcoded Protein
