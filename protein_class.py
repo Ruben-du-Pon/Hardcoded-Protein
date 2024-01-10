@@ -1,6 +1,12 @@
 from typing import Optional
 from aminoacid_class import Aminoacid
 
+class Aminoacid:
+    def __init__(self, predecessor: Optional["Aminoacid"], link: Optional["Aminoacid"], type: str) -> None:
+        self._char = type
+        self._predecessor = predecessor
+        self._link = link
+
 class Protein:
     def __init__(self, sequence: str) -> None:
         self._sequence = sequence
@@ -29,7 +35,8 @@ class Protein:
 
 
 # Example usage:
-protein_sequence = "ABCDEF"
+protein_sequence, new_seq = "HCPHPHPHCHHHHPCCPPHPPPHPPPPCPPPHPPPHPHHHHCHPHPHPHH", []
+print(f"\nOriginal Protein-string: {protein_sequence}\n\n")
 protein = Protein(protein_sequence)
 current_node = protein._head
 
@@ -45,10 +52,9 @@ while current_node:
 print("From right to left: \n")
 while current_node:
     print(current_node._char, end=" ")
-    if current_node._predecessor._char == "A":
-        current_node = current_node._predecessor
-        print(current_node._char, end=" ")
-        print("\n")
+    new_seq.append(current_node._char)
+    if len(protein_sequence) == len(new_seq):
+        print("\n\n")
         break
     else:
         current_node = current_node._predecessor
