@@ -4,9 +4,6 @@ class Aminoacid:
         self._position: tuple[int] = (0, 0)
         self._type: str = type
 
-    def get_position(self) -> tuple[int]:
-        return self._position
-
     def set_position(self, position: tuple) -> None:
         self._position = position
 
