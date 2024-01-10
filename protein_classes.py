@@ -1,10 +1,20 @@
 class Aminoacid:
 
-    def __init__(self):
-        self._position = (0, 0)
+    def __init__(self) -> None:
+        self._position: tuple[int] = (0, 0)
+        self._connections: list["Aminoacid"] = {}
+
+    def add_connection(self, other: "Aminoacid") -> None:
+        self._connections.add(other)
+
+    def check_connection(self, other: "Aminoacid") -> bool:
+        return other in self._connections
 
     def check_position(self, other: "Aminoacid") -> int:
         return abs(self.sum_position - other.sum_position)
+
+    def find_position(self) -> tuple[int]:
+        return self._position
 
     def set_position(self, position: tuple) -> None:
         self._position = position
