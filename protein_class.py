@@ -1,40 +1,54 @@
-from typing import List, Optional
-
-class Aminoacid:
-    def __init__(self, predecessor: Optional["Aminoacid"], link: Optional["Aminoacid"], char: str) -> None:
-        self._char = char
-        self._predecessor = predecessor
-        self._link = link
+from typing import Optional
+from aminoacid_class import Aminoacid
 
 class Protein:
     def __init__(self, sequence: str) -> None:
         self._sequence = sequence
-        self._head = self.create_double_linked_list(sequence)
+        self._head = self.create_double_linked_list()
         self._grid: dict[tuple, Aminoacid] = dict()
-        self._score = 0  # Fix the initialization of _score
+        self._score = 0
 
-    def create_double_linked_list(self, sequence):
-        if not sequence:
+    def create_double_linked_list(self):
+        if not self._sequence:
             return None
 
-        head = Aminoacid(predecessor=None, link=None, char=sequence[0])
+        head = Aminoacid(predecessor=None, link=None, type=self._sequence[0])
         current = head
 
-        for char in sequence[1:]:
-            new_aminoacid = Aminoacid(predecessor=current, link=None, char=char)
+        for type in self._sequence[1:]:
+            new_aminoacid = Aminoacid(predecessor=current, link=None, type=type)
             current._link = new_aminoacid
             current = new_aminoacid
 
         return head
 
-# Example usage:
-protein_sequence = "ABCDEF"
-protein = Protein(protein_sequence)
+    def get_score(self):
+        return self._score
+    
 
-# Access the linked list from the instance
+
+
+# Example usage:
+protein_sequence, new_seq = "HCPHPHPHCHHHHPCCPPHPPPHPPPPCPPPHPPPHPHHHHCHPHPHPHH", []
+print(f"\nOriginal Protein-string: {protein_sequence}\n\n")
+protein = Protein(protein_sequence)
 current_node = protein._head
+
+print("From left to right: \n")
 while current_node:
     print(current_node._char, end=" ")
-    current_node = current_node._link
-    previous_node = current_node._predecessor
-    print(previous_node._char, end=" ")
+    if current_node._link == None:
+        print("\n\n")
+        break
+    else:
+        current_node = current_node._link
+
+print("From right to left: \n")
+while current_node:
+    print(current_node._char, end=" ")
+    new_seq.append(current_node._char)
+    if len(protein_sequence) == len(new_seq):
+        print("\n\n")
+        break
+    else:
+        current_node = current_node._predecessor
