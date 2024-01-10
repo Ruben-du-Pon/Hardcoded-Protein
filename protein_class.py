@@ -1,12 +1,6 @@
 from typing import Optional
 from aminoacid_class import Aminoacid
 
-class Aminoacid:
-    def __init__(self, predecessor: Optional["Aminoacid"], link: Optional["Aminoacid"], type: str) -> None:
-        self._char = type
-        self._predecessor = predecessor
-        self._link = link
-
 class Protein:
     def __init__(self, sequence: str) -> None:
         self._sequence = sequence
