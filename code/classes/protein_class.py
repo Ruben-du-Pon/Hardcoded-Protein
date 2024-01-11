@@ -1,4 +1,4 @@
-from classes.protein_class import Aminoacid
+from classes.aminoacid_class import Aminoacid
 
 class Protein:
     def __init__(self, sequence: str) -> None:
