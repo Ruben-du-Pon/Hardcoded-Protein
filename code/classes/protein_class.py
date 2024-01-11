@@ -48,7 +48,8 @@ class Protein:
 
         pre: index is an int, the get_folding method outputs a list of dicts with
         keys amino and fold, and resp values P, H or C and 1, -1, 2, -2, 3 or -3.
-        post: creates output[index].csv with a header amino, score
+        post: creates output[index].csv with a header amino, score; a footer score, <score>
+        and a body with P, H or C followed by direction 1, -1, 2, -2, 3 or -3.
         """
 
         filename = "output" + str(index) + ".csv"
