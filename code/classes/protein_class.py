@@ -53,7 +53,6 @@ class Protein:
             current = current._link
 
         folding.append({'amino': 'score', 'fold': self._score})
-
         return folding
 
     @classmethod
