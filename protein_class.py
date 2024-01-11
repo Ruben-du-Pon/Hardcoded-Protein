@@ -1,5 +1,5 @@
-from typing import Optional
 from aminoacid_class import Aminoacid
+
 
 class Protein:
     def __init__(self, sequence: str) -> None:
@@ -8,7 +8,14 @@ class Protein:
         self._grid: dict[tuple, Aminoacid] = dict()
         self._score = 0
 
+    @staticmethod
     def create_double_linked_list(self):
+        """
+        This particular method can't be called for a created object.
+        It's used only once, when creating the object itself.
+        After the object is created, this particular function can't
+        be called on top of it.
+        """
         if not self._sequence:
             return None
 
@@ -22,10 +29,9 @@ class Protein:
 
         return head
 
+    @classmethod
     def get_score(self):
         return self._score
-    
-
 
 
 # Example usage:
@@ -36,7 +42,7 @@ current_node = protein._head
 
 print("From left to right: \n")
 while current_node:
-    print(current_node._char, end=" ")
+    print(current_node._type, end=" ")
     if current_node._link == None:
         print("\n\n")
         break
@@ -45,8 +51,8 @@ while current_node:
 
 print("From right to left: \n")
 while current_node:
-    print(current_node._char, end=" ")
-    new_seq.append(current_node._char)
+    print(current_node._type, end=" ")
+    new_seq.append(current_node._type)
     if len(protein_sequence) == len(new_seq):
         print("\n\n")
         break
