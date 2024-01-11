@@ -4,7 +4,7 @@ from typing import Optional
 class Aminoacid:
 
     def __init__(self, type: str, predecessor: Optional["Aminoacid"], link: Optional["Aminoacid"]) -> None:
-        self._position: tuple[int] = (0, 0, 0) # Note z = 0 for 3th dim
+        self._position: tuple[int] = (0, 0, 0)  # Note z = 0 for 3th dim
         self._predecessor = predecessor
         self._link = link
         self._type: str = type
@@ -24,3 +24,6 @@ class Aminoacid:
 
         if (self.find_type == "C"):
             return -5
+
+    def __str__(self):
+        return self._type
