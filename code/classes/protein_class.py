@@ -1,6 +1,7 @@
 from classes.aminoacid_class import Aminoacid
 import csv
 
+
 class Protein:
     def __init__(self, sequence: str) -> None:
         self._sequence = sequence
@@ -33,22 +34,30 @@ class Protein:
     @classmethod
     def get_score(self):
         return self._score
-    
-    @classmethod 
+
+    @classmethod
     def get_folding(self):
         pass
 
     @classmethod
     def create_csv(self, index: int = 0) -> None:
-        """Creates a csv file that displays a specific folding of a protein
+        """
+        Creates a csv file that displays a specific folding of a protein
         post: creates output.csv if it doesn't exist, empties it if it does,
-        then fills it with the folding data."""
+        then fills it with the folding data.
+
+        pre: index is an int, the get_folding method outputs a list of dicts with
+        keys amino and fold, and resp values P, H or C and 1, -1, 2, -2, 3 or -3.
+        post: creates output[index].csv with a header amino, score
+        """
 
         filename = "output" + str(index) + ".csv"
         with open(filename, 'w', newline='') as file:
             header = ["amino", "fold"]
             writer = csv.DictWriter(file, fieldnames=header)
             folding = self.get_folding()
+            score = self.get_score()
+            folding.append({"amino": "score", "fold": score})
 
             writer.writeheader()
             writer.writerows(folding)
