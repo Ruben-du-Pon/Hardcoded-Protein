@@ -37,6 +37,7 @@ class Protein:
 
     @classmethod
     def get_folding(self):
+        self._head
         pass
 
     @classmethod
