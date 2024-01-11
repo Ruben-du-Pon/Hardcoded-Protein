@@ -4,7 +4,7 @@ from typing import Optional
 class Aminoacid:
 
     def __init__(self, type: str, predecessor: Optional["Aminoacid"], link: Optional["Aminoacid"]) -> None:
-        self._position: tuple[int] = (0, 0)
+        self._position: tuple[int] = (0, 0, 0) # Note z = 0 for 3th dim
         self._predecessor = predecessor
         self._link = link
         self._type: str = type

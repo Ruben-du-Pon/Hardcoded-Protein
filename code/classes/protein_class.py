@@ -37,21 +37,35 @@ class Protein:
     def get_folding(self):
         folding = []
         current = self._head
-        prev_x, prev_y = current._position
+
+        if current is None or current._link is None:
+            return folding  # Return empty list in this case
 
         while current is not None:
-            x, y = current._position
-            # Determine the fold based on the position change
-            if x == prev_x:
-                fold = 2 if y > prev_y else -2  # Up or down
+            # If current is the last amino acid, there's no next position
+            if current._link is None:
+                fold = 0
             else:
-                fold = 1 if x > prev_x else -1  # Right or left
+                next_amino = current._link
+                x, y, z = current._position
+                next_x, next_y, next_z = next_amino._position
+
+                # Calculate the direction based on position change
+                if x != next_x:
+                    fold = 1 if next_x > x else -1
+                elif y != next_y:
+                    fold = 2 if next_y > y else -2
+                elif z != next_z:
+                    fold = 3 if next_z > z else -3
+                else:
+                    fold = 0  # No change in position, might need to handle differently
+
             folding.append({'amino': current.get_type(), 'fold': fold})
-            prev_x, prev_y = x, y
             current = current._link
 
         folding.append({'amino': 'score', 'fold': self._score})
         return folding
+
 
 
     def create_csv(self, index: int = 0) -> None:
