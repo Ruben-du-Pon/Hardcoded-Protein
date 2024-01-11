@@ -73,6 +73,7 @@ class Protein:
 
             writer.writeheader()
             writer.writerows(folding)
+            
 
 
 # Example usage:
