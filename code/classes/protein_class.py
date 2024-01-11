@@ -33,6 +33,10 @@ class Protein:
     def get_score(self):
         return self._score
     
+    @classmethod 
+    def get_folding(self):
+        pass
+
     @classmethod
     def create_csv(self, index: int = 0) -> None:
         """Creates a csv file that displays a specific folding of a protein
