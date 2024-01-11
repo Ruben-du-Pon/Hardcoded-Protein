@@ -94,7 +94,7 @@ class Protein:
 
         for _ in range(1, length):
             last_position = positions[-1]
-            movement = random.choice(directions)
+            movement = random.choice(directions_D2)
             next_position = (last_position[0] + movement[0],
                              last_position[1] + movement[1],
                              last_position[2] + movement[2])
@@ -130,8 +130,3 @@ while current_node:
 
 sample_protein = Protein("HHPHHHPHPHHHPH")
 print(sample_protein.get_folding())
-current_node = sample_protein._head
-
-while current_node:
-    print(current_node)
-    current_node = current_node._link
