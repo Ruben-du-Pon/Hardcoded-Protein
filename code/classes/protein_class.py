@@ -65,7 +65,7 @@ class Protein:
         and a body with P, H or C followed by direction 1, -1, 2, -2, 3 or -3.
         """
 
-        filename = "output" + str(index) + ".csv"
+        filename = "../../data/output/output" + str(index) + ".csv"
         with open(filename, 'w', newline='') as file:
             header = ["amino", "fold"]
             writer = csv.DictWriter(file, fieldnames=header)
