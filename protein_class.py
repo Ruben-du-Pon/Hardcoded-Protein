@@ -1,5 +1,3 @@
-from aminoacid_class import Aminoacid
-
 
 class Protein:
     def __init__(self, sequence: str) -> None:
@@ -23,7 +21,8 @@ class Protein:
         current = head
 
         for type in self._sequence[1:]:
-            new_aminoacid = Aminoacid(predecessor=current, link=None, type=type)
+            new_aminoacid = Aminoacid(
+                predecessor=current, link=None, type=type)
             current._link = new_aminoacid
             current = new_aminoacid
 
