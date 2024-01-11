@@ -66,8 +66,6 @@ class Protein:
         folding.append({'amino': 'score', 'fold': self._score})
         return folding
 
-
-
     def create_csv(self, index: int = 0) -> None:
         """
         Creates a csv file that displays a specific folding of a protein
@@ -80,15 +78,15 @@ class Protein:
         and a body with P, H or C followed by direction 1, -1, 2, -2, 3 or -3.
         """
 
-        filename = "output" + str(index) + ".csv"
+        filename = "../../data/output/output" + str(index) + ".csv"
         with open(filename, 'w', newline='') as file:
             header = ["amino", "fold"]
             writer = csv.DictWriter(file, fieldnames=header)
             folding = self.get_folding()
-            score = self.get_score()
 
             writer.writeheader()
             writer.writerows(folding)
+            
 
 
 # Example usage:
