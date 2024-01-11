@@ -37,8 +37,24 @@ class Protein:
 
     @classmethod
     def get_folding(self):
-        self._head
-        pass
+        folding = []
+        current = self._head
+        prev_x, prev_y = current._position
+
+        while current is not None:
+            x, y = current._position
+            # Determine the fold based on the position change
+            if x == prev_x:
+                fold = 2 if y > prev_y else -2  # Up or down
+            else:
+                fold = 1 if x > prev_x else -1  # Right or left
+            folding.append({'amino': current.get_type(), 'fold': fold})
+            prev_x, prev_y = x, y
+            current = current._link
+
+        folding.append({'amino': 'score', 'fold': self._score})
+
+        return folding
 
     @classmethod
     def create_csv(self, index: int = 0) -> None:
