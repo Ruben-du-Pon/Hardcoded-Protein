@@ -3,7 +3,7 @@ from typing import Optional
 
 class Aminoacid:
 
-    def __init__(self, type: str, predecessor: Optional["Aminoacid"], link: Optional["Aminoacid"]) -> None:
+    def __init__(self, type: str, predecessor: Optional["Aminoacid"] = None, link: Optional["Aminoacid"] = None) -> None:
         self._position: tuple[int] = (0, 0, 0)  # Note z = 0 for 3th dim
         self._predecessor = predecessor
         self._link = link
@@ -27,3 +27,10 @@ class Aminoacid:
 
     def __str__(self):
         return self._type
+
+
+test = Aminoacid("H")
+test2 = Aminoacid("C")
+
+print(test)
+print(test2)
