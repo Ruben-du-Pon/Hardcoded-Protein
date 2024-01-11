@@ -1,11 +1,11 @@
-from classes.aminoacid_class import Aminoacid
+from aminoacid_class import Aminoacid
 import csv
 
 
 class Protein:
     def __init__(self, sequence: str) -> None:
         self._sequence = sequence
-        self._head = self.create_double_linked_list()
+        self._head = self.create_double_linked_list(self)
         self._grid: dict[tuple, Aminoacid] = dict()
         self._score = 0
 
@@ -31,11 +31,9 @@ class Protein:
 
         return head
 
-    @classmethod
     def get_score(self):
         return self._score
 
-    @classmethod
     def get_folding(self):
         folding = []
         current = self._head
@@ -53,9 +51,9 @@ class Protein:
             current = current._link
 
         folding.append({'amino': 'score', 'fold': self._score})
-        return folding
+        return print(folding)
 
-    @classmethod
+
     def create_csv(self, index: int = 0) -> None:
         """
         Creates a csv file that displays a specific folding of a protein
@@ -74,7 +72,6 @@ class Protein:
             writer = csv.DictWriter(file, fieldnames=header)
             folding = self.get_folding()
             score = self.get_score()
-            folding.append({"amino": "score", "fold": score})
 
             writer.writeheader()
             writer.writerows(folding)
@@ -104,3 +101,7 @@ while current_node:
         break
     else:
         current_node = current_node._predecessor
+
+sample_protein = Protein("HHPHHHPHPHHHPH")
+print(sample_protein.get_folding())
+sample_protein.create_csv()
