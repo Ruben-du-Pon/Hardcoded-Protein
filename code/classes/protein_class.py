@@ -1,15 +1,16 @@
 from aminoacid_class import Aminoacid
-import csv
+import csv, random
 
 
 class Protein:
     def __init__(self, sequence: str) -> None:
         self._sequence = sequence
+        self._positions = self.generate_random_protein_positions(len(sequence))  # Store positions in the instance
         self._head = self.create_double_linked_list(self)
         self._grid: dict[tuple, Aminoacid] = dict()
         self._score = 0
 
-    @staticmethod
+    @staticmethod  
     def create_double_linked_list(self):
         """
         This particular method can't be called for a created object.
@@ -20,12 +21,11 @@ class Protein:
         if not self._sequence:
             return None
 
-        head = Aminoacid(predecessor=None, link=None, type=self._sequence[0])
+        head = Aminoacid(type=self._sequence[0], position=self._positions[0])
         current = head
 
-        for type in self._sequence[1:]:
-            new_aminoacid = Aminoacid(
-                predecessor=current, link=None, type=type)
+        for idx, type in enumerate(self._sequence[1:], start=1):
+            new_aminoacid = Aminoacid(type=type, position=self._positions[idx], predecessor=current)
             current._link = new_aminoacid
             current = new_aminoacid
 
@@ -87,6 +87,20 @@ class Protein:
             writer.writeheader()
             writer.writerows(folding)
             
+    def generate_random_protein_positions(self, length):
+        directions_D2 = [(1, 0, 0), (-1, 0, 0), (0, 1, 0), (0, -1, 0)]
+        #directions_D3 = [(1, 0, 0), (-1, 0, 0), (0, 1, 0), (0, -1, 0), (0, 0, 1), (0, 0, -1)]
+        positions = [(0, 0, 0)]  # Starting position
+
+        for _ in range(1, length):
+            last_position = positions[-1]
+            movement = random.choice(directions)
+            next_position = (last_position[0] + movement[0],
+                             last_position[1] + movement[1],
+                             last_position[2] + movement[2])
+            positions.append(next_position)
+
+        return positions
 
 
 # Example usage:
@@ -116,4 +130,8 @@ while current_node:
 
 sample_protein = Protein("HHPHHHPHPHHHPH")
 print(sample_protein.get_folding())
-sample_protein.create_csv()
+current_node = sample_protein._head
+
+while current_node:
+    print(current_node)
+    current_node = current_node._link
