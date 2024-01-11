@@ -51,7 +51,7 @@ class Protein:
             current = current._link
 
         folding.append({'amino': 'score', 'fold': self._score})
-        return print(folding)
+        return folding
 
 
     def create_csv(self, index: int = 0) -> None:
