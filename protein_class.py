@@ -1,5 +1,7 @@
+import csv
 from typing import Optional
 from aminoacid_class import Aminoacid
+
 
 class Protein:
     def __init__(self, sequence: str) -> None:
@@ -16,7 +18,8 @@ class Protein:
         current = head
 
         for type in self._sequence[1:]:
-            new_aminoacid = Aminoacid(predecessor=current, link=None, type=type)
+            new_aminoacid = Aminoacid(
+                predecessor=current, link=None, type=type)
             current._link = new_aminoacid
             current = new_aminoacid
 
@@ -24,8 +27,21 @@ class Protein:
 
     def get_score(self):
         return self._score
-    
 
+    def create_csv(self, index: int = 0) -> None:
+        """Creates a csv file that displays a specific folding of a protein
+
+        post: creates output.csv if it doesn't exist, empties it if it does,
+        then fills it with the folding data."""
+
+        filename = "output" + str(index) + ".csv"
+        with open(filename, 'w', newline='') as file:
+            header = ["amino", "fold"]
+            writer = csv.DictWriter(file, fieldnames=header)
+            folding = self.get_folding()
+
+            writer.writeheader()
+            writer.writerows(folding)
 
 
 # Example usage:
