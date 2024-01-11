@@ -102,6 +102,42 @@ class Protein:
 
         return positions
 
+    def get_grid_2D(self):
+        # Gather sequence of amino acids directly in the method
+        sequence = []
+        current = self._head
+        while current:
+            sequence.append(current.get_type())
+            current = current._link
+
+        # Determine the grid size
+        min_x = min(x for x, _, _ in self._positions)
+        max_x = max(x for x, _, _ in self._positions)
+        min_y = min(y for _, y, _ in self._positions)
+        max_y = max(y for _, y, _ in self._positions)
+        grid_size_x = (max_x - min_x) * 2 + 3
+        grid_size_y = (max_y - min_y) * 2 + 3
+
+        # Create an empty grid
+        grid = [['   ' for _ in range(grid_size_x)] for _ in range(grid_size_y)]
+
+        # Adjust positions for the grid
+        adjusted_positions = [(2 * (x - min_x) + 1, 2 * (y - min_y) + 1) for x, y, _ in self._positions]
+
+        # Place amino acids and connections
+        for (x, y), amino_acid in zip(adjusted_positions, sequence):
+            grid[y][x] = ' ' + amino_acid + ' '
+        for (x1, y1), (x2, y2) in zip(adjusted_positions, adjusted_positions[1:]):
+            if x1 == x2:
+                for y in range(min(y1, y2) + 1, max(y1, y2)):
+                    grid[y][x1] = ' | '
+            elif y1 == y2:
+                for x in range(min(x1, x2) + 1, max(x1, x2)):
+                    grid[y1][x] = ' - '
+
+        # Convert the grid to a string representation
+        grid_str = '\n'.join([''.join(row) for row in grid])
+        return grid_str
 
 # Example usage:
 protein_sequence, new_seq = "HCPHPHPHCHHHHPCCPPHPPPHPPPPCPPPHPPPHPHHHHCHPHPHPHH", []
@@ -130,3 +166,4 @@ while current_node:
 
 sample_protein = Protein("HHPHHHPHPHHHPH")
 print(sample_protein.get_folding())
+print(protein.get_grid_2D())
