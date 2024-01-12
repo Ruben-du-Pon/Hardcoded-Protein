@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 from typing import Tuple
 
 
-def plot_2d(protein, colors: Tuple[str, str, str]) -> None:
+def plot_2d(protein, colors: Tuple[str, str, str], line_number: int) -> None:
     colors = [color.lower() for color in colors]
 
     if "C" not in protein._sequence:
@@ -13,7 +13,8 @@ def plot_2d(protein, colors: Tuple[str, str, str]) -> None:
         while curr_pos.link is not None:
             curr_pos = curr_pos.link
             coordinates.append(((curr_pos.position[0], curr_pos.position[1])))
-            colors_ = colors_ + [colors[0] if curr_pos._type == "H" else colors[1]]
+            colors_ = colors_ + [colors[0]
+                                 if curr_pos._type == "H" else colors[1]]
 
         x_coordinates = [x for x, _ in coordinates]
         y_coordinates = [y for _, y in coordinates]
@@ -21,9 +22,10 @@ def plot_2d(protein, colors: Tuple[str, str, str]) -> None:
         plt.figure("Protein Alginment")
 
         for x, y, color in zip(x_coordinates, y_coordinates, colors_):
-            plt.scatter(x, y, color=color, marker="o")
+            plt.scatter(x, y, s=50, color=color, marker="o")
 
-        plt.plot(x_coordinates, y_coordinates, linestyle="-", color="black", alpha=0.1)
+        plt.plot(x_coordinates, y_coordinates,
+                 linestyle="-", color="black", alpha=0.1)
 
         plt.xlim((min(x_coordinates) - 2, max(x_coordinates) + 2))
         plt.ylim((min(y_coordinates) - 2, max(y_coordinates) + 2))
@@ -44,7 +46,8 @@ def plot_2d(protein, colors: Tuple[str, str, str]) -> None:
         ]
         plt.legend(legend_handles, legend_labels, loc="upper right")
 
-        plt.show()
+        # plt.show()
+        plt.savefig(f"data/output/plot_2D_{line_number}.png")
 
     elif "C" in protein._sequence:
         curr_pos = protein._head
@@ -74,9 +77,10 @@ def plot_2d(protein, colors: Tuple[str, str, str]) -> None:
         plt.figure("Protein Alginment")
 
         for x, y, color in zip(x_coordinates, y_coordinates, colors_):
-            plt.scatter(x, y, color=color, marker="o")
+            plt.scatter(x, y, s=50, color=color, marker="o")
 
-        plt.plot(x_coordinates, y_coordinates, linestyle="-", color="black", alpha=0.1)
+        plt.plot(x_coordinates, y_coordinates,
+                 linestyle="-", color="black", alpha=0.1)
 
         plt.xlim((min(x_coordinates) - 2, max(x_coordinates) + 2))
         plt.ylim((min(y_coordinates) - 2, max(y_coordinates) + 2))
@@ -97,4 +101,5 @@ def plot_2d(protein, colors: Tuple[str, str, str]) -> None:
         ]
         plt.legend(legend_handles, legend_labels, loc="upper right")
 
-        plt.show()
+        # plt.show()
+        plt.savefig(f"data/output/plot_2D_{line_number}.png")

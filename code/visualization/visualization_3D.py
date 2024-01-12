@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 from typing import Tuple
 
 
-def plot_3d(protein, colors: Tuple[str, str, str]) -> None:
+def plot_3d(protein, colors: Tuple[str, str, str], line_number: int) -> None:
     colors = [color.lower() for color in colors]
 
     if "C" not in protein._sequence:
@@ -15,9 +15,11 @@ def plot_3d(protein, colors: Tuple[str, str, str]) -> None:
         while curr_pos.link is not None:
             curr_pos = curr_pos.link
             coordinates.append(
-                ((curr_pos.position[0], curr_pos.position[1], curr_pos.position[2]))
+                ((curr_pos.position[0],
+                 curr_pos.position[1], curr_pos.position[2]))
             )
-            colors_ = colors_ + [colors[0] if curr_pos._type == "H" else colors[1]]
+            colors_ = colors_ + [colors[0]
+                                 if curr_pos._type == "H" else colors[1]]
 
         x_coordinates = [x for x, _, _ in coordinates]
         y_coordinates = [y for _, y, _ in coordinates]
@@ -26,7 +28,8 @@ def plot_3d(protein, colors: Tuple[str, str, str]) -> None:
         fig = plt.figure("Protein Alginment")
         ax = fig.add_subplot(projection="3d")
 
-        ax.scatter(x_coordinates, y_coordinates, z_coordinates, marker="o", c=colors_)
+        ax.scatter(x_coordinates, y_coordinates,
+                   z_coordinates, s=50, marker="o", c=colors_)
 
         for i in range(1, protein._length):
             ax.plot(
@@ -56,7 +59,8 @@ def plot_3d(protein, colors: Tuple[str, str, str]) -> None:
         ]
         plt.legend(legend_handles, legend_labels, loc="upper right")
 
-        plt.show()
+        # plt.show()
+        plt.savefig(f"data/output/plot_3D_{line_number}.png")
 
     elif "C" in protein._sequence:
         curr_pos = protein._head
@@ -74,7 +78,8 @@ def plot_3d(protein, colors: Tuple[str, str, str]) -> None:
         while curr_pos.link is not None:
             curr_pos = curr_pos.link
             coordinates.append(
-                ((curr_pos.position[0], curr_pos.position[1], curr_pos.position[2]))
+                ((curr_pos.position[0],
+                 curr_pos.position[1], curr_pos.position[2]))
             )
             colors_ = colors_ + [
                 colors[0]
@@ -91,7 +96,8 @@ def plot_3d(protein, colors: Tuple[str, str, str]) -> None:
         fig = plt.figure("Protein Alginment")
         ax = fig.add_subplot(projection="3d")
 
-        ax.scatter(x_coordinates, y_coordinates, z_coordinates, marker="o", c=colors_)
+        ax.scatter(x_coordinates, y_coordinates,
+                   z_coordinates, s=50, marker="o", c=colors_)
 
         for i in range(1, protein._length):
             ax.plot(
@@ -120,4 +126,5 @@ def plot_3d(protein, colors: Tuple[str, str, str]) -> None:
         ]
         plt.legend(legend_handles, legend_labels, loc="upper right")
 
-        plt.show()
+        # plt.show()
+        plt.savefig(f"data/output/plot_3D_{line_number}.png")
