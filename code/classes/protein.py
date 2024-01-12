@@ -82,10 +82,10 @@ class Protein:
         post: creates output.csv if it doesn't exist, empties it if it does,
         then fills it with the folding data.
 
-        pre: index is an int, the get_folding method outputs a list of dicts with
-        keys amino and fold, and resp values P, H or C and 1, -1, 2, -2, 3 or -3.
-        post: creates output[index].csv with a header amino, score; a footer score, <score>
-        and a body with P, H or C followed by direction 1, -1, 2, -2, 3 or -3.
+        pre: index is an int, the get_folding method outputs a list of dicts 
+        with keys amino and fold, and resp values P, H or C and 1, -1, 2, -2, 3 or -3.
+        post: creates output[index].csv with a header amino, score; a footer 
+        score, <score> and a body with P, H or C followed by direction 1, -1, 2, -2, 3 or -3.
         """
 
         filename = "data/output/output" + str(index) + ".csv"
@@ -110,7 +110,7 @@ class Protein:
 
         return positions
 
-    def get_grid_2D(self):
+    def get_grid_2D(self) -> str:
         # Gather sequence of amino acids directly in the method
         sequence = []
         current = self._head
@@ -147,6 +147,24 @@ class Protein:
         # Convert the grid to a string representation
         grid_str = '\n'.join([''.join(row) for row in grid])
         return grid_str
+
+    def is_valid(self) -> bool:
+        """
+        Checks if every aminoacid has a different position.
+
+        post: returns True if every aminoacid has a different position,
+        False otherwise.
+        """
+        pass
+
+    def is_valid_fold(self, position: tuple[int]) -> bool:
+        """
+        Checks if a fold is valid.
+
+        post: returns True if the chosen position is not yet a key in self._grid,
+        False otherwise.
+        """
+        return position not in self._grid
 
 
 """ Example usage:
