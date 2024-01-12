@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-from ..classes.protein import Protein
+from protein import Protein
 
 class Plot_Protein:
     def __init__(self, protein_instance: Protein):
@@ -26,4 +26,6 @@ class Plot_Protein:
             plt.ylim((0, self.protein._length))
 
 
-Protein("")
+g = Protein("HHPHHHPHPHHHPH")
+plotd = Plot_Protein(g)
+plotd.plot(dimensionality=2, colors=("Red", "Blue"))
