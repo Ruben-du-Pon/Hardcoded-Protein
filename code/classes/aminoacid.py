@@ -3,7 +3,9 @@ from typing import Optional
 
 class Aminoacid:
 
-    def __init__(self, type: str, position: tuple[int], predecessor: Optional["Aminoacid"] = None, link: Optional["Aminoacid"] = None) -> None:
+    def __init__(self, type: str, position: tuple[int],
+                 predecessor: Optional["Aminoacid"] = None,
+                 link: Optional["Aminoacid"] = None) -> None:
         self.position = position
         self.predecessor = predecessor
         self.link = link
