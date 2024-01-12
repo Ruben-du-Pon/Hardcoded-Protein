@@ -1,17 +1,21 @@
 from code.classes.aminoacid import Aminoacid
-import csv, random
+from operator import add, sub
+import csv
+import random
 
 
 class Protein:
     def __init__(self, sequence: str) -> None:
         self._sequence: str = sequence
         self._length: int = len(sequence)
-        self._positions: list[tuple[int]] = self.generate_random_protein_positions()  # Store positions in the instance
+        # Store positions in the instance
+        self._positions: list[tuple[int]
+                              ] = self.generate_random_protein_positions()
         self._head: Aminoacid = self.create_double_linked_list(self)
         self._grid: dict[tuple, Aminoacid] = {}
         self._score = 0
 
-    @staticmethod  
+    @staticmethod
     def create_double_linked_list(self):
         """
         This particular method can't be called for a created object.
@@ -26,7 +30,8 @@ class Protein:
         current = head
 
         for idx, type in enumerate(self._sequence[1:], start=1):
-            new_aminoacid = Aminoacid(type=type, position=self._positions[idx], predecessor=current)
+            new_aminoacid = Aminoacid(
+                type=type, position=self._positions[idx], predecessor=current)
             current.link = new_aminoacid
             current = new_aminoacid
 
@@ -48,6 +53,10 @@ class Protein:
                 fold = 0
             else:
                 next_amino = current.link
+                difference = tuple(
+                    map(sub, next_amino.position, current.position))
+                fold = difference[0] + 2 * difference[1] + 3 * difference[2]
+                """
                 x, y, z = current.position
                 next_x, next_y, next_z = next_amino.position
 
@@ -59,7 +68,7 @@ class Protein:
                 elif z != next_z:
                     fold = 3 if next_z > z else -3
                 else:
-                    fold = 0  # No change in position, might need to handle differently
+                    fold = 0  # No change in position, might need to handle differently"""
 
             folding.append({'amino': current.get_type(), 'fold': fold})
             current = current.link
@@ -88,16 +97,15 @@ class Protein:
 
             writer.writeheader()
             writer.writerows(folding)
-            
+
     def generate_random_protein_positions(self):
-        directions_D2 = [(1, 0, 0), (-1, 0, 0), (0, 1, 0), (0, -1, 0)]
-        #directions_D3 = [(1, 0, 0), (-1, 0, 0), (0, 1, 0), (0, -1, 0), (0, 0, 1), (0, 0, -1)]
+        directions = [(1, 0, 0), (-1, 0, 0), (0, 1, 0), (0, -1, 0)]
         positions = [(0, 0, 0)]  # Starting position
 
         for _ in range(1, self._length):
             last_position = positions[-1]
-            movement = random.choice(directions_D2)
-            next_position = last_position + movement
+            movement = random.choice(directions)
+            next_position = tuple(map(add, last_position, movement))
             positions.append(next_position)
 
         return positions
@@ -122,7 +130,8 @@ class Protein:
         grid = [[' ' for _ in range(grid_size_x)] for _ in range(grid_size_y)]
 
         # Adjust positions for the grid
-        adjusted_positions = [(2 * (x - min_x) + 1, 2 * (y - min_y) + 1) for x, y, _ in self._positions]
+        adjusted_positions = [(2 * (x - min_x) + 1, 2 * (y - min_y) + 1)
+                              for x, y, _ in self._positions]
 
         # Place amino acids and connections
         for (x, y), amino_acid in zip(adjusted_positions, sequence):
@@ -138,6 +147,7 @@ class Protein:
         # Convert the grid to a string representation
         grid_str = '\n'.join([''.join(row) for row in grid])
         return grid_str
+
 
 """ Example usage:
 protein_sequence, new_seq = "HCPHPHPHCHHHHPCCPPHPPPHPPPPCPPPHPPPHPHHHHCHPHPHPHH", []
