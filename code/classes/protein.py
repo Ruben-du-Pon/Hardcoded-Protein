@@ -98,28 +98,78 @@ class Protein:
             writer.writeheader()
             writer.writerows(folding)
 
-    def generate_random_protein_positions(self):
+    def generate_random_protein_positions(self, backtracking = False):
+        """
+        Generates a random, valid sequence of positions for the amino acids in the protein.
+        
+        It uses backtracking to avoid overlapping positions, ensuring a valid 3D structure. 
+        Raises ValueError if a valid structure cannot be generated.
+        
+        Returns a list of 3D coordinates for each amino acid.
+        """
+
         directions = [(1, 0, 0), (-1, 0, 0), (0, 1, 0), (0, -1, 0)]
         positions = [(0, 0, 0)]  # Starting position
 
-        while len(positions) < self._length:
+        if backtracking:
+            self._grid[positions[0]] = self._sequence[0]
+
+            if not self._place_next_amino_acid(positions, 1, directions):
+                raise ValueError("Cannot generate a valid protein structure with the given sequence.")
+
+            return positions
+
+        for _ in range(1, self._length):
             last_position = positions[-1]
-            valid_move_found = False
-
-            while not valid_move_found:
-                movement = random.choice(directions)
-                next_position = tuple(map(add, last_position, movement))
-
-                if self.is_valid_fold(next_position):
-                    positions.append(next_position)
-                    self._grid[next_position] = None  # Add position to the grid
-                    valid_move_found = True
+            movement = random.choice(directions)
+            next_position = (last_position[0] + movement[0],
+                             last_position[1] + movement[1],
+                             last_position[2] + movement[2])
+            positions.append(next_position)
 
         return positions
 
+    def _place_next_amino_acid(self, positions, index, directions):
+        """
+        Recursive method to place an amino acid in a valid position.
+
+        Args:
+        positions: List of current amino acid positions.
+        index: Index of the amino acid to be placed.
+        directions: Possible directions to move from the current position.
+
+        Returns a bool: True if a valid position is found, False otherwise (backtracks if False).
+        """
+
+        if index >= self._length:
+            return True
+
+        last_position = positions[-1]
+        random.shuffle(directions)  # Randomize the directions to try
+
+        for movement in directions:
+            next_position = tuple(map(add, last_position, movement))
+
+            if self.is_valid_fold(next_position):
+                positions.append(next_position)
+                self._grid[next_position] = self._sequence[index]
+
+                if self._place_next_amino_acid(positions, index + 1, directions):
+                    return True
+
+                # Backtrack
+                positions.pop()
+                del self._grid[next_position]
+
+        return False
 
     def get_grid_2D(self) -> str:
-        # Gather sequence of amino acids directly in the method
+        """
+        Generates a 2D grid representation of the protein structure.
+
+        Returns a string representation of the 2D grid, showing amino acids and their connections.
+        """
+
         sequence = []
         current = self._head
         while current:
