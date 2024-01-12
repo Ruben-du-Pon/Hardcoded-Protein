@@ -56,19 +56,6 @@ class Protein:
                 difference = tuple(
                     map(sub, next_amino.position, current.position))
                 fold = difference[0] + 2 * difference[1] + 3 * difference[2]
-                """
-                x, y, z = current.position
-                next_x, next_y, next_z = next_amino.position
-
-                # Calculate the direction based on position change
-                if x != next_x:
-                    fold = 1 if next_x > x else -1
-                elif y != next_y:
-                    fold = 2 if next_y > y else -2
-                elif z != next_z:
-                    fold = 3 if next_z > z else -3
-                else:
-                    fold = 0  # No change in position, might need to handle differently"""
 
             folding.append({'amino': current.get_type(), 'fold': fold})
             current = current.link
@@ -86,7 +73,7 @@ class Protein:
         with keys amino and fold, and resp values P, H or C and 1, -1, 2, -2, 3 or -3.
         post: creates output[index].csv with a header amino, score; a footer 
         score, <score> and a body with P, H or C followed by direction 1, -1, 2, -2, 3 or -3.
-        """
+        """  # noqa
 
         filename = "data/output/output" + str(index) + ".csv"
         with open(filename, 'w', newline='') as file:
@@ -106,7 +93,7 @@ class Protein:
         Raises ValueError if a valid structure cannot be generated.
 
         Returns a list of 3D coordinates for each amino acid.
-        """
+        """  # noqa
 
         directions = [(1, 0, 0), (-1, 0, 0), (0, 1, 0), (0, -1, 0)]
         positions = [(0, 0, 0)]  # Starting position
@@ -116,7 +103,7 @@ class Protein:
 
             if not self._place_next_amino_acid(positions, 1, directions):
                 raise ValueError(
-                    "Cannot generate a valid protein structure with the given sequence.")
+                    "Cannot generate a valid protein structure with the given sequence.")  # noqa
 
             return positions
 
@@ -140,7 +127,7 @@ class Protein:
         directions: Possible directions to move from the current position.
 
         Returns a bool: True if a valid position is found, False otherwise (backtracks if False).
-        """
+        """  # noqa
 
         if index >= self._length:
             return True
@@ -155,7 +142,7 @@ class Protein:
                 positions.append(next_position)
                 self._grid[next_position] = self._sequence[index]
 
-                if self._place_next_amino_acid(positions, index + 1, directions):
+                if self._place_next_amino_acid(positions, index + 1, directions):  # noqa
                     return True
 
                 # Backtrack
@@ -168,7 +155,8 @@ class Protein:
         """
         Generates a 2D grid representation of the protein structure.
 
-        Returns a string representation of the 2D grid, showing amino acids and their connections.
+        Returns a string representation of the 2D grid, showing amino acids
+        and their connections.
         """
 
         sequence = []
@@ -195,7 +183,7 @@ class Protein:
         # Place amino acids and connections
         for (x, y), amino_acid in zip(adjusted_positions, sequence):
             grid[y][x] = '' + amino_acid + ''
-        for (x1, y1), (x2, y2) in zip(adjusted_positions, adjusted_positions[1:]):
+        for (x1, y1), (x2, y2) in zip(adjusted_positions, adjusted_positions[1:]):  # noqa
             if x1 == x2:
                 for y in range(min(y1, y2) + 1, max(y1, y2)):
                     grid[y][x1] = '|'
@@ -222,7 +210,7 @@ class Protein:
 
         post: returns True if the chosen position is not yet a key in self._grid,
         False otherwise.
-        """
+        """  # noqa
         return position not in self._grid
 
 
@@ -254,4 +242,4 @@ while current_node:
 sample_protein = Protein("HHPHHHPHPHHHPH")
 print(sample_protein.get_folding())
 print(protein.get_grid_2D())
-"""
+"""  # noqa
