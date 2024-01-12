@@ -1,4 +1,4 @@
-from aminoacid_class import Aminoacid
+from code.classes.aminoacid import Aminoacid
 import csv, random
 
 
@@ -78,8 +78,9 @@ class Protein:
         and a body with P, H or C followed by direction 1, -1, 2, -2, 3 or -3.
         """
 
-        filename = "../../data/output/output" + str(index) + ".csv"
+        filename = "data/output/output" + str(index) + ".csv"
         with open(filename, 'w', newline='') as file:
+            print(filename)
             header = ["amino", "fold"]
             writer = csv.DictWriter(file, fieldnames=header)
             folding = self.get_folding()
@@ -139,7 +140,7 @@ class Protein:
         grid_str = '\n'.join([''.join(row) for row in grid])
         return grid_str
 
-# Example usage:
+""" Example usage:
 protein_sequence, new_seq = "HCPHPHPHCHHHHPCCPPHPPPHPPPPCPPPHPPPHPHHHHCHPHPHPHH", []
 print(f"\nOriginal Protein-string: {protein_sequence}\n\n")
 protein = Protein(protein_sequence)
@@ -167,3 +168,4 @@ while current_node:
 sample_protein = Protein("HHPHHHPHPHHHPH")
 print(sample_protein.get_folding())
 print(protein.get_grid_2D())
+"""
