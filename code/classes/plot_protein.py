@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
-from protein import Protein
 from typing import Tuple
+from protein import Protein
 
 
 class Plot_Protein:
@@ -111,7 +111,8 @@ class Plot_Protein:
     def plot_3d(self):
         pass
 
-
+"""
 g = Protein("CHPHCHPHPHCHPH")
 plotd = Plot_Protein(g)
 plotd.plot_2d(colors=("blue", "red", "green"))
+"""
