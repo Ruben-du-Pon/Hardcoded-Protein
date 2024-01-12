@@ -1,19 +1,19 @@
-from code.classes.aminoacid import Aminoacid
+from aminoacid import Aminoacid
 from operator import add, sub
 import csv
 import random
-
+from typing import Tuple, Dict, List
 
 class Protein:
     def __init__(self, sequence: str) -> None:
         self._sequence: str = sequence
         self._length: int = len(sequence)
-        self._grid: dict[tuple, Aminoacid] = {}
+        self._grid: Dict[Tuple[int, int], Aminoacid] = {}
         # Store positions in the instance
-        self._positions: list[tuple[int]
-                              ] = self.generate_random_protein_positions()
+        self._positions: List[Tuple[int]] = self.generate_random_protein_positions()
         self._head: Aminoacid = self.create_double_linked_list(self)
-        self._score = 0
+        self._score: int = 0
+
 
     @staticmethod
     def create_double_linked_list(self):
@@ -216,7 +216,7 @@ class Protein:
         """
         return self._length == len(self._grid)
 
-    def is_valid_fold(self, position: tuple[int]) -> bool:
+    def is_valid_fold(self, position: Tuple[int]) -> bool:
         """
         Checks if a fold is valid.
 

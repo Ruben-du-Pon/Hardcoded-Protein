@@ -1,9 +1,9 @@
-from typing import Optional
+from typing import Optional, Tuple
 
 
 class Aminoacid:
 
-    def __init__(self, type: str, position: tuple[int],
+    def __init__(self, type: str, position: Tuple[int],
                  predecessor: Optional["Aminoacid"] = None,
                  link: Optional["Aminoacid"] = None) -> None:
         self.position = position
