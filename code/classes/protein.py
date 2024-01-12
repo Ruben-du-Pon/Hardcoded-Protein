@@ -98,13 +98,13 @@ class Protein:
             writer.writeheader()
             writer.writerows(folding)
 
-    def generate_random_protein_positions(self, backtracking = False):
+    def generate_random_protein_positions(self, backtracking=False):
         """
         Generates a random, valid sequence of positions for the amino acids in the protein.
-        
+
         It uses backtracking to avoid overlapping positions, ensuring a valid 3D structure. 
         Raises ValueError if a valid structure cannot be generated.
-        
+
         Returns a list of 3D coordinates for each amino acid.
         """
 
@@ -115,7 +115,8 @@ class Protein:
             self._grid[positions[0]] = self._sequence[0]
 
             if not self._place_next_amino_acid(positions, 1, directions):
-                raise ValueError("Cannot generate a valid protein structure with the given sequence.")
+                raise ValueError(
+                    "Cannot generate a valid protein structure with the given sequence.")
 
             return positions
 
@@ -213,7 +214,7 @@ class Protein:
         post: returns True if every aminoacid has a different position,
         False otherwise.
         """
-        pass
+        return self._length == len(self._grid)
 
     def is_valid_fold(self, position: tuple[int]) -> bool:
         """
