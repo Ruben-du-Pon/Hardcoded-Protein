@@ -1,6 +1,7 @@
 import csv
 import sys
-from code.classes import protein, plot_protein
+from code.classes import protein
+from code.visualization import visualization_2D
 
 
 def main():
@@ -17,8 +18,8 @@ def main():
             sequence = row[0]
             test_protein = protein.Protein(sequence)
             test_protein.create_csv(line_number)
-            plot = plot_protein.Plot_Protein(test_protein)
-            plot.plot_2d(colors=("red", "blue", "green"))
+            plot = visualization_2D.plot_2d(test_protein, ("red", "blue", "green"))
+
 
             if showGrid:
                 print(test_protein.get_grid_2D())
