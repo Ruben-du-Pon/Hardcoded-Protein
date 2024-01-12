@@ -1,4 +1,5 @@
-from classes.protein_class import Protein
+from code.classes import protein
 
 sequence = input("Enter the sequence of Aminoacids for the protein: ")
-protein = Protein(sequence)
+test_protein = protein.Protein(sequence)
+test_protein.create_csv
