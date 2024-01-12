@@ -8,11 +8,11 @@ class Protein:
     def __init__(self, sequence: str) -> None:
         self._sequence: str = sequence
         self._length: int = len(sequence)
+        self._grid: dict[tuple, Aminoacid] = {}
         # Store positions in the instance
         self._positions: list[tuple[int]
                               ] = self.generate_random_protein_positions()
         self._head: Aminoacid = self.create_double_linked_list(self)
-        self._grid: dict[tuple, Aminoacid] = {}
         self._score = 0
 
     @staticmethod
@@ -102,13 +102,21 @@ class Protein:
         directions = [(1, 0, 0), (-1, 0, 0), (0, 1, 0), (0, -1, 0)]
         positions = [(0, 0, 0)]  # Starting position
 
-        for _ in range(1, self._length):
+        while len(positions) < self._length:
             last_position = positions[-1]
-            movement = random.choice(directions)
-            next_position = tuple(map(add, last_position, movement))
-            positions.append(next_position)
+            valid_move_found = False
+
+            while not valid_move_found:
+                movement = random.choice(directions)
+                next_position = tuple(map(add, last_position, movement))
+
+                if self.is_valid_fold(next_position):
+                    positions.append(next_position)
+                    self._grid[next_position] = None  # Add position to the grid
+                    valid_move_found = True
 
         return positions
+
 
     def get_grid_2D(self) -> str:
         # Gather sequence of amino acids directly in the method
