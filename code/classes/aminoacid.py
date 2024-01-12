@@ -9,9 +9,6 @@ class Aminoacid:
         self.link = link
         self._type: str = type
 
-    def set_position(self, position: tuple) -> None:
-        self._position = position
-
     def get_type(self) -> str:
         return self._type
 
