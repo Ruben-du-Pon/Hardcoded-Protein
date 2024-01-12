@@ -124,7 +124,7 @@ class Protein:
         current = self._head
         while current:
             sequence.append(current.get_type())
-            current = current._link
+            current = current.link
 
         # Determine the grid size
         min_x = min(x for x, _, _ in self._positions)
