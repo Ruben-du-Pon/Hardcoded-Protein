@@ -12,7 +12,7 @@ class Protein:
         self._grid: Dict[Tuple[int, int], Aminoacid] = {}
         # Store positions in the instance
         self._positions: List[Tuple[int]
-                              ] = self.generate_random_protein_positions()
+                              ] = self.generate_random_protein_positions(backtracking=True)
         self._head: Aminoacid = self.create_double_linked_list(self)
         self._score: int = 0
 
@@ -111,9 +111,7 @@ class Protein:
         for _ in range(1, self._length):
             last_position = positions[-1]
             movement = random.choice(directions)
-            next_position = (last_position[0] + movement[0],
-                             last_position[1] + movement[1],
-                             last_position[2] + movement[2])
+            next_position = (tuple(map(add, last_position, movement)))
             positions.append(next_position)
 
         return positions
