@@ -1,13 +1,13 @@
 import matplotlib.pyplot as plt
 from typing import Tuple
-from protein import Protein
+from .protein import Protein
 
 
 class Plot_Protein:
-    def __init__(self, protein_instance: Protein):
+    def __init__(self, protein_instance: Protein) -> None:
         self.protein = protein_instance
 
-    def plot_2d(self, colors: Tuple[str, str, str]):
+    def plot_2d(self, colors: Tuple[str, str, str]) -> None:
         colors = [color.lower() for color in colors]
 
         if "C" not in self.protein._sequence:
@@ -17,8 +17,10 @@ class Plot_Protein:
 
             while curr_pos.link is not None:
                 curr_pos = curr_pos.link
-                coordinates.append(((curr_pos.position[0], curr_pos.position[1])))
-                colors_ = colors_ + [colors[0] if curr_pos._type == "H" else colors[1]]
+                coordinates.append(
+                    ((curr_pos.position[0], curr_pos.position[1])))
+                colors_ = colors_ + [colors[0]
+                                     if curr_pos._type == "H" else colors[1]]
 
             x_coordinates = [x for x, _ in coordinates]
             y_coordinates = [y for _, y in coordinates]
@@ -66,7 +68,8 @@ class Plot_Protein:
 
             while curr_pos.link is not None:
                 curr_pos = curr_pos.link
-                coordinates.append(((curr_pos.position[0], curr_pos.position[1])))
+                coordinates.append(
+                    ((curr_pos.position[0], curr_pos.position[1])))
                 colors_ = colors_ + [
                     colors[0]
                     if curr_pos._type == "H"
@@ -110,6 +113,7 @@ class Plot_Protein:
 
     def plot_3d(self):
         pass
+
 
 """
 g = Protein("CHPHCHPHPHCHPH")
