@@ -4,10 +4,11 @@ import csv, random
 
 class Protein:
     def __init__(self, sequence: str) -> None:
-        self._sequence = sequence
-        self._positions = self.generate_random_protein_positions(len(sequence))  # Store positions in the instance
-        self._head = self.create_double_linked_list(self)
-        self._grid: dict[tuple, Aminoacid] = dict()
+        self._sequence: str = sequence
+        self._length: int = len(sequence)
+        self._positions: list[tuple[int]] = self.generate_random_protein_positions()  # Store positions in the instance
+        self._head: Aminoacid = self.create_double_linked_list(self)
+        self._grid: dict[tuple, Aminoacid] = {}
         self._score = 0
 
     @staticmethod  
@@ -26,7 +27,7 @@ class Protein:
 
         for idx, type in enumerate(self._sequence[1:], start=1):
             new_aminoacid = Aminoacid(type=type, position=self._positions[idx], predecessor=current)
-            current._link = new_aminoacid
+            current.link = new_aminoacid
             current = new_aminoacid
 
         return head
@@ -38,17 +39,17 @@ class Protein:
         folding = []
         current = self._head
 
-        if current is None or current._link is None:
+        if current is None or current.link is None:
             return folding  # Return empty list in this case
 
         while current is not None:
             # If current is the last amino acid, there's no next position
-            if current._link is None:
+            if current.link is None:
                 fold = 0
             else:
-                next_amino = current._link
-                x, y, z = current._position
-                next_x, next_y, next_z = next_amino._position
+                next_amino = current.link
+                x, y, z = current.position
+                next_x, next_y, next_z = next_amino.position
 
                 # Calculate the direction based on position change
                 if x != next_x:
@@ -61,7 +62,7 @@ class Protein:
                     fold = 0  # No change in position, might need to handle differently
 
             folding.append({'amino': current.get_type(), 'fold': fold})
-            current = current._link
+            current = current.link
 
         folding.append({'amino': 'score', 'fold': self._score})
         return folding
@@ -88,17 +89,15 @@ class Protein:
             writer.writeheader()
             writer.writerows(folding)
             
-    def generate_random_protein_positions(self, length):
+    def generate_random_protein_positions(self):
         directions_D2 = [(1, 0, 0), (-1, 0, 0), (0, 1, 0), (0, -1, 0)]
         #directions_D3 = [(1, 0, 0), (-1, 0, 0), (0, 1, 0), (0, -1, 0), (0, 0, 1), (0, 0, -1)]
         positions = [(0, 0, 0)]  # Starting position
 
-        for _ in range(1, length):
+        for _ in range(1, self._length):
             last_position = positions[-1]
             movement = random.choice(directions_D2)
-            next_position = (last_position[0] + movement[0],
-                             last_position[1] + movement[1],
-                             last_position[2] + movement[2])
+            next_position = last_position + movement
             positions.append(next_position)
 
         return positions
