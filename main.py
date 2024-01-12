@@ -20,7 +20,6 @@ def main():
             test_protein.create_csv(line_number)
             visualization_2D.plot_2d(test_protein, ("red", "blue", "green"))
 
-
             if showGrid:
                 print(test_protein.get_grid_2D())
 
