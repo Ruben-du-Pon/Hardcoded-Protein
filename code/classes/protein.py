@@ -1,8 +1,9 @@
-from aminoacid import Aminoacid
+from .aminoacid import Aminoacid
 from operator import add, sub
 import csv
 import random
 from typing import Tuple, Dict, List
+
 
 class Protein:
     def __init__(self, sequence: str) -> None:
@@ -10,10 +11,10 @@ class Protein:
         self._length: int = len(sequence)
         self._grid: Dict[Tuple[int, int], Aminoacid] = {}
         # Store positions in the instance
-        self._positions: List[Tuple[int]] = self.generate_random_protein_positions()
+        self._positions: List[Tuple[int]
+                              ] = self.generate_random_protein_positions()
         self._head: Aminoacid = self.create_double_linked_list(self)
         self._score: int = 0
-
 
     @staticmethod
     def create_double_linked_list(self):
