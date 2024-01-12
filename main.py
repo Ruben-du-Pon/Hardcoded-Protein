@@ -18,7 +18,7 @@ def main():
             sequence = row[0]
             test_protein = protein.Protein(sequence)
             test_protein.create_csv(line_number)
-            plot = visualization_2D.plot_2d(test_protein, ("red", "blue", "green"))
+            visualization_2D.plot_2d(test_protein, ("red", "blue", "green"))
 
 
             if showGrid:
