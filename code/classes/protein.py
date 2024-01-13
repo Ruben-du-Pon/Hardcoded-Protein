@@ -11,8 +11,8 @@ class Protein:
         self._length: int = len(sequence)
         self._grid: Dict[Tuple[int, int], Aminoacid] = {}
         # Store positions in the instance
-        self._positions: List[Tuple[int]
-                              ] = self.generate_random_protein_positions(backtracking=True)
+        # self._positions: List[Tuple[int]
+        #                      ] = self.generate_random_protein_positions(backtracking=True)
         self._head: Aminoacid = self.create_double_linked_list(self)
         self._score: int = 0
 
@@ -27,12 +27,12 @@ class Protein:
         if not self._sequence:
             return None
 
-        head = Aminoacid(type=self._sequence[0], position=self._positions[0])
+        head = Aminoacid(type=self._sequence[0])
         current = head
 
         for idx, type in enumerate(self._sequence[1:], start=1):
             new_aminoacid = Aminoacid(
-                type=type, position=self._positions[idx], predecessor=current)
+                type=type, predecessor=current)
             current.link = new_aminoacid
             current = new_aminoacid
 
@@ -211,6 +211,15 @@ class Protein:
         False otherwise.
         """  # noqa
         return position not in self._grid
+
+    def get_list(self) -> Aminoacid:
+        return self._head
+
+    def add_to_grid(self, position: Tuple[int], acid: Aminoacid) -> None:
+        self._grid[position] = acid
+
+    def __str__(self) -> str:
+        return self._sequence
 
 
 """ Example usage:

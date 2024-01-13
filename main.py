@@ -3,9 +3,10 @@ import sys
 from code.classes import protein
 from code.visualization import visualization_2D
 from code.visualization import visualization_3D
+from code.algorithms import zigzag
 
 
-def main():
+def main() -> None:
     showGrid = True if len(sys.argv) == 2 and sys.argv[1] == "grid" else False
 
     with open("data/input/sequences_H_P.csv", "r") as file:
@@ -18,6 +19,7 @@ def main():
 
             sequence = row[0]
             test_protein = protein.Protein(sequence)
+            zigzag.zigzag_fold(test_protein)
             test_protein.create_csv(line_number)
             visualization_3D.plot_3d(
                 test_protein, ("red", "blue", "green"), line_number)
