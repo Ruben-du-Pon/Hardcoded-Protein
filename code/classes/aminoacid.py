@@ -15,13 +15,13 @@ class Aminoacid:
         return self._type
 
     def stability_score(self, other: "Aminoacid") -> int:
-        if (self.find_type == "P" or other.find_type == "P"):
+        if (self._type == "P" or other._type == "P"):
             return 0
 
-        if (self.find_type == "H" or other.find_type == "H"):
+        if (self._type == "H" or other._type == "H"):
             return -1
 
-        if (self.find_type == "C"):
+        if (self._type == "C"):
             return -5
 
     def __str__(self):

@@ -2,7 +2,7 @@ from .aminoacid import Aminoacid
 from operator import add, sub
 import csv
 import random
-from typing import Tuple, Dict, List
+from typing import Tuple, Dict, List, Set
 
 
 class Protein:
@@ -38,7 +38,51 @@ class Protein:
 
         return head
 
-    def get_score(self):
+    def calculate_score(self) -> int:
+        """
+        Calculate the stability score of the protein.
+
+        The score is calculated based on the adjacency (non-diagonal)
+        of different amino acids in the protein structure. Each adjacent
+        pair contributes to the score based on their types.
+
+        Returns the calculated stability score of the protein.
+        """
+
+        def are_connected(amino1: Aminoacid, amino2: Aminoacid) -> bool:
+            """Check if two amino acids are connected in the sequence."""
+            return amino1.link == amino2 or amino2.link == amino1
+
+        def calculate_distance(position1: Tuple[int, int, int],
+                               position2: Tuple[int, int, int]) -> int:
+            """Calculate the Manhattan distance between two positions."""
+            return sum(abs(p1 - p2) for p1, p2 in zip(position1, position2))
+
+        visited: Set[Aminoacid] = set()
+        current = self._head
+
+        while current:
+            if current not in visited:
+                visited.add(current)
+                for other in visited:
+                    if current is not other and not are_connected(current,
+                                                                  other):
+                        if calculate_distance(current.position,
+                                              other.position) == 1:
+                            self._score += current.stability_score(other)
+            current = current.link
+
+        return self._score
+
+    def get_score(self) -> int:
+        """
+        Get the stability score of the protein.
+        Calculates the score if it has not been calculated.
+
+        Returns the stability score of the protein.
+        """
+        if self._score == 0:
+            self.calculate_score()
         return self._score
 
     def get_folding(self) -> List[Dict[str, int]]:
@@ -61,7 +105,7 @@ class Protein:
             folding.append({'amino': current.get_type(), 'fold': fold})
             current = current.link
 
-        folding.append({'amino': 'score', 'fold': self._score})
+        folding.append({'amino': 'score', 'fold': self.get_score()})
         return folding
 
     def create_csv(self, index: int = 0) -> None:
