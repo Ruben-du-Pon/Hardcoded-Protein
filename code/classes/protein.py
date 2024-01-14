@@ -10,9 +10,6 @@ class Protein:
         self._sequence: str = sequence
         self._length: int = len(sequence)
         self._grid: Dict[Tuple[int, int], Aminoacid] = {}
-        # Store positions in the instance
-        # self._positions: List[Tuple[int]
-        #                      ] = self.generate_random_protein_positions(backtracking=True)
         self._head: Aminoacid = self.create_double_linked_list(self)
         self._score: int = 0
 
