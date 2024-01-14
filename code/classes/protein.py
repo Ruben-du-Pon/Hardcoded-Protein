@@ -117,7 +117,7 @@ class Protein:
         score, <score> and a body with P, H or C followed by direction 1, -1, 2, -2, 3 or -3.
         """  # noqa
 
-        filename = "data/output/output" + str(index) + ".csv"
+        filename = f"data/output/output{index}.csv"
         with open(filename, 'w', newline='') as file:
             print(f"{filename} created.")
             header = ["amino", "fold"]
