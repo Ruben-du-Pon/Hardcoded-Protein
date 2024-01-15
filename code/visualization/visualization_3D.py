@@ -64,7 +64,7 @@ def plot_3d(protein, colors: Tuple[str, str, str], line_number: int) -> None:
         ax.scatter(x_coordinates, y_coordinates,
                    z_coordinates, s=50, marker="o", c=colors_)
 
-        for i in range(1, protein._length):
+        for i in range(1, len(protein)):
             ax.plot(
                 [x_coordinates[i - 1], x_coordinates[i]],
                 [y_coordinates[i - 1], y_coordinates[i]],
@@ -131,7 +131,7 @@ def plot_3d(protein, colors: Tuple[str, str, str], line_number: int) -> None:
         ax.scatter(x_coordinates, y_coordinates,
                    z_coordinates, s=50, marker="o", c=colors_)
 
-        for i in range(1, protein._length):
+        for i in range(1, len(protein)):
             ax.plot(
                 [x_coordinates[i - 1], x_coordinates[i]],
                 [y_coordinates[i - 1], y_coordinates[i]],
