@@ -14,19 +14,19 @@ algorithm_files = [
 
 
 def main() -> None:
-    if len(sys.argv) != 3 or len(sys.argv) != 4:
+    if len(sys.argv) != 3 and len(sys.argv) != 4:
         print("Usage: python main.py <fold_algorithm> <dimensions> [C]")
         sys.exit(1)
 
-    fold_type = sys.argv[1].lower()
+    fold_algorithm = sys.argv[1].lower()
 
-    if fold_type not in algorithm_files:
+    if fold_algorithm not in algorithm_files:
         raise ValueError("Invalid fold type.")
 
     # Import the selected folding algorithm dynamically
     fold_module = __import__(
-        f"code.algorithms.{fold_type}", fromlist=[fold_type])
-    fold_function = getattr(fold_module, f"{fold_type}_fold")
+        f"code.algorithms.{fold_algorithm}", fromlist=[fold_algorithm])
+    fold_function = getattr(fold_module, f"{fold_algorithm}_fold")
 
     if len(sys.argv) == 3:
         filename = "data/input/sequences_H_P.csv"
@@ -54,10 +54,10 @@ def main() -> None:
 
             test_protein.create_csv(line_number)
             if sys.argv[2] == "2":
-                visualization_3D.plot_2d(
+                visualization_2D.plot_2d(
                     test_protein, ("red", "blue", "green"), line_number)
             elif sys.argv[2] == "3":
-                visualization_2D.plot_3d(
+                visualization_3D.plot_3d(
                     test_protein, ("red", "blue", "green"), line_number)
             else:
                 print("Please enter dimension as 2 or 3")
