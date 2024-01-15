@@ -6,14 +6,14 @@ def helix_fold(protein: Protein) -> None:
     """
     Apply a helical folding algorithm to the given protein.
 
-    The spiral folding algorithm starts from the second amino acid in the protein sequence,
-    and it adds each amino acid to a grid in a spiral pattern. The algorithm continues until
+    The helical folding algorithm starts from the second amino acid in the protein sequence,
+    and it adds each amino acid to a grid in a helical pattern. The algorithm continues until
     every amino acid in the protein has a different position on the grid.
 
     Parameters
     ----------
     protein : Protein
-        The protein structure to which the folding algorithm is applied.
+        The protein structure to which the helical folding algorithm is applied.
 
     Raises
     ------
@@ -29,7 +29,7 @@ def helix_fold(protein: Protein) -> None:
     -------
     protein_sequence = "HCPHPHPHCHHHHPCCPPHPPPHPPPPCPPPHPPPHPHHHHCHPHPHPHH"
     my_protein = Protein(protein_sequence)
-    spiral_fold(my_protein)
+    helix_fold(my_protein)
     """
 
     current = protein.get_list().link
