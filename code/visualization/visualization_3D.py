@@ -94,8 +94,9 @@ def plot_3d(protein: Protein, colors: Tuple[str, str, str], line_number: int, al
         ]
         plt.legend(legend_handles, legend_labels, loc="upper right")
 
-        plt.savefig(f"data/output/plot_3D_{algorithm}_{line_number}.png")
-        print(f"data/output/plot_3D_{algorithm}_{line_number}.png created")
+        plt.savefig(f"data/output/plot/plot_3D_{algorithm}_{line_number}.png")
+        print(
+            f"data/output/plot/plot_3D_{algorithm}_{line_number}.png created")
 
     elif "C" in protein._sequence:
         curr_pos = protein.get_list()
@@ -161,5 +162,6 @@ def plot_3d(protein: Protein, colors: Tuple[str, str, str], line_number: int, al
         ]
         plt.legend(legend_handles, legend_labels, loc="upper right")
 
-        plt.savefig(f"data/output/plot_3D_{algorithm}_{line_number}.png")
-        print(f"data/output/plot_3D_{algorithm}_{line_number}.png created")
+        plt.savefig(f"data/output/plot/plot_3D_{algorithm}_{line_number}.png")
+        print(
+            f"data/output/plot/plot_3D_{algorithm}_{line_number}.png created")
