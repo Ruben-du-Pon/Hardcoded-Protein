@@ -47,8 +47,8 @@ def plot_2d(protein, colors: Tuple[str, str, str], line_number: int) -> None:
         plt.legend(legend_handles, legend_labels, loc="upper right")
 
         # plt.show()
-        plt.savefig(f"data/output/plot_2D_{line_number}.png")
-        print(f"data/output/plot_2D_{line_number}.png created")
+        plt.savefig(f"data/output/plot/plot_2D_{line_number}.png")
+        print(f"data/output/plot/plot_2D_{line_number}.png created")
 
     elif "C" in protein._sequence:
         curr_pos = protein._head
@@ -103,5 +103,5 @@ def plot_2d(protein, colors: Tuple[str, str, str], line_number: int) -> None:
         plt.legend(legend_handles, legend_labels, loc="upper right")
 
         # plt.show()
-        plt.savefig(f"data/output/plot_2D_{line_number}.png")
-        print(f"data/output/plot_2D_{line_number}.png created")
+        plt.savefig(f"data/output/plot/plot_2D_{line_number}.png")
+        print(f"data/output/plot/plot_2D_{line_number}.png created")
