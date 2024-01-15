@@ -152,34 +152,3 @@ class Protein:
 
     def __str__(self) -> str:
         return self._sequence
-
-
-""" Example usage:
-protein_sequence, new_seq = "HCPHPHPHCHHHHPCCPPHPPPHPPPPCPPPHPPPHPHHHHCHPHPHPHH", []
-print(f"\nOriginal Protein-string: {protein_sequence}\n\n")
-protein = Protein(protein_sequence)
-current_node = protein._head
-
-print("From left to right: \n")
-while current_node:
-    print(current_node._type, end=" ")
-    if current_node._link == None:
-        print("\n\n")
-        break
-    else:
-        current_node = current_node._link
-
-print("From right to left: \n")
-while current_node:
-    print(current_node._type, end=" ")
-    new_seq.append(current_node._type)
-    if len(protein_sequence) == len(new_seq):
-        print("\n\n")
-        break
-    else:
-        current_node = current_node._predecessor
-
-sample_protein = Protein("HHPHHHPHPHHHPH")
-print(sample_protein.get_folding())
-print(protein.get_grid_2D())
-"""  # noqa
