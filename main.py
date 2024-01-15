@@ -14,8 +14,8 @@ algorithm_files = [
 
 
 def main() -> None:
-    if len(sys.argv) != 2:
-        print("Usage: python main.py <fold_type>")
+    if len(sys.argv) != 3 or len(sys.argv) != 4:
+        print("Usage: python main.py <fold_algorithm> <dimensions> [C]")
         sys.exit(1)
 
     fold_type = sys.argv[1].lower()
@@ -28,7 +28,17 @@ def main() -> None:
         f"code.algorithms.{fold_type}", fromlist=[fold_type])
     fold_function = getattr(fold_module, f"{fold_type}_fold")
 
-    with open("data/input/sequences_H_P.csv", "r") as file:
+    if len(sys.argv) == 3:
+        filename = "data/input/sequences_H_P.csv"
+
+    if len(sys.argv) == 4:
+        if sys.argv[3] != "C":
+            print("Usage: python main.py <fold_algorithm> <dimensions> [C]")
+            sys.exit(2)
+
+        filename = "data/input/sequences_H_P_C.csv"
+
+    with open(filename, "r") as file:
         reader = csv.reader(file)
         line_number = 0
 
@@ -43,10 +53,15 @@ def main() -> None:
             fold_function(test_protein)
 
             test_protein.create_csv(line_number)
-            visualization_3D.plot_3d(
-                test_protein, ("red", "blue", "green"), line_number)
-            visualization_2D.plot_2d(
-                test_protein, ("red", "blue", "green"), line_number)
+            if sys.argv[2] == "2":
+                visualization_3D.plot_2d(
+                    test_protein, ("red", "blue", "green"), line_number)
+            elif sys.argv[2] == "3":
+                visualization_2D.plot_3d(
+                    test_protein, ("red", "blue", "green"), line_number)
+            else:
+                print("Please enter dimension as 2 or 3")
+                sys.exit(3)
 
             line_number += 1
             # break is for test (1x plotten)
