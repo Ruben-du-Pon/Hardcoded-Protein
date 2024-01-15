@@ -10,11 +10,10 @@ class Protein:
         self._sequence: str = sequence
         self._length: int = len(sequence)
         self._grid: Dict[Tuple[int, int], Aminoacid] = {}
-        self._head: Aminoacid = self.create_double_linked_list(self)
+        self._head: Aminoacid = self.__create_double_linked_list(self)
         self._score: int = 0
 
-    @staticmethod
-    def create_double_linked_list(self):
+    def __create_double_linked_list(self):
         """
         This particular method can't be called for a created object.
         It's used only once, when creating the object itself.
