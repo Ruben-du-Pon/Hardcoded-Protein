@@ -6,7 +6,7 @@ from code.visualization import visualization_2D
 from code.visualization import visualization_3D
 
 # Dynamically get filenames without extensions from the algorithms directory
-algorithm_files = [
+ALGORITHM_FILES = [
     os.path.splitext(file)[0]
     for file in os.listdir("code/algorithms")
     if file.endswith(".py") and file != "__init__.py"
@@ -14,13 +14,44 @@ algorithm_files = [
 
 
 def main() -> None:
+    """
+    Main function to execute protein folding based on the specified algorithm and visualize the results.
+
+    The function reads the command line arguments to determine the fold algorithm, dimensions, and
+    whether the protein sequence includes type 'C'. It then dynamically imports the specified algorithm,
+    applies it to protein sequences from a CSV file, and visualizes the results in 2D or 3D.
+
+    Usage
+    -----
+    python main.py <fold_algorithm> <dimensions> [C]
+
+    Parameters
+    ----------
+    fold_algorithm : str
+        The name of the folding algorithm to be used.
+    dimensions : str
+        The dimensions for visualization (either '2' for 2D or '3' for 3D).
+    C : str, optional
+        Optional parameter indicating the inclusion of type 'C' in protein sequences.
+
+    Raises
+    ------
+    ValueError
+        If an invalid fold type is provided.
+
+    Notes
+    -----
+    The function assumes that the protein sequences are stored in CSV files located in the "data/input/" directory.
+    The output CSV files and visualizations will be saved in the "data/output/csv/" and "data/output/plot/"
+    directories, respectively.
+    """
     if len(sys.argv) != 3 and len(sys.argv) != 4:
         print("Usage: python main.py <fold_algorithm> <dimensions> [C]")
         sys.exit(1)
 
     fold_algorithm = sys.argv[1].lower()
 
-    if fold_algorithm not in algorithm_files:
+    if fold_algorithm not in ALGORITHM_FILES:
         raise ValueError("Invalid fold type.")
 
     # Import the selected folding algorithm dynamically

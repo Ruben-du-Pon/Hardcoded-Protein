@@ -1,24 +1,90 @@
 from .aminoacid import Aminoacid
-from operator import add, sub
+from operator import sub
 import csv
-import random
-from typing import Tuple, Dict, List, Set
+from typing import Dict, List, Set, Tuple
 
 
 class Protein:
+    """
+    Represents a protein structure composed of amino acids.
+
+    Attributes
+    ----------
+    _sequence : str
+        A string representing the amino acid sequence of the protein.
+    _length : int
+        The length of the amino acid sequence.
+    _grid : Dict[Tuple[int, int, int], Aminoacid]
+        A grid mapping positions to amino acids in the protein structure.
+    _head : Aminoacid
+        The head of the double-linked list representing the protein structure.
+    _score : int
+        The stability score of the protein based on its structure.
+
+    Methods
+    -------
+    __init__(sequence: str)
+        Initialize a Protein object with the given amino acid sequence.
+
+    __create_double_linked_list()
+        Create a double-linked list based on the provided amino acid sequence.
+        This method is used only during the initialization of the Protein object
+        and cannot be called on an already created object.
+
+    calculate_score() -> int
+        Calculate the stability score of the protein based on the adjacency of amino acids.
+
+    get_score() -> int
+        Get the stability score of the protein. Calculates the score if not already calculated.
+
+    get_folding() -> List[Dict[str, int]]
+        Get the folding information of the protein.
+
+    create_csv(index: int = 0) -> None
+        Creates a CSV file that displays a specific folding of a protein.
+
+    is_valid() -> bool
+        Check if every amino acid in the protein has a different position.
+
+    is_valid_fold(position: Tuple[int, int, int]) -> bool
+        Check if a given fold position is valid.
+
+    get_list() -> Aminoacid
+        Get the head of the double-linked list representing the protein structure.
+
+    add_to_grid(position: Tuple[int, int, int], acid: Aminoacid) -> None
+        Add an amino acid to the protein grid at the specified position.
+
+    __str__() -> str
+        Return the string representation of the protein.
+    """
+
     def __init__(self, sequence: str) -> None:
+        """
+        Initialize a Protein object with the given amino acid sequence.
+
+        Parameters
+        ----------
+        sequence : str
+            A string representing the amino acid sequence of the protein.
+        """
         self._sequence: str = sequence
         self._length: int = len(sequence)
-        self._grid: Dict[Tuple[int, int], Aminoacid] = {}
-        self._head: Aminoacid = self.__create_double_linked_list(self)
+        self._grid: Dict[Tuple[int, int, int], Aminoacid] = {}
+        self._head: Aminoacid = self.__create_double_linked_list()
         self._score: int = 0
 
     def __create_double_linked_list(self):
         """
-        This particular method can't be called for a created object.
-        It's used only once, when creating the object itself.
-        After the object is created, this particular function can't
-        be called on top of it.
+        Create a double-linked list based on the provided amino acid sequence.
+
+        This method is used only during the initialization of the Protein object
+        and cannot be called on an already created object.
+
+        Returns
+        -------
+        Aminoacid
+            The head of the double-linked list.
         """
         if not self._sequence:
             return None
@@ -26,7 +92,7 @@ class Protein:
         head = Aminoacid(type=self._sequence[0])
         current = head
 
-        for idx, type in enumerate(self._sequence[1:], start=1):
+        for _, type in enumerate(self._sequence[1:], start=1):
             new_aminoacid = Aminoacid(
                 type=type, predecessor=current)
             current.link = new_aminoacid
@@ -42,9 +108,11 @@ class Protein:
         of different amino acids in the protein structure. Each adjacent
         pair contributes to the score based on their types.
 
-        Returns the calculated stability score of the protein.
+        Returns
+        -------
+        int
+            The calculated stability score of the protein.
         """
-
         def are_connected(amino1: Aminoacid, amino2: Aminoacid) -> bool:
             """Check if two amino acids are connected in the sequence."""
             return amino1.link == amino2 or amino2.link == amino1
@@ -72,16 +140,27 @@ class Protein:
 
     def get_score(self) -> int:
         """
-        Get the stability score of the protein.
-        Calculates the score if it has not been calculated.
+        Get the stability score of the protein. Calculates the score if not already calculated.
 
-        Returns the stability score of the protein.
+        Returns
+        -------
+        int
+            The stability score of the protein.
         """
         if self._score == 0:
             self.calculate_score()
         return self._score
 
     def get_folding(self) -> List[Dict[str, int]]:
+        """
+        Get the folding information of the protein.
+
+        Returns
+        -------
+        List[Dict[str, int]]
+            A list of dictionaries containing amino acid types and folding directions,
+            with a final entry for the stability score.
+        """
         folding = []
         current = self._head
 
@@ -106,16 +185,19 @@ class Protein:
 
     def create_csv(self, index: int = 0) -> None:
         """
-        Creates a csv file that displays a specific folding of a protein
-        post: creates output.csv if it doesn't exist, empties it if it does,
-        then fills it with the folding data.
+        Creates a CSV file that displays a specific folding of a protein.
 
-        pre: index is an int, the get_folding method outputs a list of dicts 
-        with keys amino and fold, and resp values P, H or C and 1, -1, 2, -2, 3 or -3.
-        post: creates output[index].csv with a header amino, score; a footer 
-        score, <score> and a body with P, H or C followed by direction 1, -1, 2, -2, 3 or -3.
-        """  # noqa
+        Parameters
+        ----------
+        index : int, optional
+            An index used to name the output CSV file. Defaults to 0.
 
+        Postconditions
+        --------------
+        Creates a CSV file in the "data/output/csv/" directory with folding data.
+        The file includes a header "amino", "fold", a footer "score", <score>,
+        and a body with amino acid types P, H, or C followed by directions 1, -1, 2, -2, 3, or -3.
+        """
         filename = f"data/output/csv/output{index}.csv"
         with open(filename, 'w', newline='') as file:
             print(f"{filename} created.")
@@ -128,27 +210,62 @@ class Protein:
 
     def is_valid(self) -> bool:
         """
-        Checks if every aminoacid has a different position.
+        Check if every amino acid in the protein has a different position.
 
-        post: returns True if every aminoacid has a different position,
-        False otherwise.
+        Returns
+        -------
+        bool
+            True if every amino acid has a different position, False otherwise.
         """
         return self._length == len(self._grid)
 
-    def is_valid_fold(self, position: Tuple[int]) -> bool:
+    def is_valid_fold(self, position: Tuple[int, int, int]) -> bool:
         """
-        Checks if a fold is valid.
+        Check if a given fold position is valid.
 
-        post: returns True if the chosen position is not yet a key in self._grid,
-        False otherwise.
-        """  # noqa
+        Parameters
+        ----------
+        position : Tuple[int, int, int]
+            The position to be checked.
+
+        Returns
+        -------
+        bool
+            True if the chosen position is not yet a key in the protein grid, False otherwise.
+        """
         return position not in self._grid
 
     def get_list(self) -> Aminoacid:
+        """
+        Get the head of the double-linked list representing the protein structure.
+
+        Returns
+        -------
+        Aminoacid
+            The head of the double-linked list.
+        """
         return self._head
 
-    def add_to_grid(self, position: Tuple[int], acid: Aminoacid) -> None:
+    def add_to_grid(self, position: Tuple[int, int, int], acid: Aminoacid) -> None:
+        """
+        Add an amino acid to the protein grid at the specified position.
+
+        Parameters
+        ----------
+        position : Tuple[int, int, int]
+            The position where the amino acid should be added.
+        acid : Aminoacid
+            The amino acid to be added to the grid.
+        """
         self._grid[position] = acid
 
     def __str__(self) -> str:
+        """
+        Return the string representation of the protein.
+
+        Returns
+        -------
+        str
+            The amino acid sequence of the protein.
+        """
         return self._sequence

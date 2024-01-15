@@ -3,6 +3,39 @@ from typing import Tuple
 
 
 def plot_3d(protein, colors: Tuple[str, str, str], line_number: int) -> None:
+    """
+    Plot a 3D representation of the protein structure.
+
+    The function generates a 3D scatter plot of amino acid positions in the protein structure.
+    Amino acids of different types are distinguished by colors. The resulting plot is saved as an image file.
+
+    Parameters
+    ----------
+    protein : Protein
+        The protein structure to be visualized.
+    colors : Tuple[str, str, str]
+        A tuple of three colors representing different amino acid types (Hydrophobic, Polar, Cysteine).
+    line_number : int
+        An index used to name the output image file.
+
+    Raises
+    ------
+    ValueError
+        If the provided protein sequence is invalid.
+
+    Notes
+    -----
+    - The function assumes that the protein structure has a double-linked list representation.
+    - Amino acid types are identified by characters "H" (Hydrophobic), "P" (Polar), and "C" (Cysteine).
+
+    Example
+    -------
+    colors = ("red", "blue", "green")
+    protein_sequence = "HCPHPHPHCHHHHPCCPPHPPPHPPPPCPPPHPPPHPHHHHCHPHPHPHH"
+    my_protein = Protein(protein_sequence)
+    plot_3d(my_protein, colors, line_number=0)
+    """
+
     colors = [color.lower() for color in colors]
 
     if "C" not in protein._sequence:
@@ -25,7 +58,7 @@ def plot_3d(protein, colors: Tuple[str, str, str], line_number: int) -> None:
         y_coordinates = [y for _, y, _ in coordinates]
         z_coordinates = [z for _, _, z in coordinates]
 
-        fig = plt.figure("Protein Alginment")
+        fig = plt.figure("Protein Alignment")
         ax = fig.add_subplot(projection="3d")
 
         ax.scatter(x_coordinates, y_coordinates,
@@ -39,13 +72,12 @@ def plot_3d(protein, colors: Tuple[str, str, str], line_number: int) -> None:
                 color="black",
             )
 
-        # ax.axis("off")
         ax.set_xlim((min(x_coordinates) - 2, max(x_coordinates) + 2))
         ax.set_ylim((min(y_coordinates) - 2, max(y_coordinates) + 2))
         ax.set_zlim((min(z_coordinates) - 2, max(z_coordinates) + 2))
         plt.axis("off")
 
-        legend_labels = ["Hydrofoob", "Polair"]
+        legend_labels = ["Hydrophobic", "Polar"]
         legend_handles = [
             plt.Line2D(
                 [0],
@@ -59,7 +91,6 @@ def plot_3d(protein, colors: Tuple[str, str, str], line_number: int) -> None:
         ]
         plt.legend(legend_handles, legend_labels, loc="upper right")
 
-        # plt.show()
         plt.savefig(f"data/output/plot_3D_{line_number}.png")
         print(f"data/output/plot_3D_{line_number}.png created")
 
@@ -94,7 +125,7 @@ def plot_3d(protein, colors: Tuple[str, str, str], line_number: int) -> None:
         y_coordinates = [y for _, y, _ in coordinates]
         z_coordinates = [z for _, _, z in coordinates]
 
-        fig = plt.figure("Protein Alginment")
+        fig = plt.figure("Protein Alignment")
         ax = fig.add_subplot(projection="3d")
 
         ax.scatter(x_coordinates, y_coordinates,
@@ -113,7 +144,7 @@ def plot_3d(protein, colors: Tuple[str, str, str], line_number: int) -> None:
         ax.set_zlim((min(z_coordinates) - 2, max(z_coordinates) + 2))
         plt.axis("off")
 
-        legend_labels = ["Hydrofoob", "Polair", "Cysteine"]
+        legend_labels = ["Hydrophobic", "Polar", "Cysteine"]
         legend_handles = [
             plt.Line2D(
                 [0],
@@ -127,6 +158,5 @@ def plot_3d(protein, colors: Tuple[str, str, str], line_number: int) -> None:
         ]
         plt.legend(legend_handles, legend_labels, loc="upper right")
 
-        # plt.show()
         plt.savefig(f"data/output/plot_3D_{line_number}.png")
         print(f"data/output/plot_3D_{line_number}.png created")

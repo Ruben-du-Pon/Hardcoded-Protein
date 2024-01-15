@@ -3,6 +3,39 @@ from typing import Tuple
 
 
 def plot_2d(protein, colors: Tuple[str, str, str], line_number: int) -> None:
+    """
+    Plot a 2D representation of the protein structure.
+
+    The function generates a 2D scatter plot of amino acid positions in the protein structure.
+    Amino acids of different types are distinguished by colors. The resulting plot is saved as an image file.
+
+    Parameters
+    ----------
+    protein : Protein
+        The protein structure to be visualized.
+    colors : Tuple[str, str, str]
+        A tuple of three colors representing different amino acid types (Hydrophobic, Polar, Cysteine).
+    line_number : int
+        An index used to name the output image file.
+
+    Raises
+    ------
+    ValueError
+        If the provided protein sequence is invalid.
+
+    Notes
+    -----
+    - The function assumes that the protein structure has a double-linked list representation.
+    - Amino acid types are identified by characters "H" (Hydrophobic), "P" (Polar), and "C" (Cysteine).
+
+    Example
+    -------
+    colors = ("red", "blue", "green")
+    protein_sequence = "HCPHPHPHCHHHHPCCPPHPPPHPPPPCPPPHPPPHPHHHHCHPHPHPHH"
+    my_protein = Protein(protein_sequence)
+    plot_2d(my_protein, colors, line_number=0)
+    """
+
     colors = [color.lower() for color in colors]
 
     if "C" not in protein._sequence:
@@ -19,7 +52,7 @@ def plot_2d(protein, colors: Tuple[str, str, str], line_number: int) -> None:
         x_coordinates = [x for x, _ in coordinates]
         y_coordinates = [y for _, y in coordinates]
 
-        plt.figure("Protein Alginment")
+        plt.figure("Protein Alignment")
 
         for x, y, color in zip(x_coordinates, y_coordinates, colors_):
             plt.scatter(x, y, s=50, color=color, marker="o")
@@ -32,7 +65,7 @@ def plot_2d(protein, colors: Tuple[str, str, str], line_number: int) -> None:
         plt.axis("off")
 
         # Create a legend outside plt.legend
-        legend_labels = ["Hydrofoob", "Polair"]
+        legend_labels = ["Hydrophobic", "Polar"]
         legend_handles = [
             plt.Line2D(
                 [0],
@@ -46,7 +79,6 @@ def plot_2d(protein, colors: Tuple[str, str, str], line_number: int) -> None:
         ]
         plt.legend(legend_handles, legend_labels, loc="upper right")
 
-        # plt.show()
         plt.savefig(f"data/output/plot/plot_2D_{line_number}.png")
         print(f"data/output/plot/plot_2D_{line_number}.png created")
 
@@ -75,7 +107,7 @@ def plot_2d(protein, colors: Tuple[str, str, str], line_number: int) -> None:
         x_coordinates = [x for x, _ in coordinates]
         y_coordinates = [y for _, y in coordinates]
 
-        plt.figure("Protein Alginment")
+        plt.figure("Protein Alignment")
 
         for x, y, color in zip(x_coordinates, y_coordinates, colors_):
             plt.scatter(x, y, s=50, color=color, marker="o")
@@ -88,7 +120,7 @@ def plot_2d(protein, colors: Tuple[str, str, str], line_number: int) -> None:
         plt.axis("off")
 
         # Create a legend outside plt.legend
-        legend_labels = ["Hydrofoob", "Polair", "Cysteine"]
+        legend_labels = ["Hydrophobic", "Polar", "Cysteine"]
         legend_handles = [
             plt.Line2D(
                 [0],
@@ -102,6 +134,5 @@ def plot_2d(protein, colors: Tuple[str, str, str], line_number: int) -> None:
         ]
         plt.legend(legend_handles, legend_labels, loc="upper right")
 
-        # plt.show()
         plt.savefig(f"data/output/plot/plot_2D_{line_number}.png")
         print(f"data/output/plot/plot_2D_{line_number}.png created")
