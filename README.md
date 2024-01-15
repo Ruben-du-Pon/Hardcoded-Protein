@@ -1,6 +1,6 @@
-Hardcoded Protein
+# Hardcoded Protein
 
-Usage: 
+### Usage:  
 First install requirements using
 ```
 pip install -r requirements.txt
