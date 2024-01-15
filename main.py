@@ -21,18 +21,13 @@ def main() -> None:
     whether the protein sequence includes type 'C'. It then dynamically imports the specified algorithm,
     applies it to protein sequences from a CSV file, and visualizes the results in 2D or 3D.
 
-    Usage
-    -----
-    python main.py <fold_algorithm> <dimensions> [C]
-
     Parameters
     ----------
-    fold_algorithm : str
-        The name of the folding algorithm to be used.
-    dimensions : str
-        The dimensions for visualization (either '2' for 2D or '3' for 3D).
-    C : str, optional
-        Optional parameter indicating the inclusion of type 'C' in protein sequences.
+    None
+
+    Returns
+    -------
+    None
 
     Raises
     ------
@@ -49,7 +44,7 @@ def main() -> None:
         print("Usage: python main.py <fold_algorithm> <dimensions> [C]")
         sys.exit(1)
 
-    fold_algorithm = sys.argv[1].lower()
+    fold_algorithm: str = sys.argv[1].lower()
 
     if fold_algorithm not in ALGORITHM_FILES:
         raise ValueError("Invalid fold type.")
@@ -60,36 +55,36 @@ def main() -> None:
     fold_function = getattr(fold_module, f"{fold_algorithm}_fold")
 
     if len(sys.argv) == 3:
-        filename = "data/input/sequences_H_P.csv"
+        filename: str = "data/input/sequences_H_P.csv"
 
     if len(sys.argv) == 4:
         if sys.argv[3] != "C":
             print("Usage: python main.py <fold_algorithm> <dimensions> [C]")
             sys.exit(2)
 
-        filename = "data/input/sequences_H_P_C.csv"
+        filename: str = "data/input/sequences_H_P_C.csv"
 
     with open(filename, "r") as file:
         reader = csv.reader(file)
-        line_number = 0
+        line_number: int = 0
 
         for row in reader:
             if not row:
                 break
 
-            sequence = row[0]
-            test_protein = protein.Protein(sequence)
+            sequence: str = row[0]
+            test_protein: protein.Protein = protein.Protein(sequence)
 
             # Call the selected folding algorithm
             fold_function(test_protein)
 
-            test_protein.create_csv(line_number)
+            test_protein.create_csv(fold_algorithm, line_number)
             if sys.argv[2] == "2":
                 visualization_2D.plot_2d(
-                    test_protein, ("red", "blue", "green"), line_number)
+                    test_protein, ("red", "blue", "green"), line_number, fold_algorithm)
             elif sys.argv[2] == "3":
                 visualization_3D.plot_3d(
-                    test_protein, ("red", "blue", "green"), line_number)
+                    test_protein, ("red", "blue", "green"), line_number, fold_algorithm)
             else:
                 print("Please enter dimension as 2 or 3")
                 sys.exit(3)

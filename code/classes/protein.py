@@ -23,39 +23,39 @@ class Protein:
 
     Methods
     -------
-    __init__(sequence: str)
+    __init__(sequence: str) -> None:
         Initialize a Protein object with the given amino acid sequence.
 
-    __create_double_linked_list()
+    __create_double_linked_list() -> Aminoacid:
         Create a double-linked list based on the provided amino acid sequence.
         This method is used only during the initialization of the Protein object
         and cannot be called on an already created object.
 
-    calculate_score() -> int
+    calculate_score() -> int:
         Calculate the stability score of the protein based on the adjacency of amino acids.
 
-    get_score() -> int
+    get_score() -> int:
         Get the stability score of the protein. Calculates the score if not already calculated.
 
-    get_folding() -> List[Dict[str, int]]
+    get_folding() -> List[Dict[str, int]]:
         Get the folding information of the protein.
 
-    create_csv(index: int = 0) -> None
+    create_csv(index: int = 0, algorithm: str = '') -> None:
         Creates a CSV file that displays a specific folding of a protein.
 
-    is_valid() -> bool
+    is_valid() -> bool:
         Check if every amino acid in the protein has a different position.
 
-    is_valid_fold(position: Tuple[int, int, int]) -> bool
+    is_valid_fold(position: Tuple[int, int, int]) -> bool:
         Check if a given fold position is valid.
 
-    get_list() -> Aminoacid
+    get_list() -> Aminoacid:
         Get the head of the double-linked list representing the protein structure.
 
-    add_to_grid(position: Tuple[int, int, int], acid: Aminoacid) -> None
+    add_to_grid(position: Tuple[int, int, int], acid: Aminoacid) -> None:
         Add an amino acid to the protein grid at the specified position.
 
-    __str__() -> str
+    __str__() -> str:
         Return the string representation of the protein.
     """
 
@@ -186,7 +186,7 @@ class Protein:
         folding.append({'amino': 'score', 'fold': self.get_score()})
         return folding
 
-    def create_csv(self, index: int = 0) -> None:
+    def create_csv(self, index: int = 0, algorithm: str = '') -> None:
         """
         Creates a CSV file that displays a specific folding of a protein.
 
@@ -194,6 +194,8 @@ class Protein:
         ----------
         index : int, optional
             An index used to name the output CSV file. Defaults to 0.
+        algorithm : str, optional
+            The algorithm used for folding, included in the output filename.
 
         Postconditions
         --------------
@@ -201,7 +203,7 @@ class Protein:
         The file includes a header "amino", "fold", a footer "score", <score>,
         and a body with amino acid types P, H, or C followed by directions 1, -1, 2, -2, 3, or -3.
         """
-        filename = f"data/output/csv/output{index}.csv"
+        filename = f"data/output/csv/output_{algorithm}_{index}.csv"
         with open(filename, 'w', newline='') as file:
             print(f"{filename} created.")
             header = ["amino", "fold"]

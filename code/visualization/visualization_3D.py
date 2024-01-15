@@ -1,8 +1,9 @@
 import matplotlib.pyplot as plt
 from typing import Tuple
+from ..classes.protein import Protein
 
 
-def plot_3d(protein, colors: Tuple[str, str, str], line_number: int) -> None:
+def plot_3d(protein: Protein, colors: Tuple[str, str, str], line_number: int, algorithm: str) -> None:
     """
     Plot a 3D representation of the protein structure.
 
@@ -17,6 +18,8 @@ def plot_3d(protein, colors: Tuple[str, str, str], line_number: int) -> None:
         A tuple of three colors representing different amino acid types (Hydrophobic, Polar, Cysteine).
     line_number : int
         An index used to name the output image file.
+    algorithm : str
+        The algorithm used for folding.
 
     Raises
     ------
@@ -33,17 +36,17 @@ def plot_3d(protein, colors: Tuple[str, str, str], line_number: int) -> None:
     colors = ("red", "blue", "green")
     protein_sequence = "HCPHPHPHCHHHHPCCPPHPPPHPPPPCPPPHPPPHPHHHHCHPHPHPHH"
     my_protein = Protein(protein_sequence)
-    plot_3d(my_protein, colors, line_number=0)
+    plot_3d(my_protein, colors, line_number=0, algorithm="my_algorithm")
     """
 
     colors = [color.lower() for color in colors]
 
     if "C" not in protein._sequence:
-        curr_pos = protein._head
+        curr_pos = protein.get_list()
         coordinates = [
             (curr_pos.position[0], curr_pos.position[1], curr_pos.position[2])
         ]
-        colors_ = [colors[0] if curr_pos._type == "H" else colors[1]]
+        colors_ = [colors[0] if curr_pos.get_type() == "H" else colors[1]]
 
         while curr_pos.link is not None:
             curr_pos = curr_pos.link
@@ -52,7 +55,7 @@ def plot_3d(protein, colors: Tuple[str, str, str], line_number: int) -> None:
                  curr_pos.position[1], curr_pos.position[2]))
             )
             colors_ = colors_ + [colors[0]
-                                 if curr_pos._type == "H" else colors[1]]
+                                 if curr_pos.get_type() == "H" else colors[1]]
 
         x_coordinates = [x for x, _, _ in coordinates]
         y_coordinates = [y for _, y, _ in coordinates]
@@ -91,19 +94,19 @@ def plot_3d(protein, colors: Tuple[str, str, str], line_number: int) -> None:
         ]
         plt.legend(legend_handles, legend_labels, loc="upper right")
 
-        plt.savefig(f"data/output/plot_3D_{line_number}.png")
-        print(f"data/output/plot_3D_{line_number}.png created")
+        plt.savefig(f"data/output/plot_3D_{algorithm}_{line_number}.png")
+        print(f"data/output/plot_3D_{algorithm}_{line_number}.png created")
 
     elif "C" in protein._sequence:
-        curr_pos = protein._head
+        curr_pos = protein.get_list()
         coordinates = [
             (curr_pos.position[0], curr_pos.position[1], curr_pos.position[2])
         ]
         colors_ = [
             colors[0]
-            if curr_pos._type == "H"
+            if curr_pos.get_type() == "H"
             else colors[1]
-            if curr_pos._type == "P"
+            if curr_pos.get_type() == "P"
             else colors[2]
         ]
 
@@ -115,9 +118,9 @@ def plot_3d(protein, colors: Tuple[str, str, str], line_number: int) -> None:
             )
             colors_ = colors_ + [
                 colors[0]
-                if curr_pos._type == "H"
+                if curr_pos.get_type() == "H"
                 else colors[1]
-                if curr_pos._type == "P"
+                if curr_pos.get_type() == "P"
                 else colors[2]
             ]
 
@@ -158,5 +161,5 @@ def plot_3d(protein, colors: Tuple[str, str, str], line_number: int) -> None:
         ]
         plt.legend(legend_handles, legend_labels, loc="upper right")
 
-        plt.savefig(f"data/output/plot_3D_{line_number}.png")
-        print(f"data/output/plot_3D_{line_number}.png created")
+        plt.savefig(f"data/output/plot_3D_{algorithm}_{line_number}.png")
+        print(f"data/output/plot_3D_{algorithm}_{line_number}.png created")
