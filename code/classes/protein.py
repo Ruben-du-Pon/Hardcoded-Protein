@@ -12,8 +12,6 @@ class Protein:
     ----------
     _sequence : str
         A string representing the amino acid sequence of the protein.
-    _length : int
-        The length of the amino acid sequence.
     _grid : Dict[Tuple[int, int, int], Aminoacid]
         A grid mapping positions to amino acids in the protein structure.
     _head : Aminoacid
@@ -57,6 +55,9 @@ class Protein:
 
     __str__() -> str:
         Return the string representation of the protein.
+
+    __len__() -> int:
+        Return the length of the amino acid sequence.
     """
 
     def __init__(self, sequence: str) -> None:
@@ -222,7 +223,7 @@ class Protein:
         bool
             True if every amino acid has a different position, False otherwise.
         """
-        return self._length == len(self._grid)
+        return len(self._sequence) == len(self._grid)
 
     def is_valid_fold(self, position: Tuple[int, int, int]) -> bool:
         """
