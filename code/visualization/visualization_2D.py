@@ -61,10 +61,23 @@ def plot_2d(protein: Protein, colors: Tuple[str, str, str], line_number: int, al
             plt.scatter(x, y, s=50, color=color, marker="o")
 
         plt.plot(x_coordinates, y_coordinates,
-                 linestyle="-", color="black", alpha=0.1)
+                 linestyle="-", color="black", alpha=0.7)
 
-        plt.xlim((min(x_coordinates) - 2, max(x_coordinates) + 2))
-        plt.ylim((min(y_coordinates) - 2, max(y_coordinates) + 2))
+        x_min, y_min = min(x_coordinates), min(y_coordinates)
+        x_max, y_max  = max(x_coordinates), max(y_coordinates)
+
+        if (x_min <= y_min):
+            minimum = x_min
+        else:
+            minimum = y_min
+        
+        if (x_max >= y_max):
+            maximum = x_max
+        else:
+            maximum = y_max
+
+        plt.xlim((minimum - 2, maximum + 2))
+        plt.ylim((minimum - 2, maximum + 2))
         plt.axis("off")
 
         # Create a legend outside plt.legend
@@ -117,10 +130,23 @@ def plot_2d(protein: Protein, colors: Tuple[str, str, str], line_number: int, al
             plt.scatter(x, y, s=50, color=color, marker="o")
 
         plt.plot(x_coordinates, y_coordinates,
-                 linestyle="-", color="black", alpha=0.1)
+                 linestyle="-", color="black", alpha=0.7)
 
-        plt.xlim((min(x_coordinates) - 2, max(x_coordinates) + 2))
-        plt.ylim((min(y_coordinates) - 2, max(y_coordinates) + 2))
+        x_min, y_min = min(x_coordinates), min(y_coordinates)
+        x_max, y_max  = max(x_coordinates), max(y_coordinates)
+
+        if (x_min <= y_min):
+            minimum = x_min
+        else:
+            minimum = y_min
+        
+        if (x_max >= y_max):
+            maximum = x_max
+        else:
+            maximum = y_max
+
+        plt.xlim((minimum - 2, maximum + 2))
+        plt.ylim((minimum - 2, maximum + 2))
         plt.axis("off")
 
         # Create a legend outside plt.legend

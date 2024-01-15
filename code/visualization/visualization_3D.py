@@ -75,9 +75,26 @@ def plot_3d(protein: Protein, colors: Tuple[str, str, str], line_number: int, al
                 color="black",
             )
 
-        ax.set_xlim((min(x_coordinates) - 2, max(x_coordinates) + 2))
-        ax.set_ylim((min(y_coordinates) - 2, max(y_coordinates) + 2))
-        ax.set_zlim((min(z_coordinates) - 2, max(z_coordinates) + 2))
+        x_min, y_min, z_min = min(x_coordinates), min(y_coordinates), min(z_coordinates)
+        x_max, y_max, z_max = max(x_coordinates), max(y_coordinates), max(z_coordinates)
+
+        if (x_min <= y_min) and (x_min <= z_min):
+            minimum = x_min
+        elif (y_min <= x_min) and (y_min <= z_min):
+            minimum = y_min
+        else:
+            minimum = z_min
+        
+        if (x_max >= y_max) and (x_max >= z_max):
+            maximum = x_max
+        elif (y_max >= x_max) and (y_max >= z_max):
+            maximum = y_max
+        else:
+            maximum = z_max
+
+        ax.set_xlim((minimum - 2, maximum + 2))
+        ax.set_ylim((minimum - 2, maximum + 2))
+        ax.set_zlim((minimum - 2, maximum + 2))
         plt.axis("off")
 
         legend_labels = ["Hydrophobic", "Polar"]
@@ -143,9 +160,26 @@ def plot_3d(protein: Protein, colors: Tuple[str, str, str], line_number: int, al
                 color="black",
             )
 
-        ax.set_xlim((min(x_coordinates) - 2, max(x_coordinates) + 2))
-        ax.set_ylim((min(y_coordinates) - 2, max(y_coordinates) + 2))
-        ax.set_zlim((min(z_coordinates) - 2, max(z_coordinates) + 2))
+        x_min, y_min, z_min = min(x_coordinates), min(y_coordinates), min(z_coordinates)
+        x_max, y_max, z_max = max(x_coordinates), max(y_coordinates), max(z_coordinates)
+
+        if (x_min <= y_min) and (x_min <= z_min):
+            minimum = x_min
+        elif (y_min <= x_min) and (y_min <= z_min):
+            minimum = y_min
+        else:
+            minimum = z_min
+        
+        if (x_max >= y_max) and (x_max >= z_max):
+            maximum = x_max
+        elif (y_max >= x_max) and (y_max >= z_max):
+            maximum = y_max
+        else:
+            maximum = z_max
+
+        ax.set_xlim((minimum - 2, maximum + 2))
+        ax.set_ylim((minimum - 2, maximum + 2))
+        ax.set_zlim((minimum - 2, maximum + 2))
         plt.axis("off")
 
         legend_labels = ["Hydrophobic", "Polar", "Cysteine"]
