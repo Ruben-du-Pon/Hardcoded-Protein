@@ -1,4 +1,4 @@
-from code.classes.protein import Protein
+from ..classes.protein import Protein
 from typing import List, Tuple
 
 
