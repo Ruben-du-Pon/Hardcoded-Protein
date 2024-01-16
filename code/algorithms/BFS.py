@@ -8,6 +8,19 @@ NOTE: A bit slow for now.
 """
 
 def create_nested_dict(protein: Protein, keys, depth, prev=None, t=[(0, 0, 0)]):
+    """
+    Recursively create a nested dictionary representing possible protein folding steps.
+
+    Args:
+    - protein (Protein): The protein structure.
+    - keys (list): The possible directions to fold the protein (e.g., ["R", "L", "U", "D"]).
+    - depth (int): The depth of recursion.
+    - prev (str): The previous direction of folding.
+    - t (list): A list of tuples representing the current position in the folding process.
+
+    Returns:
+    - dict: A nested dictionary representing possible protein folding steps.
+    """
     aminoacid = protein._head
 
     if aminoacid.link is None or depth == 1:
@@ -28,6 +41,18 @@ def create_nested_dict(protein: Protein, keys, depth, prev=None, t=[(0, 0, 0)]):
 
 
 def valid_combinations(keys, prev=None, length=2, it=0):
+    """
+    Generate valid combinations of folding directions up to a specified length.
+
+    Args:
+    - keys (list): The possible directions to fold the protein (e.g., ["R", "L", "U", "D"]).
+    - prev (str): The previous direction of folding.
+    - length (int): The desired length of folding directions.
+    - it (int): Current iteration level.
+
+    Returns:
+    - list: List of valid combinations of folding directions.
+    """
     if it == length:
         return [[]]
 
@@ -47,6 +72,19 @@ def valid_combinations(keys, prev=None, length=2, it=0):
 
 
 def create_dict(protein:Protein, protein_sequence, keys, depth, best_options=[]):
+    """
+    Create a dictionary of protein sequences and their scores based on valid folding directions.
+
+    Args:
+    - protein (Protein): The protein structure.
+    - protein_sequence (str): The sequence of amino acids in the protein.
+    - keys (list): The possible directions to fold the protein (e.g., ["R", "L", "U", "D"]).
+    - depth (int): The maximum depth of folding directions to consider.
+    - best_options (list): List of optimal folding sequences from previous iterations.
+
+    Returns:
+    - dict: A dictionary of protein sequences and their corresponding scores.
+    """
     seq, seq_ , score_dict, pos = "", "", {}, [(0,0,0)]
 
     if depth > len(protein_sequence):
@@ -120,6 +158,17 @@ def create_dict(protein:Protein, protein_sequence, keys, depth, best_options=[])
 
 
 def breadth_fold(protein: Protein, when_cutting=4, step=2) -> Protein:
+    """
+    Perform breadth-first folding of a protein structure to optimize its score.
+
+    Args:
+    - protein (Protein): The protein structure to fold.
+    - when_cutting (int): The depth at which to start considering alternative folding directions.
+    - step (int): The step size for adjusting the depth during the folding process.
+
+    Returns:
+    - Protein: The folded protein structure.
+    """
     length_protein = len(protein)
     sequence_protein = protein._sequence
     types = ["R", "L", "U", "D"]
