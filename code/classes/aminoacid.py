@@ -75,13 +75,16 @@ class Aminoacid:
         int
             The calculated stability score.
         """
-        if self.get_type() == "P" or other.get_type() == "P":
+        self_type = self.get_type()
+        other_type = other.get_type()
+
+        if self_type == "P" or other_type == "P":
             return 0
 
-        if self.get_type() == "H" or other.get_type() == "H":
+        if self_type == "H" or other_type == "H":
             return -1
 
-        if self.get_type() == "C":
+        if self_type == "C":
             return -5
 
     def __str__(self) -> str:
