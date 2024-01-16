@@ -1,25 +1,5 @@
-from code.classes.protein import Protein
-from code.classes.aminoacid import Aminoacid
-
-def delete_dict(dictionary):
-    if not isinstance(dictionary, dict):
-        return dictionary
-    
-    for key in dictionary:
-        if key == "R":
-            del dictionary["L"]
-            delete_dict(dictionary)
-        if key == "L":
-            del dictionary["R"]
-            delete_dict(dictionary)
-        if key == "U":
-            del dictionary["D"]
-            delete_dict(dictionary)
-        else:
-            del dictionary["U"]
-            delete_dict(dictionary)
-    
-    return dictionary
+from ..classes.protein import Protein
+from ..classes.aminoacid import Aminoacid
 
 
 def create_nested_dict(protein: Protein, keys, depth, t=[(0, 0, 0)]):
@@ -47,33 +27,30 @@ def create_nested_dict(protein: Protein, keys, depth, t=[(0, 0, 0)]):
     return result_dict
 
 
-# def breadth_search(protein: Protein, aminoacid: Aminoacid, dictionary, types, seq: str = ""):
-#     result_dict = {}
-#     if seq == "LLL":
-#         print(seq)
+def breadth_search(protein: Protein, aminoacid: Aminoacid, dictionary, types, seq: str = ""):
+    result_dict = {}
 
-#     if "pos" not in dictionary:
-#         aminoacid.position = dictionary[-1]
-#         return result_dict
-#     else:
-#         aminoacid.position = dictionary["pos"]
+    if "pos" not in dictionary:
+        aminoacid.position = dictionary[-1]
+        return result_dict
+    else:
+        aminoacid.position = dictionary["pos"]
 
-#     score = protein.calculate_score()
-#     result_dict[seq] = score
-#     print(seq, protein._head.position, protein._head.link.position, protein._head.link.link.position, protein._head.link.link.position)
-#     for type in types:
-#         if type in dictionary.keys():
-#             result_dict.update(breadth_search(protein, aminoacid.link, dictionary[type], types, seq + type))
+    score = protein.calculate_score()
+    result_dict[seq] = score
+    print(seq, protein._head.position, protein._head.link.position, protein._head.link.link.position, protein._head.link.link.position)
+    for type in types:
+        if type in dictionary.keys():
+            result_dict.update(breadth_search(protein, aminoacid.link, dictionary[type], types, seq + type))
 
-#     return result_dict
+    return result_dict
 
-types = ["R", "L", "U", "D"]
-protein = Protein("HHHHHP")
-depth = 3
-# begin_pos = (0, 0)
-result = create_nested_dict(protein, types, depth)
-print(result)
-print(delete_dict(result))
+# types = ["R", "L", "U", "D"]
+# protein = Protein("HHHHHP")
+# depth = 3
+# # begin_pos = (0, 0)
+# result = create_nested_dict(protein, types, depth)
+# print(result)
 # result_ = breadth_search(protein, protein._head, result, types)
 # print(result_)
 # score = 0
