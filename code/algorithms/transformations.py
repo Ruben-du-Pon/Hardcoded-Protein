@@ -1,5 +1,4 @@
-from typing import Iterator, Optional, Tuple
-
+from typing import Iterator
 import numpy as np
 from ..classes.aminoacid import Aminoacid
 from ..classes.protein import Protein
