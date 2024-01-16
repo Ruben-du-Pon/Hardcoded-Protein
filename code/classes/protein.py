@@ -77,7 +77,6 @@ class Protein:
     def __len__(self):
         return len(self._sequence)
 
-
     def __create_double_linked_list(self):
         """
         Create a double-linked list based on the provided amino acid sequence.
@@ -104,7 +103,7 @@ class Protein:
 
         return head
 
-    def calculate_score(self) -> int:
+    def get_score(self) -> int:
         """
         Calculate the stability score of the protein.
 
@@ -117,43 +116,56 @@ class Protein:
         int
             The calculated stability score of the protein.
         """
-        def are_connected(amino1: Aminoacid, amino2: Aminoacid) -> bool:
-            """Check if two amino acids are connected in the sequence."""
-            return amino1.link == amino2 or amino2.link == amino1
-
-        def calculate_distance(position1: Tuple[int, int, int],
-                               position2: Tuple[int, int, int]) -> int:
-            """Calculate the Manhattan distance between two positions."""
-            return sum(abs(p1 - p2) for p1, p2 in zip(position1, position2))
-
-        visited: Set[Aminoacid] = set()
         current = self._head
-
         while current:
-            if current not in visited:
-                visited.add(current)
-                for other in visited:
-                    if current is not other and not are_connected(current,
-                                                                  other):
-                        if calculate_distance(current.position,
-                                              other.position) == 1:
-                            self._score += current.stability_score(other)
-            current = current.link
+            # Add current.predecessor.position and current.link.position to the
+            # connections list if they are not None
+            connections = [pos for node in [current.predecessor, current.link]
+                           if node and (pos := getattr(node, 'position', None))
+                           and isinstance(pos, tuple) and len(pos) == 3]
 
-        return self._score
+            adjacent_positions = [(1, 0, 0), (-1, 0, 0),
+                                  (0, 1, 0), (0, -1, 0), (0, 0, 1), (0, 0, -1)]
 
-    def get_score(self) -> int:
-        """
-        Get the stability score of the protein. Calculates the score if not already calculated.
+            # Calculate all positions adjacent to current.position and subtract
+            # the positions in connections
+            check_positions = [(c + adj[0], d + adj[1], e + adj[2]) for
+                               (c, d, e), adj in zip([current.position] *
+                                                     len(adjacent_positions),
+                                                     adjacent_positions) if
+                               (c + adj[0], d + adj[1], e + adj[2]) not in
+                               connections]
 
-        Returns
-        -------
-        int
-            The stability score of the protein.
-        """
-        if self._score == 0:
-            self.calculate_score()
-        return self._score
+            for tuple in check_positions:
+                if tuple in self._grid:
+                    self._score += current.stability_score(self._grid[tuple])
+
+        return self._score / 2
+
+        # def are_connected(amino1: Aminoacid, amino2: Aminoacid) -> bool:
+        #     """Check if two amino acids are connected in the sequence."""
+        #     return amino1.link == amino2 or amino2.link == amino1
+
+        # def calculate_distance(position1: Tuple[int, int, int],
+        #                        position2: Tuple[int, int, int]) -> int:
+        #     """Calculate the Manhattan distance between two positions."""
+        #     return sum(abs(p1 - p2) for p1, p2 in zip(position1, position2))
+
+        # visited: Set[Aminoacid] = set()
+        # current = self._head
+
+        # while current:
+        #     if current not in visited:
+        #         visited.add(current)
+        #         for other in visited:
+        #             if current is not other and not are_connected(current,
+        #                                                           other):
+        #                 if calculate_distance(current.position,
+        #                                       other.position) == 1:
+        #                     self._score += current.stability_score(other)
+        #     current = current.link
+
+        # return self._score
 
     def get_folding(self) -> List[Dict[str, int]]:
         """
