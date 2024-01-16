@@ -23,6 +23,50 @@ def traverse_linked_list(start_aminoacid: Aminoacid, depth: int) -> Iterator[Ami
         current = current.link
 
 
+def get_set_and_centroid(protein: Protein, depth: int):
+    """
+    Helper function to get coordinates set and centroid of a Protein up to a specified depth.
+
+    Parameters:
+    - protein (Protein): The Protein instance.
+    - depth (int): The depth or the number of Aminoacid objects to consider.
+
+    Returns:
+    - Tuple[np.ndarray, np.ndarray]: The centered set of coordinates and the centroid.
+    """
+    aminoacids = list(protein.get_list())[:depth]
+    coordinates = np.array([aminoacid.position for aminoacid in aminoacids])
+    centroid = np.mean(coordinates, axis=0)
+    centered_set = coordinates - centroid
+    return centered_set, centroid
+
+
+def is_valid_rotation_matrix(matrix: np.ndarray) -> bool:
+    """
+    Check if a matrix is a valid rotation matrix.
+
+    Parameters:
+    - matrix (np.ndarray): The matrix to check.
+
+    Returns:
+    - bool: True if the matrix is a valid rotation matrix, False otherwise.
+    """
+    return np.allclose(matrix @ matrix.T, np.eye(3)) and np.allclose(np.linalg.det(matrix), 1.0)
+
+
+def is_valid_mirror_matrix(matrix: np.ndarray) -> bool:
+    """
+    Check if a matrix is a valid mirror matrix.
+
+    Parameters:
+    - matrix (np.ndarray): The matrix to check.
+
+    Returns:
+    - bool: True if the matrix is a valid mirror matrix, False otherwise.
+    """
+    return np.allclose(matrix @ matrix.T, np.eye(3)) and np.allclose(np.linalg.det(matrix), -1.0)
+
+
 def check_rotation(protein_1: Protein, protein_2: Protein, depth: int) -> bool:
     """
     Check if two sets of coordinates from Protein instances are rotations of each other.
@@ -35,48 +79,20 @@ def check_rotation(protein_1: Protein, protein_2: Protein, depth: int) -> bool:
     Returns:
     - bool: True if the sets are rotations of each other, False otherwise.
     """
-    def is_valid_rotation_matrix(matrix: np.ndarray) -> bool:
-        """
-        Check if a matrix is a valid rotation matrix.
+    centered_set1, _ = get_set_and_centroid(protein_1, depth)
+    centered_set2, centroid2 = get_set_and_centroid(protein_2, depth)
 
-        Parameters:
-        - matrix (np.ndarray): The matrix to check.
+    covariance_matrix = centered_set1.T @ centered_set2
 
-        Returns:
-        - bool: True if the matrix is a valid rotation matrix, False otherwise.
-        """
-        return np.allclose(np.dot(matrix, matrix.T), np.eye(3)) and np.allclose(np.linalg.det(matrix), 1.0)
-
-    # Extract coordinates from the linked list of Aminoacid objects
-    set1 = np.array([aminoacid.position for aminoacid in traverse_linked_list(
-        next(protein_1.get_list()), depth)])
-    set2 = np.array([aminoacid.position for aminoacid in traverse_linked_list(
-        next(protein_2.get_list()), depth)])
-
-    # Find the centroid of each set
-    centroid1 = np.mean(set1, axis=0)
-    centroid2 = np.mean(set2, axis=0)
-
-    # Center the sets at the origin
-    centered_set1 = set1 - centroid1
-    centered_set2 = set2 - centroid2
-
-    # Compute the covariance matrix
-    covariance_matrix = np.dot(centered_set1.T, centered_set2)
-
-    # Use Singular Value Decomposition (SVD) to find the rotation matrix
     U, _, Vt = np.linalg.svd(covariance_matrix)
-    rotation_matrix = np.dot(U, Vt)
+    rotation_matrix = U @ Vt
 
-    # Check if the matrix is a valid rotation matrix
     if not is_valid_rotation_matrix(rotation_matrix):
         return False
 
-    # Apply the rotation matrix to set1
-    rotated_set1 = np.dot(centered_set1, rotation_matrix) + centroid2
+    rotated_set1 = centered_set1 @ rotation_matrix + centroid2
 
-    # Check if rotated_set1 matches set2
-    return np.allclose(rotated_set1, set2)
+    return np.allclose(rotated_set1, centered_set2)
 
 
 def check_mirror(protein_1: Protein, protein_2: Protein, depth: int) -> bool:
@@ -91,41 +107,14 @@ def check_mirror(protein_1: Protein, protein_2: Protein, depth: int) -> bool:
     Returns:
     - bool: True if the sets are mirrors of each other, False otherwise.
     """
-    def is_valid_mirror_matrix(matrix: np.ndarray) -> bool:
-        """
-        Check if a matrix is a valid mirror matrix.
+    centered_set1, _ = get_set_and_centroid(protein_1, depth)
+    centered_set2, centroid2 = get_set_and_centroid(protein_2, depth)
 
-        Parameters:
-        - matrix (np.ndarray): The matrix to check.
+    mirror_matrix = centered_set1.T @ centered_set2
 
-        Returns:
-        - bool: True if the matrix is a valid mirror matrix, False otherwise.
-        """
-        return np.allclose(np.dot(matrix, matrix.T), np.eye(3)) and np.allclose(np.linalg.det(matrix), -1.0)
-
-    # Extract coordinates from the linked list of Aminoacid objects
-    set1 = np.array([aminoacid.position for aminoacid in traverse_linked_list(
-        next(protein_1.get_list()), depth)])
-    set2 = np.array([aminoacid.position for aminoacid in traverse_linked_list(
-        next(protein_2.get_list()), depth)])
-
-    # Find the centroid of each set
-    centroid1 = np.mean(set1, axis=0)
-    centroid2 = np.mean(set2, axis=0)
-
-    # Center the sets at the origin
-    centered_set1 = set1 - centroid1
-    centered_set2 = set2 - centroid2
-
-    # Compute the mirror matrix
-    mirror_matrix = np.dot(centered_set1.T, centered_set2)
-
-    # Check if the matrix is a valid mirror matrix
     if not is_valid_mirror_matrix(mirror_matrix):
         return False
 
-    # Apply the mirror matrix to set1
-    mirrored_set1 = np.dot(centered_set1, mirror_matrix) + centroid2
+    mirrored_set1 = centered_set1 @ mirror_matrix + centroid2
 
-    # Check if mirrored_set1 matches set2
-    return np.allclose(mirrored_set1, set2)
+    return np.allclose(mirrored_set1, centered_set2)
