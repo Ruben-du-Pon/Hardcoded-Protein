@@ -2,7 +2,7 @@ from ..classes.protein import Protein
 from ..classes.aminoacid import Aminoacid
 
 
-def create_nested_dict(protein: Protein, keys, depth, t=[(0, 0, 0)]):
+def create_nested_dict(protein: Protein, keys, prev = None, depth = None, t=[(0, 0, 0)]):
     aminoacid = protein._head
 
     if aminoacid.link is None or depth == 1:
@@ -10,19 +10,25 @@ def create_nested_dict(protein: Protein, keys, depth, t=[(0, 0, 0)]):
 
     result_dict = {}
     for key in keys:
-        if key == "R":
+        if key == "R" and prev == "L":
+            continue
+        elif key == "R":
             result_dict["pos"] = t[-1]
-            result_dict[key] = create_nested_dict(protein, keys, depth - 1, t+[tuple(x + y for x, y in zip(t[-1], (1,0,0)))])
+            result_dict[key] = create_nested_dict(protein, keys, key, depth - 1, t+[tuple(x + y for x, y in zip(t[-1], (1,0,0)))])
+        elif key == "L" and prev == "R":
+            continue
         elif key == "L":
             # print(t, key)
             result_dict["pos"] = t[-1]
-            result_dict[key] = create_nested_dict(protein, keys, depth - 1, t+[tuple(x + y for x, y in zip(t[-1], (-1,0,0)))])
+            result_dict[key] = create_nested_dict(protein, keys, key, depth - 1, t+[tuple(x + y for x, y in zip(t[-1], (-1,0,0)))])
+        elif key == "U" and prev == "D":
+            continue
         elif key == "U":
             result_dict["pos"] = t[-1]
-            result_dict[key] = create_nested_dict(protein, keys, depth - 1, t+[tuple(x + y for x, y in zip(t[-1], (0,1,0)))])
-        else:
+            result_dict[key] = create_nested_dict(protein, keys, key, depth - 1, t+[tuple(x + y for x, y in zip(t[-1], (0,1,0)))])
+        elif key == "D" and prev == "U":
             result_dict["pos"] = t[-1]
-            result_dict[key] = create_nested_dict(protein, keys, depth - 1, t+[tuple(x + y for x, y in zip(t[-1], (0,-1,0)))])
+            result_dict[key] = create_nested_dict(protein, keys, key, depth - 1, t+[tuple(x + y for x, y in zip(t[-1], (0,-1,0)))])
 
     return result_dict
 
