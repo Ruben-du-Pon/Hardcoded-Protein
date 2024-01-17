@@ -157,7 +157,7 @@ def create_dict(protein:Protein, protein_sequence, keys, depth, best_options=[])
     return score_dict
 
 
-def bfs(protein: Protein, when_cutting=4, step=2) -> Protein:
+def bfsfold(protein: Protein, when_cutting=4, step=2) -> Protein:
     """
     Perform breadth-first folding of a protein structure to optimize its score.
 

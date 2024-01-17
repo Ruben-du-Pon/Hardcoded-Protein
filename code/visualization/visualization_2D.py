@@ -2,7 +2,6 @@ import matplotlib.pyplot as plt
 from typing import Tuple
 from ..classes.protein import Protein
 
-
 def plot_2d(protein: Protein, colors: Tuple[str, str, str], line_number: int, algorithm: str) -> None:
     """
     Plot a 2D representation of the protein structure.
@@ -76,18 +75,18 @@ def plot_2d(protein: Protein, colors: Tuple[str, str, str], line_number: int, al
         else:
             maximum = y_max
 
-        plt.xlim((minimum - 2, maximum + 2))
-        plt.ylim((minimum - 2, maximum + 2))
+        plt.xlim((x_min - 2, x_max + 2))
+        plt.ylim((y_min - 2, y_max + 2))
         plt.axis("off")
 
         # Create a legend outside plt.legend
-        legend_labels = ["Hydrophobic", "Polar"]
+        legend_labels = ["H", "P"]  # Replace with your custom characters
         legend_handles = [
             plt.Line2D(
                 [0],
                 [0],
                 marker="o",
-                color="w",
+                color=color,
                 markerfacecolor=color,
                 markersize=10,
             )
@@ -145,18 +144,18 @@ def plot_2d(protein: Protein, colors: Tuple[str, str, str], line_number: int, al
         else:
             maximum = y_max
 
-        plt.xlim((minimum - 2, maximum + 2))
-        plt.ylim((minimum - 2, maximum + 2))
+        plt.xlim((x_min - 2, x_max + 2))
+        plt.ylim((y_min - 2, y_max + 2))
         plt.axis("off")
 
         # Create a legend outside plt.legend
-        legend_labels = ["Hydrophobic", "Polar", "Cysteine"]
+        legend_labels = ["H", "P", "C"]  # Replace with your custom characters
         legend_handles = [
             plt.Line2D(
                 [0],
                 [0],
                 marker="o",
-                color="w",
+                color=color,
                 markerfacecolor=color,
                 markersize=10,
             )

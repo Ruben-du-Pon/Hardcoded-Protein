@@ -2,7 +2,6 @@ import matplotlib.pyplot as plt
 from typing import Tuple
 from ..classes.protein import Protein
 
-
 def plot_3d(protein: Protein, colors: Tuple[str, str, str], line_number: int, algorithm: str) -> None:
     """
     Plot a 3D representation of the protein structure.
@@ -92,18 +91,18 @@ def plot_3d(protein: Protein, colors: Tuple[str, str, str], line_number: int, al
         else:
             maximum = z_max
 
-        ax.set_xlim((minimum - 2, maximum + 2))
-        ax.set_ylim((minimum - 2, maximum + 2))
-        ax.set_zlim((minimum - 2, maximum + 2))
+        ax.set_xlim((x_min - 2, x_max + 2))
+        ax.set_ylim((y_min - 2, y_max + 2))
+        ax.set_zlim((z_min - 2, z_max + 2))
         plt.axis("off")
 
-        legend_labels = ["Hydrophobic", "Polar"]
+        legend_labels = ["H", "P"]  # Replace with your custom characters
         legend_handles = [
             plt.Line2D(
                 [0],
                 [0],
                 marker="o",
-                color="w",
+                color=color,
                 markerfacecolor=color,
                 markersize=10,
             )
@@ -177,18 +176,18 @@ def plot_3d(protein: Protein, colors: Tuple[str, str, str], line_number: int, al
         else:
             maximum = z_max
 
-        ax.set_xlim((minimum - 2, maximum + 2))
-        ax.set_ylim((minimum - 2, maximum + 2))
-        ax.set_zlim((minimum - 2, maximum + 2))
+        ax.set_xlim((x_min - 2, x_max + 2))
+        ax.set_ylim((y_min - 2, y_max + 2))
+        ax.set_zlim((z_min - 2, z_max + 2))
         plt.axis("off")
 
-        legend_labels = ["Hydrophobic", "Polar", "Cysteine"]
+        legend_labels = ["H", "P", "C"]  # Replace with your custom characters
         legend_handles = [
             plt.Line2D(
                 [0],
                 [0],
                 marker="o",
-                color="w",
+                color=color,
                 markerfacecolor=color,
                 markersize=10,
             )
