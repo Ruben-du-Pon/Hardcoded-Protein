@@ -16,6 +16,7 @@ class HelixFold:
         """
 
         self._protein = protein
+        self._dimensions = dimensions
         self._movements: List[Tuple[int, int, int]] = [
             (0, 1, 0), (1, 0, 0), (0, -1, 0), (-1, 0, 0), (0, 0, 1)
         ]
