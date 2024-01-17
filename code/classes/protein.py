@@ -218,13 +218,13 @@ class Protein:
         """
         filename = f"data/output/csv/output_{algorithm}_{index}.csv"
         with open(filename, 'w', newline='') as file:
-            print(f"{filename} created.")
             header = ["amino", "fold"]
             writer = csv.DictWriter(file, fieldnames=header)
             folding = self.get_folding()
 
             writer.writeheader()
             writer.writerows(folding)
+            print(f"{filename} created.")
 
     def is_valid(self) -> bool:
         """
