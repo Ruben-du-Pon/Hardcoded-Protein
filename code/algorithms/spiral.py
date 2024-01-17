@@ -30,11 +30,10 @@ class SpiralFold:
         ValueError
             If a valid folding cannot be found for the given protein.
         """
-        current = self._protein.get_list().link
-        self._protein.add_to_grid(
-            current.predecessor.position, current.predecessor)
+        current = self._protein.get_list()
         self._protein.add_to_grid(current.position, current)
         movement_index: int = 0
+        current = current.link
 
         while not self._protein.is_valid():
 

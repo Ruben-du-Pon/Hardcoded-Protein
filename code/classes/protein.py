@@ -142,7 +142,7 @@ class Protein:
 
             current = current.link
 
-        return self._score / 2
+        return (self._score // 2)
 
         # def are_connected(amino1: Aminoacid, amino2: Aminoacid) -> bool:
         #     """Check if two amino acids are connected in the sequence."""
