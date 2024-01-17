@@ -1,4 +1,5 @@
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, Set
+from operator import add
 from ..classes.protein import Protein
 from ..classes.aminoacid import Aminoacid
 import random
@@ -45,7 +46,7 @@ class RandomFold:
     """  # noqa
 
     def __init__(self, protein: Protein, dimensions: int,
-                 no_crossing: Optional[bool] = False) -> None:
+                 no_crossing: Optional[bool] = True) -> None:
         """
         Initialize the RandomFold object.
 
@@ -88,10 +89,10 @@ class RandomFold:
         self._protein.add_to_grid(current.position, current)
         current = current.link
         while current:
-            self.set_position(current)
+            self.set_position(current, self._no_crossing)
             current = current.link
 
-    def set_position(self, acid: Aminoacid) -> None:
+    def set_position(self, acid: Aminoacid, no_crossing: bool, move_history=None) -> None:
         """
         Set the position of an amino acid based on a random direction.
 
@@ -102,26 +103,53 @@ class RandomFold:
         acid : Aminoacid
             The amino acid for which the position is set.
         """  # noqa
-        if self._dimensions == 2:
-            directions = [(1, 0, 0), (-1, 0, 0), (0, 1, 0), (0, -1, 0)]
-        elif self._dimensions == 3:
-            directions = [(1, 0, 0), (-1, 0, 0), (0, 1, 0),
-                          (0, -1, 0), (0, 0, 1), (0, 0, -1)]
+        if move_history is None:
+            move_history = []
 
-        tried = set()
-        while len(tried) <= len(directions):
-            options = [
-                direction for direction in directions if direction not in tried]
-            random_direction = self.get_random_direction(options)
-            new_position = tuple(
-                x + y for x, y in zip(acid.predecessor.position, random_direction))
+        directions = self._get_directions()
 
-            if not self._no_crossing or self._protein.is_valid_fold(new_position):
+        if no_crossing:
+            while True:
+                valid_directions = [d for d in directions if d not in move_history]
+                random.shuffle(valid_directions)
+
+                for direction in valid_directions:
+                    if acid.predecessor and acid.predecessor.position:
+                        new_position = tuple(map(add, acid.predecessor.position, direction))
+                        if self._protein.is_valid_fold(new_position):
+                            acid.position = new_position
+                            self._protein.add_to_grid(new_position, acid)
+                            move_history.append(direction)  # Record successful move
+                            return
+
+                if move_history:  # Backtrack if there are moves to undo
+                    last_move = move_history.pop()
+                    reverse_move = tuple(-x for x in last_move)
+                    if acid.position:
+                        backtrack_position = tuple(map(add, acid.position, reverse_move))
+                        self._protein.remove_from_grid(acid.position)
+                        acid.position = backtrack_position
+                    if acid.predecessor:
+                        self.set_position(acid.predecessor, no_crossing, move_history)
+                        return
+                else:
+                    # No more moves to backtrack or at the start of the chain
+                    break
+        else:
+            if acid.predecessor and acid.predecessor.position:
+                direction = random.choice(directions)
+                new_position = tuple(map(add, acid.predecessor.position, direction))
                 acid.position = new_position
                 self._protein.add_to_grid(new_position, acid)
-                tried.clear()
-                break
-            tried.add(random_direction)
+
+
+    def _get_directions(self) -> List[Tuple[int, int, int]]:
+        if self._dimensions == 2:
+            return [(1, 0, 0), (-1, 0, 0), (0, 1, 0), (0, -1, 0)]
+        elif self._dimensions == 3:
+            return [(1, 0, 0), (-1, 0, 0), (0, 1, 0),
+                    (0, -1, 0), (0, 0, 1), (0, 0, -1)]
+        return []
 
     def get_random_direction(self, directions: List[Tuple[int, int, int]]) -> Tuple[int, int, int]:
         """
