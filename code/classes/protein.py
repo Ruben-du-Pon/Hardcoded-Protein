@@ -275,6 +275,20 @@ class Protein:
         """
         self._grid[position] = acid
 
+    def remove_from_grid(self, position: Tuple[int, int, int]) -> None:
+        """
+        Remove an amino acid from the protein grid at the specified position.
+
+        Parameters
+        ----------
+        position : Tuple[int, int, int]
+            The position from which the amino acid should be removed.
+        """
+        if position in self._grid:
+            # Remove the amino acid from the grid and update its position to None
+            removed_acid = self._grid.pop(position)
+            removed_acid.position = None
+
     def __str__(self) -> str:
         """
         Return the string representation of the protein.

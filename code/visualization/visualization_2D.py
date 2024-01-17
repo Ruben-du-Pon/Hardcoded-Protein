@@ -38,6 +38,9 @@ def plot_2d(protein: Protein, colors: Tuple[str, str, str], line_number: int, al
     plot_2d(my_protein, colors, line_number=0, algorithm="my_algorithm")
     """
 
+    # Clear the previous plot
+    plt.clf()
+
     colors = [color.lower() for color in colors]
 
     if "C" not in protein._sequence:
