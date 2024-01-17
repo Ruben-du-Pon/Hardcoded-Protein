@@ -29,11 +29,8 @@ class Protein:
         This method is used only during the initialization of the Protein object
         and cannot be called on an already created object.
 
-    calculate_score() -> int:
-        Calculate the stability score of the protein based on the adjacency of amino acids.
-
     get_score() -> int:
-        Get the stability score of the protein. Calculates the score if not already calculated.
+        Get the stability score of the protein.
 
     get_folding() -> List[Dict[str, int]]:
         Get the folding information of the protein.
@@ -197,8 +194,6 @@ class Protein:
 
             folding.append({'amino': current.get_type(), 'fold': fold})
             current = current.link
-
-        folding.append({'amino': 'score', 'fold': self.get_score()})
         return folding
 
     def create_csv(self, index: int = 0, algorithm: str = '') -> None:
@@ -223,6 +218,7 @@ class Protein:
             header = ["amino", "fold"]
             writer = csv.DictWriter(file, fieldnames=header)
             folding = self.get_folding()
+            folding.append({'amino': 'score', 'fold': self.get_score()})
 
             writer.writeheader()
             writer.writerows(folding)
