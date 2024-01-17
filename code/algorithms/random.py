@@ -1,4 +1,4 @@
-from typing import Optional, Tuple
+from typing import List, Optional, Tuple
 from ..classes.protein import Protein
 from ..classes.aminoacid import Aminoacid
 import random
@@ -84,26 +84,12 @@ class RandomFold:
         If no_crossing is True, ensures that no two amino acids occupy the
         same position by repeatedly selecting a new position until a unique one is found.
         """  # noqa
-        current = self._protein.get_list().link
+        current = self._protein.get_list()
+        self._protein.add_to_grid(current.position, current)
+        current = current.link
         while current.link is not None:
             self.set_position(current)
             current = current.link
-
-    def get_random_direction(self) -> Tuple[int, int, int]:
-        """
-        Get a random direction for the folding.
-
-        Returns
-        -------
-        Tuple[int, int, int]
-            A tuple representing the random direction.
-        """
-        if self._dimensions == 2:
-            directions = [(1, 0, 0), (-1, 0, 0), (0, 1, 0), (0, -1, 0)]
-        elif self._dimensions == 3:
-            directions = [(1, 0, 0), (-1, 0, 0), (0, 1, 0),
-                          (0, -1, 0), (0, 0, 1), (0, 0, -1)]
-        return random.choice(directions)
 
     def set_position(self, acid: Aminoacid) -> None:
         """
@@ -116,8 +102,15 @@ class RandomFold:
         acid : Aminoacid
             The amino acid for which the position is set.
         """  # noqa
-        while True:
-            random_direction = self.get_random_direction()
+        if self._dimensions == 2:
+            directions = [(1, 0, 0), (-1, 0, 0), (0, 1, 0), (0, -1, 0)]
+        elif self._dimensions == 3:
+            directions = [(1, 0, 0), (-1, 0, 0), (0, 1, 0),
+                          (0, -1, 0), (0, 0, 1), (0, 0, -1)]
+
+        tried = set()
+        while tried <= directions:
+            random_direction = self.get_random_direction(directions)
             new_position = tuple(
                 x + y for x, y in zip(acid.position, random_direction))
 
@@ -125,3 +118,15 @@ class RandomFold:
                 acid.position = new_position
                 self._protein.add_to_grid(new_position, acid)
                 break
+            tried.add(random_direction)
+
+    def get_random_direction(self, directions: List[Tuple[int, int, int]]) -> Tuple[int, int, int]:
+        """
+        Get a random direction for the folding.
+
+        Returns
+        -------
+        Tuple[int, int, int]
+            A tuple representing the random direction.
+        """
+        return random.choice(directions)
