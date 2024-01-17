@@ -46,6 +46,33 @@ class RandomFold:
 
     def __init__(self, protein: Protein, dimensions: int,
                  no_crossing: Optional[bool] = False) -> None:
+        """
+        Initialize the RandomFold object.
+
+        Parameters
+        ----------
+        protein : Protein
+            The protein structure to which the random folding algorithm is applied.
+        dimensions : int
+            Represents the dimensions of folding (2 or 3).
+        no_crossing : Optional[bool], default: False
+            If True, ensures that the folding algorithm avoids crossing paths.
+
+        Raises
+        ------
+        ValueError
+            If dimensions is not 2 or 3.
+
+        Notes
+        -----
+        The RandomFold object is used to apply a random folding algorithm to the given protein.
+        The algorithm starts from the second amino acid in the protein sequence and adds each
+        amino acid to a grid in a random pattern.
+
+        """
+        if dimensions not in (2, 3):
+            raise ValueError("Dimensions must be 2 or 3.")
+
         self._protein = protein
         self._dimensions = dimensions
         self._no_crossing = no_crossing
