@@ -122,7 +122,7 @@ class Protein:
             # connections list if they are not None
             connections = [pos for node in [current.predecessor, current.link]
                            if node and (pos := getattr(node, 'position', None))
-                           and isinstance(pos, tuple) and len(pos) == 3]
+                           and isinstance(pos, Tuple) and len(pos) == 3]
 
             adjacent_positions = [(1, 0, 0), (-1, 0, 0),
                                   (0, 1, 0), (0, -1, 0), (0, 0, 1), (0, 0, -1)]
