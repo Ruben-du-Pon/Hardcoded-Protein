@@ -87,7 +87,7 @@ class RandomFold:
         current = self._protein.get_list()
         self._protein.add_to_grid(current.position, current)
         current = current.link
-        while current.link is not None:
+        while current:
             self.set_position(current)
             current = current.link
 
@@ -109,14 +109,17 @@ class RandomFold:
                           (0, -1, 0), (0, 0, 1), (0, 0, -1)]
 
         tried = set()
-        while tried <= directions:
-            random_direction = self.get_random_direction(directions)
+        while len(tried) <= len(directions):
+            options = [
+                direction for direction in directions if direction not in tried]
+            random_direction = self.get_random_direction(options)
             new_position = tuple(
-                x + y for x, y in zip(acid.position, random_direction))
+                x + y for x, y in zip(acid.predecessor.position, random_direction))
 
             if not self._no_crossing or self._protein.is_valid_fold(new_position):
                 acid.position = new_position
                 self._protein.add_to_grid(new_position, acid)
+                tried.clear()
                 break
             tried.add(random_direction)
 
