@@ -140,6 +140,8 @@ class Protein:
                 if tuple in self._grid:
                     self._score += current.stability_score(self._grid[tuple])
 
+            current = current.link
+
         return self._score / 2
 
         # def are_connected(amino1: Aminoacid, amino2: Aminoacid) -> bool:
