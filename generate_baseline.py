@@ -40,11 +40,11 @@ def generate_baseline(dimensions: int, C: bool) -> None:
 
             with open(outputfile, "a") as file:
                 writer = csv.writer(file)
-                writer.writerow(["", "", ""])
+                writer.writerow([])
                 writer.writerow(
-                    ["", "", f"Average: {sum(scores) / len(scores)}"])
-                writer.writerow(["", "", ""])
-                writer.writerow(["", "", ""])
+                    ["Average:", f"{sum(scores) / len(scores)}"])
+                writer.writerow([])
+                writer.writerow([])
 
             line_number += 1
 
