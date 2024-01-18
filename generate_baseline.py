@@ -1,16 +1,20 @@
 import csv
 import sys
-from .code.algorithms.random import RandomFold
-from .code.classes.protein import Protein
-from .code.classes.amino_acid import AminoAcid
+from code.algorithms.random import RandomFold
+from code.classes.protein import Protein
 
 
 def generate_baseline(dimensions: int, C: bool) -> None:
 
     if C:
         filename: str = "data/input/sequences_H_P_C.csv"
+        outputfile: str = f"data/output/baseline/{dimensions}D_C.csv"
     else:
         filename: str = "data/input/sequences_H_P.csv"
+        outputfile: str = f"data/output/baseline/{dimensions}D.csv"
+
+    with open(outputfile, "w") as file:
+        pass
 
     with open(filename, "r") as file:
         reader = csv.reader(file)
@@ -25,11 +29,6 @@ def generate_baseline(dimensions: int, C: bool) -> None:
             test = RandomFold(test_protein, dimensions, True)
             scores = []
 
-            if C:
-                outputfile = f"data/output/baseline/baseline_{dimensions}D_C.csv"
-            else:
-                outputfile = f"data/output/baseline/baseline_{dimensions}D.csv"
-
             for iteration in range(1000):
                 test.run()
                 scores.append(test_protein.get_score())
@@ -38,16 +37,14 @@ def generate_baseline(dimensions: int, C: bool) -> None:
                     writer = csv.writer(file)
                     writer.writerow(
                         [iteration, str(test_protein), test_protein.get_score()])
-                    writer.writerow(["", "", ""])
-                    file.close()
 
             with open(outputfile, "a") as file:
                 writer = csv.writer(file)
+                writer.writerow([])
                 writer.writerow(
-                    ["", "", f"Average: {sum(scores) / len(scores)}"])
-                writer.writerow(["", "", ""])
-                writer.writerow(["", "", ""])
-                file.close()
+                    ["Average:", f"{sum(scores) / len(scores)}"])
+                writer.writerow([])
+                writer.writerow([])
 
             line_number += 1
 
