@@ -2,10 +2,10 @@ import matplotlib.pyplot as plt
 import csv
 import math
 import numpy as np
+import os
 
 
-def reading_the_csv_file(name_csv: str):
-    file = open(name_csv) 
+def reading_the_csv_file(file):
     csvreader = csv.reader(file)
 
     rows = []
@@ -25,16 +25,24 @@ def reading_the_csv_file(name_csv: str):
 
     return c, y, avg, amount_seq
 
-c, y, avg, amount_seq = reading_the_csv_file('3D_C.csv')
+def plot_random(file) -> list:
+    c, y, avg, amount_seq = reading_the_csv_file(file)
+    lst = []
 
-fig = plt.figure(y[0])
-for count, val in enumerate(range(1000, (amount_seq+1)*1000, 1000)):
-    plt.hist(y[val-1000:val], bins=np.arange(min(y[val-1000:val]), max(y[val-1000:val]), 0.5))
-    plt.grid(True, alpha=0.5)  # Add grid lines
-    average_value = float(avg[count][-1])
-    min_val = float(min(y[val-1000:val]))
-    plt.axvline(average_value, color='red', linestyle='dashed', linewidth=2, label='Average: ' + str(average_value))
-    plt.axvline(min_val, color='green', linestyle='dashed', linewidth=2, label='Min: ' + str(min_val))
-    plt.legend()
-    plt.title(c[count])
-    plt.show()
+    for count, val in enumerate(range(1000, (amount_seq+1)*1000, 1000)):
+        # Create a new Figure and Axes for each plot
+        fig, ax = plt.subplots()
+
+        ax.hist(y[val-1000:val], bins=np.arange(min(y[val-1000:val]), max(y[val-1000:val]), 0.5))
+        ax.grid(True, alpha=0.5)  # Add grid lines
+        average_value = float(avg[count][-1])
+        min_val = float(min(y[val-1000:val]))
+        ax.axvline(average_value, color='red', linestyle='dashed', linewidth=2, label='Average: ' + str(average_value))
+        ax.axvline(min_val, color='green', linestyle='dashed', linewidth=2, label='Min: ' + str(min_val))
+        ax.legend()
+        ax.set_title(c[count])
+
+        # Append the Figure to the list
+        lst.append(fig)
+
+    return lst
