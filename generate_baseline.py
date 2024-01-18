@@ -1,78 +1,64 @@
 import csv
-from code.algorithms.random import RandomFold
-from code.classes.protein import Protein
-from code.visualization import visualization_2D
+import sys
+from .code.algorithms.random import RandomFold
+from .code.classes.protein import Protein
+from .code.classes.amino_acid import AminoAcid
 
 
-highscore = (None, 0)
-highscore_plotname = None
-valid_proteins = []
+def generate_baseline(dimensions: int, C: bool) -> None:
 
-
-def experiment():
-    global highscore
-    global highscore_plotname
-    global valid_proteins
-
-    for iteration in range(50000):
-        with open("data/input/sequences_H_P.csv", "r") as file:
-            reader = csv.reader(file)
-            line_number = 0
-
-            for row in reader:
-                if not row:
-                    break
-
-                sequence = row[0]
-                protein = Protein(sequence)
-                test = RandomFold(protein, 2, False)
-                test.run()
-
-                if check_valid(protein):
-                    valid_proteins.append(protein)
-
-                filename = f"data/output/baseline/csv/random_{line_number}_{iteration}.csv"
-                plotname = f"data/output/baseline/plot/random_{line_number}_{iteration}.png"
-                protein.create_csv(filename)
-                visualization_2D.plot_2d(
-                    protein, ("red", "blue", "green"), plotname)
-
-                score = protein.get_score()
-                if score > highscore[1]:
-                    highscore = (protein, score)
-                    highscore_plotname = plotname
-
-                line_number += 1
-
-
-def check_valid(protein):
-    positions = set()
-    current = protein.get_list()
-
-    if current.position not in positions:
-        positions.add(current.position)
+    if C:
+        filename: str = "data/input/sequences_H_P_C.csv"
     else:
-        return False
+        filename: str = "data/input/sequences_H_P.csv"
 
-    return True
+    with open(filename, "r") as file:
+        reader = csv.reader(file)
+        line_number: int = 0
+
+        for row in reader:
+            if not row:
+                break
+
+            sequence: str = row[0]
+            test_protein: Protein = Protein(sequence)
+            test = RandomFold(test_protein, dimensions, True)
+            scores = []
+
+            if C:
+                outputfile = f"data/output/baseline/baseline_{dimensions}D_C.csv"
+            else:
+                outputfile = f"data/output/baseline/baseline_{dimensions}D.csv"
+
+            for iteration in range(1000):
+                test.run()
+                scores.append(test_protein.get_score())
+
+                with open(outputfile, "a") as file:
+                    writer = csv.writer(file)
+                    writer.writerow(
+                        [iteration, str(test_protein), test_protein.get_score()])
+                    file.close()
+
+            with open(outputfile, "a") as file:
+                writer = csv.writer(file)
+                writer.writerow(
+                    ["", "", f"Average: {sum(scores) / len(scores)}"])
+                file.close()
+
+            line_number += 1
 
 
-def write_stats():
-    global highscore
-    global highscore_plotname
-    global valid_proteins
+def main():
+    if len(sys.argv) != 3:
+        print("Usage: python generate_baseline.py <dimensions> <t/f>")
+        sys.exit(1)
 
-    statsfile = "data/output/baseline/stats.md"
-    with open(statsfile, "w") as file:
-        file.write(f"# Baseline\n")
-        file.write(f"Number of tests done: {50000}\n")
-        file.write(f"Number of valid proteins: {len(valid_proteins)}\n")
-        file.write(
-            f"Highest scoring protein: {str(highscore[0])}, {highscore[1]}\n")
-        file.write(f"![Highscore]({highscore_plotname})\n")
-        print(f"{statsfile} created.")
+    dimensions: int = int(sys.argv[1])
+    C: bool = sys.argv[2].lower() == "t"
+
+    generate_baseline(dimensions, C)
 
 
 if __name__ == "__main__":
-    experiment()
-    write_stats()
+    main()
