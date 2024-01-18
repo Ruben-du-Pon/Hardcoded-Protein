@@ -22,6 +22,6 @@ for plots, csv_filename in zip(lst_, csv_files):
     for plot, figure_title in zip(plots, csv_files):
         title = plot.get_axes()[0].get_title()
         figure_name = f"{figure_title}_{title}_plot.png"
-        figure_path = os.path.join(output_path, figure_name)
+        figure_path = os.path.join(output_path+figure_title+"/", figure_name)
         plot.savefig(figure_path)
         print(f"Saved plot: {figure_path}")
