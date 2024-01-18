@@ -130,7 +130,7 @@ class RandomFold:
                     if acid.predecessor and acid.predecessor.position:
                         new_position = tuple(map(add, acid.predecessor.position, direction))
                         if self._protein.is_valid_fold(new_position):
-                            if acid.position and acid.position != (0,0,0):  # Remove the old position from the grid
+                            if acid.position != (0,0,0):  # Remove the old position from the grid
                                 self._protein.remove_from_grid(acid.position)
                             acid.position = new_position
                             self._protein.add_to_grid(new_position, acid)
@@ -157,12 +157,12 @@ class RandomFold:
                                 backtrack_position = tuple(map(add, backtrack_acid.position, direction))
                                 if backtrack_position and self._protein.is_valid_fold(backtrack_position):
                                     # Update the state for successful backtracking
-                                    if acid.position and acid.position != (0,0,0):  # Remove the current position from the grid if set
+                                    if acid.position != (0,0,0):  # Remove the current position from the grid if set
                                         self._protein.remove_from_grid(acid.position)
                                     acid.position = backtrack_position
                                     self._protein.add_to_grid(backtrack_position, acid)
                                     move_history.append((backtrack_acid.position, direction))  # Record the new move
-                                    move_history.append('BACKTRACK')  # Mark this as a backtrack
+                                    move_history.append('BACKTRACK')  # Mark thiacid.position and s as a backtrack
                                     return  # Successful backtracking
 
                             backtrack_acid = backtrack_acid.predecessor  # Move to the next predecessor for further backtracking
