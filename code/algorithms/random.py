@@ -93,6 +93,7 @@ class RandomFold:
         while current:
             self.set_position(current, self._no_crossing, move_history)
             print(f"{current}[{x}]:{current.position}")
+
             if move_history and move_history[-1] == 'BACKTRACK':
                 move_history.pop()
                 current = current.predecessor
@@ -146,7 +147,8 @@ class RandomFold:
                             continue  # Skip backtrack markers
 
                         backtrack_acid = acid.predecessor
-                        while backtrack_acid:
+                        x = 0
+                        while backtrack_acid is not None and x != 10:
                             # Generate valid directions from the backtrack_acid's position
                             valid_directions = [d for d in directions if (backtrack_acid.position, d) not in move_history]
                             random.shuffle(valid_directions)
@@ -164,7 +166,7 @@ class RandomFold:
                                     return  # Successful backtracking
 
                             backtrack_acid = backtrack_acid.predecessor  # Move to the next predecessor for further backtracking
-
+                            x += 1
                     # If the loop exits without finding a valid position
                     acid.position = (0, 0, 0)
                     self._protein.add_to_grid((0, 0, 0), acid)
