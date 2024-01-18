@@ -84,22 +84,21 @@ def main() -> None:
             # Call the run method of the folding algorithm
             fold_instance.run()
 
-            test_protein.create_csv(line_number, fold_algorithm)
+            filename = f"data/output/csv/{fold_algorithm}_{line_number}.csv"
+            plotname = f"data/output/plot/{fold_algorithm}_{line_number}.png"
+
+            test_protein.create_csv(filename)
             if sys.argv[2] == "2":
                 visualization_2D.plot_2d(
-                    test_protein, ("red", "blue", "green"),
-                    line_number, fold_algorithm)
+                    test_protein, ("red", "blue", "green"), plotname)
             elif sys.argv[2] == "3":
                 visualization_3D.plot_3d(
-                    test_protein, ("red", "blue", "green"),
-                    line_number, fold_algorithm)
+                    test_protein, ("red", "blue", "green"), plotname)
             else:
                 print("Please enter dimension as 2 or 3")
                 sys.exit(3)
 
             line_number += 1
-            # break is for test (1x plotting)
-            # break
 
 
 if __name__ == "__main__":
