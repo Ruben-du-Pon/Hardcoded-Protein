@@ -87,10 +87,21 @@ class RandomFold:
         """  # noqa
         current = self._protein.get_list()
         self._protein.add_to_grid(current.position, current)
-        current = current.link
+        
+        move_history = []
+        x = 0
         while current:
-            self.set_position(current, self._no_crossing)
-            current = current.link
+            self.set_position(current, self._no_crossing, move_history)
+            print(f"{current}[{x}]:{current.position}")
+            if move_history and move_history[-1] == 'BACKTRACK':
+                move_history.pop()
+                current = current.predecessor
+                if current is None:
+                    break
+                x -= 1
+            else:
+                current = current.link
+                x += 1
 
     def set_position(self, acid: Aminoacid, no_crossing: bool, move_history=None) -> None:
         """
@@ -110,38 +121,63 @@ class RandomFold:
 
         if no_crossing:
             while True:
-                valid_directions = [d for d in directions if d not in move_history]
+                # Generate a list of valid directions not used yet for the current amino acid
+                valid_directions = [d for d in directions if (acid.position, d) not in move_history]
                 random.shuffle(valid_directions)
 
                 for direction in valid_directions:
                     if acid.predecessor and acid.predecessor.position:
                         new_position = tuple(map(add, acid.predecessor.position, direction))
                         if self._protein.is_valid_fold(new_position):
+                            if acid.position and acid.position != (0,0,0):  # Remove the old position from the grid
+                                self._protein.remove_from_grid(acid.position)
                             acid.position = new_position
                             self._protein.add_to_grid(new_position, acid)
-                            move_history.append(direction)  # Record successful move
+                            move_history.append((acid.position, direction))
                             return
 
-                if move_history:  # Backtrack if there are moves to undo
-                    last_move = move_history.pop()
-                    reverse_move = tuple(-x for x in last_move)
-                    if acid.position:
-                        backtrack_position = tuple(map(add, acid.position, reverse_move))
-                        self._protein.remove_from_grid(acid.position)
-                        acid.position = backtrack_position
-                    if acid.predecessor:
-                        self.set_position(acid.predecessor, no_crossing, move_history)
-                        return
+                # Backtracking logic
+                if move_history:
+                    print("backtrackß")
+                    while move_history:
+                        last_move = move_history.pop()
+
+                        if last_move == 'BACKTRACK':
+                            continue  # Skip backtrack markers
+
+                        backtrack_acid = acid.predecessor
+                        while backtrack_acid:
+                            # Generate valid directions from the backtrack_acid's position
+                            valid_directions = [d for d in directions if (backtrack_acid.position, d) not in move_history]
+                            random.shuffle(valid_directions)
+
+                            for direction in valid_directions:
+                                backtrack_position = tuple(map(add, backtrack_acid.position, direction))
+                                if backtrack_position and self._protein.is_valid_fold(backtrack_position):
+                                    # Update the state for successful backtracking
+                                    if acid.position and acid.position != (0,0,0):  # Remove the current position from the grid if set
+                                        self._protein.remove_from_grid(acid.position)
+                                    acid.position = backtrack_position
+                                    self._protein.add_to_grid(backtrack_position, acid)
+                                    move_history.append((backtrack_acid.position, direction))  # Record the new move
+                                    move_history.append('BACKTRACK')  # Mark this as a backtrack
+                                    return  # Successful backtracking
+
+                            backtrack_acid = backtrack_acid.predecessor  # Move to the next predecessor for further backtracking
+
+                    # If the loop exits without finding a valid position
+                    acid.position = (0, 0, 0)
+                    self._protein.add_to_grid((0, 0, 0), acid)
                 else:
-                    # No more moves to backtrack or at the start of the chain
-                    break
+                    break  # Exit if no moves are left in move_history
+
         else:
+            # Handling the case when no_crossing is False
             if acid.predecessor and acid.predecessor.position:
                 direction = random.choice(directions)
                 new_position = tuple(map(add, acid.predecessor.position, direction))
                 acid.position = new_position
                 self._protein.add_to_grid(new_position, acid)
-
 
     def _get_directions(self) -> List[Tuple[int, int, int]]:
         if self._dimensions == 2:
