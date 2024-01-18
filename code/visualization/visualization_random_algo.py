@@ -25,16 +25,16 @@ def reading_the_csv_file(name_csv: str):
 
     return c, y, avg, amount_seq
 
-def plot_random(csv: str, filename: str) -> None:
-    c, y, avg, amount_seq = reading_the_csv_file(csv)
+c, y, avg, amount_seq = reading_the_csv_file('3D_C.csv')
 
-    for count, val in enumerate(range(1000, (amount_seq+1)*1000, 1000)):
-        plt.hist(y[val-1000:val], bins=np.arange(min(y[val-1000:val]), max(y[val-1000:val]), 0.5))
-        plt.grid(True, alpha=0.5)  # Add grid lines
-        average_value = float(avg[count][-1])
-        min_val = float(min(y[val-1000:val]))
-        plt.axvline(average_value, color='red', linestyle='dashed', linewidth=2, label='Average: ' + str(average_value))
-        plt.axvline(min_val, color='green', linestyle='dashed', linewidth=2, label='Min: ' + str(min_val))
-        plt.legend()
-        plt.title(c[count])
-        plt.savefig(filename + f"{count}.csv")
+fig = plt.figure(y[0])
+for count, val in enumerate(range(1000, (amount_seq+1)*1000, 1000)):
+    plt.hist(y[val-1000:val], bins=np.arange(min(y[val-1000:val]), max(y[val-1000:val]), 0.5))
+    plt.grid(True, alpha=0.5)  # Add grid lines
+    average_value = float(avg[count][-1])
+    min_val = float(min(y[val-1000:val]))
+    plt.axvline(average_value, color='red', linestyle='dashed', linewidth=2, label='Average: ' + str(average_value))
+    plt.axvline(min_val, color='green', linestyle='dashed', linewidth=2, label='Min: ' + str(min_val))
+    plt.legend()
+    plt.title(c[count])
+    plt.show()
