@@ -113,6 +113,7 @@ class Protein:
         int
             The calculated stability score of the protein.
         """
+        self._score = 0
         current = self._head
         while current:
             # Add current.predecessor.position and current.link.position to the
