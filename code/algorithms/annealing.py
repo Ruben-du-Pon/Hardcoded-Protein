@@ -19,7 +19,7 @@ class AnnealingFold:
         start_state = RandomFold(self._protein, self._dimensions, True)
         start_state.run()
         highscore = (self._protein, self._protein.get_score())
-        for _ in range(1000):
+        for _ in range(2):
             self.run_experiment()
             if self._protein.get_score() > highscore[1]:
                 highscore = (self._protein, self._protein.get_score())
@@ -36,7 +36,7 @@ class AnnealingFold:
         while chance < random.random():
             temperature = temperature * 0.75
             chance = 2.0 ** ((score_old - score_new) / temperature)
-            randomise_positions(snippet)
+            self.randomize_positions(snippet)
         self._protein = protein_copy
 
     def get_snippet(self, protein):
@@ -75,19 +75,24 @@ class AnnealingFold:
             for direction in directions:
                 # Calculate new position
                 new_position = (
-                    position[0] + direction[0], position[1] + direction[1], position[2] + direction[2])
+                    position[0] + direction[0],
+                    position[1] + direction[1],
+                    position[2] + direction[2])
 
-                # If the new position is the same as the last position, check if all positions have been visited
+                # If the new position is the same as the last position, check
+                # if all positions have been visited
                 if new_position == positions[-1]:
                     new_positions = path + [new_position]
-                    # If all positions have been visited, assign new positions to the sequence and return
+                    # If all positions have been visited, assign new positions
+                    # to the sequence and return
                     if len(new_positions) == len(sequence):
                         for i, acid in enumerate(sequence):
                             acid.position = new_positions[i]
                         return
                     # Otherwise, continue with the BFS
 
-                # If the new position is valid (within bounds and not visited), add it to the queue with the path plus the new position
+                # If the new position is valid (within bounds and not visited),
+                # add it to the queue with the path plus the new position
                 if new_position not in visited:
                     queue.append((new_position, path + [new_position]))
                     visited.add(new_position)
