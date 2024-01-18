@@ -8,10 +8,10 @@ def generate_baseline(dimensions: int, C: bool) -> None:
 
     if C:
         filename: str = "data/input/sequences_H_P_C.csv"
-        outputfile: str = "data/output/baseline/{dimensions}D_C.csv"
+        outputfile: str = f"data/output/baseline/{dimensions}D_C.csv"
     else:
         filename: str = "data/input/sequences_H_P.csv"
-        outputfile: str = "data/output/baseline/{dimensions}D.csv"
+        outputfile: str = f"data/output/baseline/{dimensions}D.csv"
 
     with open(outputfile, "w") as file:
         pass
