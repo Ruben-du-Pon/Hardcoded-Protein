@@ -196,16 +196,14 @@ class Protein:
             current = current.link
         return folding
 
-    def create_csv(self, index: int = 0, algorithm: str = '') -> None:
+    def create_csv(self, filename: str) -> None:
         """
         Creates a CSV file that displays a specific folding of a protein.
 
         Parameters
         ----------
-        index : int, optional
-            An index used to name the output CSV file. Defaults to 0.
-        algorithm : str, optional
-            The algorithm used for folding, included in the output filename.
+        filename : str
+            The name of the CSV file to be created.
 
         Postconditions
         --------------
@@ -213,7 +211,6 @@ class Protein:
         The file includes a header "amino", "fold", a footer "score", <score>,
         and a body with amino acid types P, H, or C followed by directions 1, -1, 2, -2, 3, or -3.
         """
-        filename = f"data/output/csv/output_{algorithm}_{index}.csv"
         with open(filename, 'w', newline='') as file:
             header = ["amino", "fold"]
             writer = csv.DictWriter(file, fieldnames=header)
