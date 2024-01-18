@@ -38,12 +38,15 @@ def generate_baseline(dimensions: int, C: bool) -> None:
                     writer = csv.writer(file)
                     writer.writerow(
                         [iteration, str(test_protein), test_protein.get_score()])
+                    writer.writerow(["", "", ""])
                     file.close()
 
             with open(outputfile, "a") as file:
                 writer = csv.writer(file)
                 writer.writerow(
                     ["", "", f"Average: {sum(scores) / len(scores)}"])
+                writer.writerow(["", "", ""])
+                writer.writerow(["", "", ""])
                 file.close()
 
             line_number += 1
