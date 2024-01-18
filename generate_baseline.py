@@ -70,6 +70,7 @@ def write_stats():
         file.write(
             f"Highest scoring protein: {str(highscore[0])}, {highscore[1]}\n")
         file.write(f"![Highscore]({highscore_plotname})\n")
+        print(f"{statsfile} created.")
 
 
 if __name__ == "__main__":
