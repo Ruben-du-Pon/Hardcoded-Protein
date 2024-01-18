@@ -97,8 +97,7 @@ def plot_2d(protein: Protein, colors: Tuple[str, str, str], filename: str) -> No
         plt.legend(legend_handles, legend_labels, loc="upper right")
 
         plt.savefig(filename)
-        print(
-            f"{filename} created")
+        print(f"{filename} created")
 
     elif "C" in protein._sequence:
         curr_pos = protein.get_list()
@@ -166,5 +165,4 @@ def plot_2d(protein: Protein, colors: Tuple[str, str, str], filename: str) -> No
         plt.legend(legend_handles, legend_labels, loc="upper right")
 
         plt.savefig(filename)
-        print(
-            f"{filename} created")
+        print(f"{filename} created")
