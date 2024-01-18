@@ -216,11 +216,15 @@ class BfsFold:
         when_cutting = length_protein // 2
 
         for depth in range(when_cutting, length_protein, step):
+            print(1)
             create_d = self.__create_dict(
                 protein, sequence_protein, types, depth, min_keys
             )
+            print(create_d)
             min_key = min(create_d, key=lambda k: create_d[k])
+            print(min_key)
             min_keys = [k for k, v in create_d.items() if v == create_d[min_key]]
+            print(min_keys)
 
         nested_dict = self.__create_nested_dict(protein, types, length_protein)
         aminoacid_ = protein.get_list()
