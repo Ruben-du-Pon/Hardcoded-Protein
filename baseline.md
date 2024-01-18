@@ -13,6 +13,22 @@ Met het oog op de beschikbare tijd hebben we voor elk eiwit 1000 willekeurige vo
 In de bestanden 2D.csv, 2D_C.csv, 3D.csv, 3D_C.csv staan de resultaten van de verschillende testen in het volgende format: Een cijfer om bij te houden om welke iteratie het gaat, een string die de volgorde van aminozuren in het eiwit weergeeft, de score van de vouwing. Hieronder volgen figuren die de verdeling van scores en de gemiddelde waarde van een willekeurige vouwing laten zien.
 
 
-## 2D
+# 2D
+
+![2D](data/output/baseline_plots/2D.csv/2D.csv_CPPCHPPCHPPCPPHHHHHHCCPCHPPCPCHPPHPC_plot.png)
+![2D](data/output/baseline_plots/2D.csv/2D.csv_HHPHHHPHPHHHPH_plot.png)
+
+# 2D with C
 
 ![2D with C](data/output/baseline_plots/2D_C.csv/2D_C.csv_HCPHPHPHCHHHHPCCPPHPPPHPPPPCPPPHPPPHPHHHHCHPHPHPHH_plot.png)
+![2D with C](data/output/baseline_plots/2D_C.csv/2D_C.csv_PPPHHPPHHPPPPPHHHHHHHPPHHPPPPHHPPHPP_plot.png)
+
+# 3D
+
+![3D](data/output/baseline_plots/3D.csv/3D.csv_HCPHPCPHPCHCHPHPPPHPPPHPPPPHPCPHPPPHPHHHCCHCHCHCHH_plot.png)
+![3D](data/output/baseline_plots/3D.csv/3D.csv_HPHPPHHPHPPHPHHPPHPH_plot.png)
+
+# 3D with C
+
+![3D with C](data/output/baseline_plots/3D_C.csv/3D_C.csv_HHPHHHPH_plot.png)
+![3D with C](data/output/baseline_plots/3D_C.csv/3D_C.csv_PPCHHPPCHPPPPCHHHHCHHPPHHPPPPHHPPHPP_plot.png)
