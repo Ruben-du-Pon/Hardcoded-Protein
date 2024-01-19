@@ -87,7 +87,7 @@ class RandomFold:
         """  # noqa
 
         if not self._no_crossing:
-            current = self._protein.get_list()
+            current = self._protein.get_head()
             self._protein.add_to_grid(current.position, current)
             
             move_history = []
@@ -117,7 +117,7 @@ class RandomFold:
     
     def backtracking(self) -> None:
         """Backtracking"""
-        acid = self._protein.get_list()
+        acid = self._protein.get_head()
         self._protein.add_to_grid(acid.position, acid)
 
         protein_path = [acid.position]
