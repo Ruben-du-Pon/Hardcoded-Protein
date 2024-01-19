@@ -44,7 +44,7 @@ class Protein:
     is_valid_fold(position: Tuple[int, int, int]) -> bool:
         Check if a given fold position is valid.
 
-    get_list() -> Aminoacid:
+    get_head() -> Aminoacid:
         Get the head of the double-linked list representing the protein structure.
 
     add_to_grid(position: Tuple[int, int, int], acid: Aminoacid) -> None:
