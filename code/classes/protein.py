@@ -69,7 +69,7 @@ class Protein:
         self._sequence: str = sequence
         self._grid: Dict[Tuple[int, int, int], Aminoacid] = {}
         self._head: Aminoacid = self.__create_double_linked_list()
-        self._tail: Aminoacid = self.get_back_list()
+        self._tail: Aminoacid = self.get_tail()
         self._score: int = 0
 
     def __len__(self):
