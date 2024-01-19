@@ -1,8 +1,17 @@
 from ..classes.protein import Protein
 
+# NOTE: WORKS ONLY FOR 2D FOR NOW!!!
 
 class BfsFold:
     def __init__(self, protein: Protein, when_cutting=2, step=1):
+        """
+        Initialize BfsFold instance.
+
+        Parameters:
+        - protein (Protein): The protein structure to be folded.
+        - when_cutting (int): The length at which to start cutting the protein sequence during folding.
+        - step (int): The step size to use during folding.
+        """
         self._protein = protein
         self._cut = when_cutting
         self._step = step
@@ -10,6 +19,19 @@ class BfsFold:
     def __create_nested_dict(
         self, protein: Protein, keys, depth, prev=None, pos=[(0, 0, 0)]
     ):
+        """
+        Recursively create a nested dictionary representing possible folding positions.
+
+        Parameters:
+        - protein (Protein): The protein structure being folded.
+        - keys (list): The possible folding directions (e.g., ["R", "L", "U", "D"]).
+        - depth (int): The current depth in the folding process.
+        - prev (str): The direction of the previous fold step.
+        - pos (list): The list of positions representing the folded structure.
+
+        Returns:
+        - dict: A nested dictionary representing possible folding positions.
+        """
         aminoacid = protein._head
 
         if aminoacid.link is None or depth == 1:
@@ -37,8 +59,20 @@ class BfsFold:
         return result_dict
 
     def __valid_combinations(self, keys, prev=None, length=2, it=0):
+        """
+        Generate valid combinations of folding directions.
+
+        Parameters:
+        - keys (list): The possible folding directions (e.g., ["R", "L", "U", "D"]).
+        - prev (str): The direction of the previous fold step.
+        - length (int): The desired length of the folding sequence.
+        - it (int): Current iteration index.
+
+        Returns:
+        - list: List of valid combinations of folding directions.
+        """
         if it == length:
-            return [[]]
+            return ['']
 
         valid_combos = []
 
@@ -54,13 +88,27 @@ class BfsFold:
                 combos = self.__valid_combinations(
                     keys, prev=key, length=length, it=it + 1
                 )
-                valid_combos.extend([[key] + combo for combo in combos])
+                valid_combos.extend([key + combo for combo in combos])
 
         return valid_combos
 
     def __create_dict(
-        self, protein: Protein, protein_sequence, keys, depth, best_options=[]
+        self, protein: Protein, protein_sequence, keys, depth, step_size, best_options=[]
     ):
+        """
+        Create a dictionary of possible folding sequences and their corresponding scores.
+
+        Parameters:
+        - protein (Protein): The protein structure being folded.
+        - protein_sequence (str): The protein sequence to be folded.
+        - keys (list): The possible folding directions (e.g., ["R", "L", "U", "D"]).
+        - depth (int): The depth at which to stop the folding process.
+        - step_size (int): The step size used during the folding process.
+        - best_options (list): List of previously determined best folding options.
+
+        Returns:
+        - dict: A dictionary mapping folding sequences to their scores.
+        """
         seq, seq_, score_dict, pos = "", "", {}, [(0, 0, 0)]
 
         if depth > len(protein_sequence):
@@ -70,10 +118,8 @@ class BfsFold:
 
         for steps in valid_combos:
             if len(best_options) != 0:
-                for step in steps:
-                    seq_ += step
                 for option in best_options:
-                    if seq_[: len(option)] in option and len(seq_) > len(option):
+                    if steps[: depth-step_size] in option and len(steps) > len(option):
                         prt = Protein(protein_sequence[: depth + 1])
                         dict_ = self.__create_nested_dict(protein, keys, depth + 1)
 
@@ -140,6 +186,18 @@ class BfsFold:
         return score_dict
 
     def __bfsfold(self, protein: Protein, when_cutting, step, dimension=2) -> Protein:
+        """
+        Perform Breadth-First Search (BFS) based folding on the given protein structure.
+
+        Parameters:
+        - protein (Protein): The protein structure to be folded.
+        - when_cutting (int): The length at which to start cutting the protein sequence during folding.
+        - step (int): The step size to use during folding.
+        - dimension (int): The dimension of the protein folding (default is 2).
+
+        Returns:
+        - Protein: The folded protein structure.
+        """
         length_protein = len(protein)
         sequence_protein = protein._sequence
         types = ["R", "L", "U", "D"]
@@ -150,7 +208,7 @@ class BfsFold:
 
         for depth in range(when_cutting, length_protein, step):
             create_d = self.__create_dict(
-                protein, sequence_protein, types, depth, min_keys
+                protein, sequence_protein, types, depth, step, min_keys
             )
 
             min_key = min(create_d, key=lambda k: create_d[k])
@@ -179,4 +237,10 @@ class BfsFold:
         return protein
 
     def run(self) -> Protein:
+        """
+        Run the BFS folding algorithm on the specified protein.
+
+        Returns:
+        - Protein: The folded protein structure.
+        """
         return self.__bfsfold(self._protein, self._cut, self._step)
