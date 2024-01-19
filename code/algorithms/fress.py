@@ -13,7 +13,7 @@ class FressFold:
         self.best_protein_structure: Protein = protein
         pass
 
-    def optimize(self) -> None:
+    def analyzeChain(self) -> None:
         """
         Start the optimization process on the current protein.
         """
@@ -22,6 +22,12 @@ class FressFold:
     def calculate_stability(self) -> float:
         """
         Calculate the stability of the current protein structure.
+        """
+        pass
+
+    def optimizeChain(self) -> None:
+        """
+        Start the optimization process on the current protein.
         """
         pass
 
