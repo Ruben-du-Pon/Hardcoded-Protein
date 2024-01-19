@@ -102,7 +102,7 @@ def main() -> None:
             plotname = f"data/output/plot/{fold_algorithm}_{line_number}.png"
 
             test_protein.create_csv(filename)
-            if dimensions == "2":
+            if dimensions == 2:
                 visualization_2D.plot_2d(
                     test_protein, ("red", "blue", "green"), plotname)
             else:
