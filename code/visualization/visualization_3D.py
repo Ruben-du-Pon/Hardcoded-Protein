@@ -43,7 +43,7 @@ def plot_3d(protein: Protein, colors: Tuple[str, str, str], line_number: int, al
     colors = [color.lower() for color in colors]
 
     if "C" not in protein._sequence:
-        curr_pos = protein.get_list()
+        curr_pos = protein.get_head()
         coordinates = [
             (curr_pos.position[0], curr_pos.position[1], curr_pos.position[2])
         ]
@@ -117,7 +117,7 @@ def plot_3d(protein: Protein, colors: Tuple[str, str, str], line_number: int, al
             f"data/output/plot/plot_3D_{algorithm}_{line_number}.png created")
 
     elif "C" in protein._sequence:
-        curr_pos = protein.get_list()
+        curr_pos = protein.get_head()
         coordinates = [
             (curr_pos.position[0], curr_pos.position[1], curr_pos.position[2])
         ]

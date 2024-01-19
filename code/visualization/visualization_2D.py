@@ -43,7 +43,7 @@ def plot_2d(protein: Protein, colors: Tuple[str, str, str], filename: str) -> No
     colors = [color.lower() for color in colors]
 
     if "C" not in protein._sequence:
-        curr_pos = protein.get_list()
+        curr_pos = protein.get_head()
         coordinates = [(curr_pos.position[0], curr_pos.position[1])]
         colors_ = [colors[0] if curr_pos.get_type() == "H" else colors[1]]
 
@@ -100,7 +100,7 @@ def plot_2d(protein: Protein, colors: Tuple[str, str, str], filename: str) -> No
         print(f"{filename} created")
 
     elif "C" in protein._sequence:
-        curr_pos = protein.get_list()
+        curr_pos = protein.get_head()
         coordinates = [(curr_pos.position[0], curr_pos.position[1])]
         colors_ = [
             colors[0]
