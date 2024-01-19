@@ -250,7 +250,7 @@ class Protein:
         """
         return position not in self._grid
 
-    def get_list(self) -> Aminoacid:
+    def get_head(self) -> Aminoacid:
         """
         Get the head of the double-linked list representing the protein structure.
 
@@ -260,14 +260,16 @@ class Protein:
             The head of the double-linked list.
         """
         return self._head
-    
-    def get_back_list(self) -> Aminoacid:
+
+    def get_tail(self) -> Aminoacid:
         current = self._head.link
         while current.link is not None:
             current = current.link
 
         return current
 
+    def get_grid(self) -> Dict[Tuple[int, int, int], Aminoacid]:
+        return self._grid
 
     def add_to_grid(self, position: Tuple[int, int, int], acid: Aminoacid) -> None:
         """
