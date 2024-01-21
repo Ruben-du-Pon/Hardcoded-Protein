@@ -1,9 +1,11 @@
 from ..classes.protein import Protein
+import random
+from typing import List
 
 # NOTE: WORKS ONLY FOR 2D FOR NOW!!!
 
 class BfsFold:
-    def __init__(self, protein: Protein, when_cutting=2, step=1):
+    def __init__(self, protein: Protein, when_cutting=6, step=1):
         """
         Initialize BfsFold instance.
 
@@ -15,6 +17,13 @@ class BfsFold:
         self._protein = protein
         self._cut = when_cutting
         self._step = step
+
+
+    def cutting_seq(self, protein: Protein, cut=10) -> List[str]:
+        length, seq, proteins = len(protein), protein._sequence, []
+
+
+
 
     def __create_nested_dict(
         self, protein: Protein, keys, depth, prev=None, pos=[(0, 0, 0)]
@@ -109,7 +118,7 @@ class BfsFold:
         Returns:
         - dict: A dictionary mapping folding sequences to their scores.
         """
-        seq, seq_, score_dict, pos = "", "", {}, [(0, 0, 0)]
+        seq, score_dict, pos = "", {}, [(0, 0, 0)]
 
         if depth > len(protein_sequence):
             depth = len(protein_sequence)
@@ -147,10 +156,13 @@ class BfsFold:
                             score_dict[seq] = prt.get_score()
                             seq, pos = "", [(0, 0, 0)]
                         else:
-                            seq, seq_, pos = "", "", [(0, 0, 0)]
+                            current = prt.get_head()
+                            while current is not None:
+                                prt.remove_from_grid(current.position)
+                                current = current.link
+                            seq, pos = "", [(0, 0, 0)]
                             continue
                     else:
-                        seq_ = ""
                         continue
             else:
                 prt = Protein(protein_sequence[: depth + 1])
@@ -180,6 +192,10 @@ class BfsFold:
                     score_dict[seq] = prt.get_score()
                     seq, pos = "", [(0, 0, 0)]
                 else:
+                    current = prt.get_head()
+                    while current is not None:
+                        prt.remove_from_grid(current.position)
+                        current = current.link
                     seq, pos = "", [(0, 0, 0)]
                     continue
 
@@ -204,7 +220,7 @@ class BfsFold:
         min_keys = []
 
         when_cutting = 6
-        step = 2
+        step = 1
 
         for depth in range(when_cutting, length_protein, step):
             create_d = self.__create_dict(
@@ -213,25 +229,24 @@ class BfsFold:
 
             min_key = min(create_d, key=lambda k: create_d[k])
             min_keys = [k for k, v in create_d.items() if v == create_d[min_key]]
-            max_length = max(len(key) for key in min_keys)
 
-            if max_length <= 11:
-                min_keys = [key for key in min_keys if len(key) == max_length]
-            else:
-                min_keys = [min_keys[-1]]
 
         nested_dict = self.__create_nested_dict(protein, types, length_protein)
         aminoacid_ = protein.get_head().link
+        
+        folding = random.choice(min_keys)
 
-        for direction in min_keys[-1]:
+        for direction in folding:
+
             nested_dict = nested_dict[direction]
             aminoacid_.position = nested_dict["pos"]
             aminoacid_ = aminoacid_.link
 
-        aminoacid_ = protein.get_head().link
+        aminoacid_ = protein.get_head()
 
         while aminoacid_ is not None:
             protein.add_to_grid(aminoacid_.position, aminoacid_)
+
             aminoacid_ = aminoacid_.link
 
         return protein

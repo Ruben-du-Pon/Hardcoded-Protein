@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 from typing import Tuple
 from ..classes.protein import Protein
 
-def plot_3d(protein: Protein, colors: Tuple[str, str, str], line_number: int, algorithm: str) -> None:
+def plot_3d(protein: Protein, colors: Tuple[str, str, str], filename:str) -> None:
     """
     Plot a 3D representation of the protein structure.
 
@@ -112,9 +112,11 @@ def plot_3d(protein: Protein, colors: Tuple[str, str, str], line_number: int, al
         ]
         plt.legend(legend_handles, legend_labels, loc="upper right")
 
-        plt.savefig(f"data/output/plot/plot_3D_{algorithm}_{line_number}.png")
-        print(
-            f"data/output/plot/plot_3D_{algorithm}_{line_number}.png created")
+        score_text = f"Score: {protein.get_score()}"
+        ax.text(x_min - 2, y_max + 2, z_max + 2, score_text, fontsize=12.5, color='red')
+
+        plt.savefig(filename)
+        print(f"{filename} created")
 
     elif "C" in protein._sequence:
         curr_pos = protein.get_head()
@@ -197,6 +199,9 @@ def plot_3d(protein: Protein, colors: Tuple[str, str, str], line_number: int, al
         ]
         plt.legend(legend_handles, legend_labels, loc="upper right")
 
-        plt.savefig(f"data/output/plot/plot_3D_{algorithm}_{line_number}.png")
-        print(
-            f"data/output/plot/plot_3D_{algorithm}_{line_number}.png created")
+        score_text = f"Score: {protein.get_score()}"
+        ax.text(x_min - 2, y_max + 2, z_max + 2, score_text, fontsize=12.5, color='red')
+
+
+        plt.savefig(filename)
+        print(f"{filename} created")

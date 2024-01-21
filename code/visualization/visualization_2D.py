@@ -2,7 +2,6 @@ import matplotlib.pyplot as plt
 from typing import Tuple
 from ..classes.protein import Protein
 
-
 def plot_2d(protein: Protein, colors: Tuple[str, str, str], filename: str) -> None:
     """
     Plot a 2D representation of the protein structure.
@@ -96,6 +95,10 @@ def plot_2d(protein: Protein, colors: Tuple[str, str, str], filename: str) -> No
         ]
         plt.legend(legend_handles, legend_labels, loc="upper right")
 
+
+        score_text = f"Score: {protein.get_score()}"
+        plt.text(x_min - 2, y_max + 1, score_text, fontsize=12.5, color='red')
+
         plt.savefig(filename)
         print(f"{filename} created")
 
@@ -163,6 +166,9 @@ def plot_2d(protein: Protein, colors: Tuple[str, str, str], filename: str) -> No
             for color in colors
         ]
         plt.legend(legend_handles, legend_labels, loc="upper right")
+
+        score_text = f"Score: {protein.get_score()}"
+        plt.text(x_min - 2, y_max + 1, score_text, fontsize=12.5, color='red')
 
         plt.savefig(filename)
         print(f"{filename} created")

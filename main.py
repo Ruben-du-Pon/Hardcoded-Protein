@@ -98,8 +98,12 @@ def main() -> None:
             # Call the run method of the folding algorithm
             fold_instance.run()
 
-            filename = f"data/output/csv/{fold_algorithm}_{line_number}.csv"
-            plotname = f"data/output/plot/{fold_algorithm}_{line_number}.png"
+            if dimensions == 2:
+                filename = f"data/output/csv/{fold_algorithm}_{line_number}_2D.csv"
+                plotname = f"data/output/plot/{fold_algorithm}_{line_number}_2D.png"
+            else:
+                filename = f"data/output/csv/{fold_algorithm}_{line_number}_3D.csv"
+                plotname = f"data/output/plot/{fold_algorithm}_{line_number}_3D.png"
 
             test_protein.create_csv(filename)
             if dimensions == 2:
