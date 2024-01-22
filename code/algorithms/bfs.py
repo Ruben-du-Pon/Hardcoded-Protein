@@ -376,14 +376,16 @@ class BfsFold:
                 current = current.link
         
         prt = Protein(self._sequence)
+        print(prt.get_grid())
         current = prt.get_head()
 
         for pos in positions[1:]:
             current.position = pos
             prt.add_to_grid(current.position, current)
+            print(current.position)
             current = current.link
 
-
+        self._protein, self._sequence = prt, prt._sequence
         start_time = time.time()  # Record the start time
 
 
@@ -391,5 +393,5 @@ class BfsFold:
         elapsed_time = end_time - start_time
         print(f"Elapsed Time: {elapsed_time} seconds")
 
-        return prt
+        return self._protein
 
