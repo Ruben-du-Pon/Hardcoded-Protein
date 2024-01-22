@@ -104,7 +104,7 @@ def main() -> None:
             fold_instance = fold_class(test_protein, dimensions, iterations)
 
             # Call the run method of the folding algorithm
-            fold_instance.run()
+            test_protein = fold_instance.run()
 
             # Set the output filenames
             if dimensions == 2:
