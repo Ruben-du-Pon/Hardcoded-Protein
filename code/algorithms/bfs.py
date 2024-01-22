@@ -1,8 +1,7 @@
 from ..classes.protein import Protein
 import random
-from typing import List
+from typing import List, Set
 import time
-
 
 class BfsFold:
     def __init__(self, protein: Protein, dimensions: int, when_cutting=6, step=1):
@@ -21,16 +20,19 @@ class BfsFold:
         self._step = step
         self.dimensions = dimensions
 
+    def cutting_seq(self, protein: Protein, cut=8) -> Set[str]:
+        length, seq, proteins = len(protein), protein._sequence, {}
 
-    def cutting_seq(self, protein: Protein, cut=10) -> List[str]:
-        length, seq, proteins = len(protein), protein._sequence, []
+        for x in range(0, length, cut):
+            proteins.append(seq[x:x+cut]) 
 
+        return proteins
 
 
 
     def __create_nested_dict(
         self, protein: Protein, keys, depth, prev=None, pos=[(0, 0, 0)]
-    ):
+    ) -> dict:
         """
         Recursively create a nested dictionary representing possible folding positions.
 
@@ -70,7 +72,7 @@ class BfsFold:
                     )
 
             return result_dict
-        
+
         elif self.dimensions == 3:
             aminoacid = protein._head
 
@@ -98,9 +100,9 @@ class BfsFold:
                         pos + [tuple(x + y for x, y in zip(pos[-1], move[key]))],
                     )
 
-            return result_dict 
+            return result_dict
 
-    def __valid_combinations(self, keys, prev=None, length=2, it=0):
+    def __valid_combinations(self, keys, prev=None, length=2, it=0, prev_valid={}) -> List[str]:
         """
         Generate valid combinations of folding directions.
 
@@ -115,9 +117,12 @@ class BfsFold:
         """
         if self.dimensions == 2:
             if it == length:
-                return ['']
+                return {''}
 
-            valid_combos = []
+            if prev_valid == {}:
+                valid_combos = set()
+            else:
+                valid_combos = prev_valid
 
             for key in keys:
                 if (
@@ -131,18 +136,21 @@ class BfsFold:
                     combos = self.__valid_combinations(
                         keys, prev=key, length=length, it=it + 1
                     )
-                    valid_combos.extend([key + combo for combo in combos])
+                    valid_combos.update({key + combo for combo in combos})
 
             return valid_combos
 
         elif self.dimensions == 3:
             if it == length:
-                return ['']
+                return {''}
 
-            valid_combos = []
+            if prev_valid == {}:
+                valid_combos = set()
+            else:
+                valid_combos = prev_valid
 
             for key in keys:
-                
+
                 if (
                     (key == "R" and prev == "L")
                     or (key == "L" and prev == "R")
@@ -156,14 +164,13 @@ class BfsFold:
                     combos = self.__valid_combinations(
                         keys, prev=key, length=length, it=it + 1
                     )
-                    valid_combos.extend([key + combo for combo in combos])
+                    valid_combos.update({key + combo for combo in combos})
 
             return valid_combos
 
-
     def __create_dict(
-        self, protein: Protein, protein_sequence, keys, depth, step_size, best_options=[]
-    ):
+        self, protein: Protein, protein_sequence, keys, depth, step_size, best_options={}
+    ) -> dict:
         """
         Create a dictionary of possible folding sequences and their corresponding scores.
 
@@ -277,12 +284,12 @@ class BfsFold:
         length_protein = len(protein)
         sequence_protein = protein._sequence
         if self.dimensions == 2:
-            types = ["R", "L", "U", "D"]
+            types = {"R", "L", "U", "D"}
         elif self.dimensions == 3:
-            types = ["R", "L", "U", "D", "F", "B"]
-        min_keys = []
+            types = {"R", "L", "U", "D", "F", "B"}
+        min_keys = set()
 
-        when_cutting = 5
+        when_cutting = 3
         step = 1
 
         for depth in range(when_cutting, length_protein, step):
@@ -291,16 +298,14 @@ class BfsFold:
             )
 
             min_key = min(create_d, key=lambda k: create_d[k])
-            min_keys = [k for k, v in create_d.items() if v == create_d[min_key]]
-
+            min_keys = {k for k, v in create_d.items() if v == create_d[min_key]}
 
         nested_dict = self.__create_nested_dict(protein, types, length_protein)
         aminoacid_ = protein.get_head().link
-        
-        folding = random.choice(min_keys)
+
+        folding = random.choice(list(min_keys))
 
         for direction in folding:
-
             nested_dict = nested_dict[direction]
             aminoacid_.position = nested_dict["pos"]
             aminoacid_ = aminoacid_.link
@@ -309,7 +314,6 @@ class BfsFold:
 
         while aminoacid_ is not None:
             protein.add_to_grid(aminoacid_.position, aminoacid_)
-
             aminoacid_ = aminoacid_.link
 
         return protein
@@ -324,6 +328,7 @@ class BfsFold:
         start_time = time.time()
 
         result = self.__bfsfold(self._protein, self._cut, self._step)
+
         end_time = time.time()  # Record the end time
         elapsed_time = end_time - start_time
         print(f"Elapsed time: {elapsed_time} seconds")
