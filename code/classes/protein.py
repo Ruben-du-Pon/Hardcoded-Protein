@@ -61,6 +61,9 @@ class Protein:
     remove_from_grid(position: Tuple[int, int, int]) -> None:
         Remove an amino acid from the protein grid at the specified position.
 
+    reset_grid():
+        Clear the grid and add back all the positions of the amino acids.
+    
     __str__() -> str:
         Return the string representation of the protein.
 
@@ -305,6 +308,13 @@ class Protein:
         if position in self._grid:
             self._grid.pop(position)
 
+    def reset_grid(self) -> None:
+        self._grid.clear()
+        current = self.get_head()
+        while current:
+            self._grid[current.position] = current
+            current = current.link
+    
     def __str__(self) -> str:
         """
         Return the string representation of the protein.
