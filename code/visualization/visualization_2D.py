@@ -3,7 +3,7 @@ from typing import Tuple
 from ..classes.protein import Protein
 
 
-def plot_2d(protein: Protein, colors: Tuple[str, str, str], filename: str) -> None:
+def plot_2d(protein: Protein, colors: Tuple[str, str, str], filename: str, output: str = "svg") -> None:
     """
     Plot a 2D representation of the protein structure.
 
@@ -94,7 +94,10 @@ def plot_2d(protein: Protein, colors: Tuple[str, str, str], filename: str) -> No
                  1, score_text, fontsize=12.5, color='red')
 
         # Save the plot as an SVG file
-        plt.savefig(filename, format='svg')
+        if output == "png":
+            plt.savefig(filename, format='png')
+        else:
+            plt.savefig(filename, format='svg')
         print(f"{filename} created")
 
     elif "C" in protein._sequence:
@@ -160,5 +163,8 @@ def plot_2d(protein: Protein, colors: Tuple[str, str, str], filename: str) -> No
                  1, score_text, fontsize=12.5, color='red')
 
         # Save the plot as an SVG file
-        plt.savefig(filename, format='svg')
+        if output == "png":
+            plt.savefig(filename, format='png')
+        else:
+            plt.savefig(filename, format='svg')
         print(f"{filename} created")

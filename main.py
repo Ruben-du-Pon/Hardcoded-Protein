@@ -19,9 +19,10 @@ def main() -> None:
     and visualize the results.
 
     The function reads the command line arguments to determine the fold
-    algorithm, dimensions, and whether the protein sequence includes type 'C'.
-    It then dynamically imports the specified algorithm, applies it to protein
-    sequences from a CSV file, and visualizes the results in 2D or 3D.
+    algorithm, dimensions, whether the protein sequence includes type 'C', and
+    the output file format. It then dynamically imports the specified algorithm,
+    applies it to protein sequences from a CSV file, and visualizes the results in
+    2D or 3D.
 
     Parameters
     ----------
@@ -40,12 +41,12 @@ def main() -> None:
     -----
     The function assumes that the protein sequences are stored in CSV files
     located in the "data/input/" directory.
-    The output CSV files and visualizations will be saved in the "data/output/csv/"
-    and "data/output/plot/" directories, respectively.
+    The output files will be saved in the "data/output/csv/" and "data/output/plot/"
+    directories for CSV and visualization files, respectively.
     """
     if len(sys.argv) != 4 and len(sys.argv) != 5:
         print(
-            "Usage: python main.py <fold_algorithm> <dimensions> <iterations> [C/c]")
+            "Usage: python main.py <fold_algorithm> <dimensions> <iterations> [C/c] [png/svg]")
         sys.exit(1)
 
     fold_algorithm: str = sys.argv[1].lower()
@@ -56,7 +57,7 @@ def main() -> None:
 
     dimensions: int = int(sys.argv[2])
 
-    if sys.argv[3].isdigit() == False:
+    if sys.argv[3].isdigit() is False:
         print("Please enter iterations as an integer")
         sys.exit(3)
 
@@ -76,10 +77,9 @@ def main() -> None:
         filename: str = "data/input/sequences_H_P.csv"
 
     if len(sys.argv) == 5:
-        if sys.argv[4].lower != "c":
-            print(
-                "Usage: python main.py <fold_algorithm> <dimensions> <iterations> [C/c]")
-            sys.exit(4)
+        if sys.argv[4].lower() not in ("png", "svg"):
+            print("Please enter file format as png or svg")
+            sys.exit(5)
 
         filename: str = "data/input/sequences_H_P_C.csv"
 
@@ -105,19 +105,19 @@ def main() -> None:
             # Set the output filenames
             if dimensions == 2:
                 filename = f"data/output/csv/{fold_algorithm}_{line_number}_2D.csv"
-                plotname = f"data/output/plot/{fold_algorithm}_{line_number}_2D.svg"
+                plotname = f"data/output/plot/{fold_algorithm}_{line_number}_2D.{sys.argv[4].lower() if len(sys.argv) == 5 else 'svg'}"
             else:
                 filename = f"data/output/csv/{fold_algorithm}_{line_number}_3D.csv"
-                plotname = f"data/output/plot/{fold_algorithm}_{line_number}_3D.svg"
+                plotname = f"data/output/plot/{fold_algorithm}_{line_number}_3D.{sys.argv[4].lower() if len(sys.argv) == 5 else 'svg'}"
 
-            # Write the results to a CSV file and the visualization to an SVG file
+            # Write the results to a CSV file and the visualization to a file
             test_protein.create_csv(filename)
             if dimensions == 2:
                 visualization_2D.plot_2d(
-                    test_protein, ("red", "blue", "green"), plotname)
+                    test_protein, ("red", "blue", "green"), plotname, sys.argv[4].lower() if len(sys.argv) == 5 else 'svg')
             else:
                 visualization_3D.plot_3d(
-                    test_protein, ("red", "blue", "green"), plotname)
+                    test_protein, ("red", "blue", "green"), plotname, sys.argv[4].lower() if len(sys.argv) == 5 else 'svg')
 
             line_number += 1
 
