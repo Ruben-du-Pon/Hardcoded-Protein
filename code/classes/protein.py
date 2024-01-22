@@ -289,8 +289,7 @@ class Protein:
             The position from which the amino acid should be removed.
         """
         if position in self._grid:
-            removed_acid = self._grid.pop(position)
-            removed_acid.position = None
+            self._grid.pop(position)
 
     def __str__(self) -> str:
         """
