@@ -3,15 +3,44 @@ from typing import List, Tuple
 
 
 class ZigzagFold:
+    """
+    A class that folds a protein into a zigzag.
+
+    Attributes
+    ----------
+    _protein : Protein
+        The protein to fold.
+    _dimensions : int
+        The dimensions of the protein.
+    _movements : List[Tuple[int, int, int]]
+        The possible movements in the grid.
+
+    Methods
+    -------
+    run()
+        Runs the zigzag folding algorithm.
+    """
+
     def __init__(self, protein: Protein, dimensions: int) -> None:
         """
-        Initialize the ZigzagFold object.
+        Initializes a ZigzagFold object.
 
         Parameters
         ----------
         protein : Protein
-            The protein structure to which the zigzag folding algorithm is applied.
+            The protein to fold.
+        dimensions : int
+            The dimensions of the protein.
+
+        Raises
+        ------
+        ValueError
+            If the dimensions are not 2 or 3.
         """
+        if dimensions not in (2, 3):
+            raise ValueError(
+                "Please enter dimensions as 2 or 3 for 2D or 3D folding.")
+
         self._protein = protein
         self._dimensions = dimensions
         self._movements: List[Tuple[int, int, int]] = [
@@ -20,7 +49,7 @@ class ZigzagFold:
 
     def run(self) -> None:
         """
-        Apply a zigzag folding algorithm to the given protein.
+        Runs the zigzag folding algorithm.
 
         Raises
         ------
