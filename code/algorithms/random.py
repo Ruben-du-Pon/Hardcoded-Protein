@@ -15,7 +15,7 @@ class RandomFold:
         The protein sequence on which the random folding is performed.
     dimensions : int
         The number of dimensions for the folding (2 for 2D, 3 for 3D).
-    no_crossing : Optional[bool], optional
+    avoid_overlap : Optional[bool], optional
         If True, ensures that no two amino acids occupy the same position,
         by repeatedly selecting a new position until a unique one is found.
 
@@ -25,14 +25,14 @@ class RandomFold:
         The protein sequence on which the random folding is performed.
     _dimensions : int
         The number of dimensions for the folding (2 for 2D, 3 for 3D).
-    _no_crossing : Optional[bool]
+    _avoid_overlap : Optional[bool]
         If True, ensures that no two amino acids occupy the same position.
 
     Methods
     -------
     run() -> None:
         Perform the random folding on the protein sequence.
-        If no_crossing is True, ensures that no two amino acids occupy the
+        If avoid_overlap is True, ensures that no two amino acids occupy the
         same position by repeatedly selecting a new position until a unique one is found.
 
     get_random_direction() -> Tuple[int, int, int]:
@@ -41,12 +41,12 @@ class RandomFold:
 
     set_position(acid: Aminoacid) -> None:
         Set the position of an amino acid based on a random direction.
-        If no_crossing is True, ensures that no two amino acids occupy the same position.
+        If avoid_overlap is True, ensures that no two amino acids occupy the same position.
 
     """  # noqa
 
     def __init__(self, protein: Protein, dimensions: int,
-                 no_crossing: Optional[bool] = True, verbose: Optional[bool] = False) -> None:
+                 avoid_overlap: Optional[bool] = True, verbose: Optional[bool] = False) -> None:
         """
         Initialize the RandomFold object.
 
@@ -56,7 +56,7 @@ class RandomFold:
             The protein structure to which the random folding algorithm is applied.
         dimensions : int
             Represents the dimensions of folding (2 or 3).
-        no_crossing : Optional[bool], default: False
+        avoid_overlap : Optional[bool], default: False
             If True, ensures that the folding algorithm avoids crossing paths.
 
         Raises
@@ -76,18 +76,18 @@ class RandomFold:
 
         self._protein = protein
         self._dimensions = dimensions
-        self._no_crossing = no_crossing
+        self._avoid_overlap = avoid_overlap
         self._verbose = verbose
 
     def run(self) -> None:
         """
         Perform the random folding on the protein sequence.
 
-        If no_crossing is True, ensures that no two amino acids occupy the
+        If avoid_overlap is True, ensures that no two amino acids occupy the
         same position by repeatedly selecting a new position until a unique one is found.
         """  # noqa
 
-        if not self._no_crossing:
+        if not self._avoid_overlap:
             current = self._protein.get_head()
             self._protein.add_to_grid(current.position, current)
 
@@ -117,9 +117,9 @@ class RandomFold:
             acid.position = new_position
             self._protein.add_to_grid(new_position, acid)
 
-    def backtracking(self) -> None:
+    def backtracking(self, max_backtracking: int = 5000) -> None:
         """Backtracking"""
-        c = 0
+        backtrack_count = 0
         acid = self._protein.get_head()
         self._protein.add_to_grid(acid.position, acid)
 
@@ -164,8 +164,8 @@ class RandomFold:
                         directions.remove(avoid_direction_failed_path)
                     print("backtracking needed") if self._verbose else None
                     acid_index -= 1
-                    c += 1
-                    if c > 5:
+                    backtrack_count += 1
+                    if backtrack_count > max_backtracking:
                         current = self._protein.get_head()
                         self._protein.remove_from_grid(current.position)
                         current.position = (0, 0, 0)
