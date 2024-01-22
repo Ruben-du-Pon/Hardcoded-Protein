@@ -115,7 +115,7 @@ def plot_3d(protein: Protein, colors: Tuple[str, str, str], filename:str) -> Non
         score_text = f"Score: {protein.get_score()}"
         ax.text(x_min - 2, y_max + 2, z_max + 2, score_text, fontsize=12.5, color='red')
 
-        plt.savefig(filename)
+        plt.savefig(filename, format='svg')
         print(f"{filename} created")
 
     elif "C" in protein._sequence:
@@ -203,5 +203,5 @@ def plot_3d(protein: Protein, colors: Tuple[str, str, str], filename:str) -> Non
         ax.text(x_min - 2, y_max + 2, z_max + 2, score_text, fontsize=12.5, color='red')
 
 
-        plt.savefig(filename)
+        plt.savefig(filename, format='svg')
         print(f"{filename} created")

@@ -99,7 +99,7 @@ def plot_2d(protein: Protein, colors: Tuple[str, str, str], filename: str) -> No
         score_text = f"Score: {protein.get_score()}"
         plt.text(x_min - 2, y_max + 1, score_text, fontsize=12.5, color='red')
 
-        plt.savefig(filename)
+        plt.savefig(filename, format='svg')
         print(f"{filename} created")
 
     elif "C" in protein._sequence:
@@ -170,5 +170,5 @@ def plot_2d(protein: Protein, colors: Tuple[str, str, str], filename: str) -> No
         score_text = f"Score: {protein.get_score()}"
         plt.text(x_min - 2, y_max + 1, score_text, fontsize=12.5, color='red')
 
-        plt.savefig(filename)
+        plt.savefig(filename, format='svg')
         print(f"{filename} created")
