@@ -100,10 +100,10 @@ def main() -> None:
 
             if dimensions == 2:
                 filename = f"data/output/csv/{fold_algorithm}_{line_number}_2D.csv"
-                plotname = f"data/output/plot/{fold_algorithm}_{line_number}_2D.png"
+                plotname = f"data/output/plot/{fold_algorithm}_{line_number}_2D.svg"
             else:
                 filename = f"data/output/csv/{fold_algorithm}_{line_number}_3D.csv"
-                plotname = f"data/output/plot/{fold_algorithm}_{line_number}_3D.png"
+                plotname = f"data/output/plot/{fold_algorithm}_{line_number}_3D.svg"
 
             test_protein.create_csv(filename)
             if dimensions == 2:
