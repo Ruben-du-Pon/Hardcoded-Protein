@@ -8,4 +8,6 @@ if __name__ == "__main__":
     hillclimber = HillclimberFold(test_protein, 2, 100, True)
 
     # Run the hillclimber algorithm
-    hillclimber.run()
+    protein = hillclimber.run()
+
+    protein.create_csv("data/output/csv/test_hillclimber.csv")
