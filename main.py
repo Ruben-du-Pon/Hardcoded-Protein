@@ -44,9 +44,11 @@ def main() -> None:
     The output files will be saved in the "data/output/csv/" and "data/output/plot/"
     directories for CSV and visualization files, respectively.
     """
-    if len(sys.argv) != 4 and len(sys.argv) != 5:
+    filename: str = "data/input/sequences_H_P.csv"
+
+    if len(sys.argv) != 4 and len(sys.argv) != 5 and len(sys.argv) != 6:
         print(
-            "Usage: python main.py <fold_algorithm> <dimensions> <iterations> [C/c] [png/svg]")
+            "Usage: python main.py <fold_algorithm> <dimensions> <iterations> [png/svg] [C/c]")
         sys.exit(1)
 
     fold_algorithm: str = sys.argv[1].lower()
@@ -81,7 +83,9 @@ def main() -> None:
             print("Please enter file format as png or svg")
             sys.exit(5)
 
-        filename: str = "data/input/sequences_H_P_C.csv"
+    if len(sys.argv) == 6:
+        if sys.argv[5].lower() == "c":
+            filename: str = "data/input/sequences_H_P_C.csv"
 
     with open(filename, "r") as file:
         reader = csv.reader(file)
