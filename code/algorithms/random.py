@@ -117,6 +117,7 @@ class RandomFold:
     
     def backtracking(self) -> None:
         """Backtracking"""
+        c = 0
         acid = self._protein.get_head()
         self._protein.add_to_grid(acid.position, acid)
 
@@ -159,6 +160,18 @@ class RandomFold:
                         directions.remove(avoid_direction_failed_path)
                     print("backtracking needed")
                     acid_index -= 1
+                    c += 1
+                    if c > 5:
+                        current = self._protein.get_head()
+                        self._protein.remove_from_grid(current.position)
+                        current.position = (0, 0, 0)
+                        current = current.link
+                        while current is not None:
+                            self._protein.remove_from_grid(current.position)
+                            current.position = (0, 0, 0)
+                            current = current.link
+
+                        return self.backtracking(self._protein)
                     acid = acid.predecessor
                     backtracking_bool = True
                     print(f"{acid}[{acid_index}]: {acid.position}")
