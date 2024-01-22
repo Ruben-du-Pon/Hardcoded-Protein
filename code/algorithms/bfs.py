@@ -78,14 +78,24 @@ class BfsFold:
 
             result_dict = {"pos": pos[-1]}
             for key in keys:
-                move = {"R": (1, 0, 0), "L": (-1, 0, 0), "U": (0, 1, 0), "D": (0, -1, 0), "F": (0, 0, 1), "B": (0, 0, -1)}
-                result_dict[key] = self.__create_nested_dict(
-                    protein,
-                    keys,
-                    depth - 1,
-                    key,
-                    pos + [tuple(x + y for x, y in zip(pos[-1], move[key]))],
-                )
+                if (
+                    (key == "R" and prev == "L")
+                    or (key == "L" and prev == "R")
+                    or (key == "U" and prev == "D")
+                    or (key == "D" and prev == "U")
+                    or (key == "F" and prev == "B")
+                    or (key == "B" and prev == "F")
+                ):
+                    continue
+                else:
+                    move = {"R": (1, 0, 0), "L": (-1, 0, 0), "U": (0, 1, 0), "D": (0, -1, 0), "F": (0, 0, 1), "B": (0, 0, -1)}
+                    result_dict[key] = self.__create_nested_dict(
+                        protein,
+                        keys,
+                        depth - 1,
+                        key,
+                        pos + [tuple(x + y for x, y in zip(pos[-1], move[key]))],
+                    )
 
             return result_dict 
 
@@ -102,26 +112,53 @@ class BfsFold:
         Returns:
         - list: List of valid combinations of folding directions.
         """
-        if it == length:
-            return ['']
+        if self.dimensions == 2:
+            if it == length:
+                return ['']
 
-        valid_combos = []
+            valid_combos = []
 
-        for key in keys:
-            if (
-                (key == "R" and prev == "L")
-                or (key == "L" and prev == "R")
-                or (key == "U" and prev == "D")
-                or (key == "D" and prev == "U")
-            ):
-                continue
-            else:
-                combos = self.__valid_combinations(
-                    keys, prev=key, length=length, it=it + 1
-                )
-                valid_combos.extend([key + combo for combo in combos])
+            for key in keys:
+                if (
+                    (key == "R" and prev == "L")
+                    or (key == "L" and prev == "R")
+                    or (key == "U" and prev == "D")
+                    or (key == "D" and prev == "U")
+                ):
+                    continue
+                else:
+                    combos = self.__valid_combinations(
+                        keys, prev=key, length=length, it=it + 1
+                    )
+                    valid_combos.extend([key + combo for combo in combos])
 
-        return valid_combos
+            return valid_combos
+
+        elif self.dimensions == 3:
+            if it == length:
+                return ['']
+
+            valid_combos = []
+
+            for key in keys:
+                
+                if (
+                    (key == "R" and prev == "L")
+                    or (key == "L" and prev == "R")
+                    or (key == "U" and prev == "D")
+                    or (key == "D" and prev == "U")
+                    or (key == "F" and prev == "B")
+                    or (key == "B" and prev == "F")
+                ):
+                    continue
+                else:
+                    combos = self.__valid_combinations(
+                        keys, prev=key, length=length, it=it + 1
+                    )
+                    valid_combos.extend([key + combo for combo in combos])
+
+            return valid_combos
+
 
     def __create_dict(
         self, protein: Protein, protein_sequence, keys, depth, step_size, best_options=[]
@@ -223,7 +260,7 @@ class BfsFold:
 
         return score_dict
 
-    def __bfsfold(self, protein: Protein, when_cutting, step, dimension=2) -> Protein:
+    def __bfsfold(self, protein: Protein, when_cutting, step) -> Protein:
         """
         Perform Breadth-First Search (BFS) based folding on the given protein structure.
 
@@ -238,10 +275,13 @@ class BfsFold:
         """
         length_protein = len(protein)
         sequence_protein = protein._sequence
-        types = ["R", "L", "U", "D"]
+        if self.dimensions == 2:
+            types = ["R", "L", "U", "D"]
+        elif self.dimensions == 3:
+            types = ["R", "L", "U", "D", "F", "B"]
         min_keys = []
 
-        when_cutting = 7
+        when_cutting = 4
         step = 1
 
         for depth in range(when_cutting, length_protein, step):

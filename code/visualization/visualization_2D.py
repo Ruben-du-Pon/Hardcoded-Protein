@@ -39,9 +39,11 @@ def plot_2d(protein: Protein, colors: Tuple[str, str, str], filename: str) -> No
     # Clear the previous plot
     plt.clf()
 
+    # Convert colors to lowercase for consistency
     colors = [color.lower() for color in colors]
 
     if "C" not in protein._sequence:
+        # If there are no Cysteine residues in the sequence
         curr_pos = protein.get_head()
         coordinates = [(curr_pos.position[0], curr_pos.position[1])]
         colors_ = [colors[0] if curr_pos.get_type() == "H" else colors[1]]
@@ -55,29 +57,20 @@ def plot_2d(protein: Protein, colors: Tuple[str, str, str], filename: str) -> No
         x_coordinates = [x for x, _ in coordinates]
         y_coordinates = [y for _, y in coordinates]
 
+        # Create a new figure for the plot
         plt.figure("Protein Alignment")
 
+        # Scatter plot for amino acid positions
         for x, y, color in zip(x_coordinates, y_coordinates, colors_):
             plt.scatter(x, y, s=50, color=color, marker="o")
 
+        # Line plot connecting amino acid positions
         plt.plot(x_coordinates, y_coordinates,
                  linestyle="-", color="black", alpha=0.7)
 
-        x_min, y_min = min(x_coordinates), min(y_coordinates)
-        x_max, y_max = max(x_coordinates), max(y_coordinates)
-
-        if (x_min <= y_min):
-            minimum = x_min
-        else:
-            minimum = y_min
-
-        if (x_max >= y_max):
-            maximum = x_max
-        else:
-            maximum = y_max
-
-        plt.xlim((x_min - 2, x_max + 2))
-        plt.ylim((y_min - 2, y_max + 2))
+        # Set plot limits and turn off axis
+        plt.xlim((min(x_coordinates) - 2, max(x_coordinates) + 2))
+        plt.ylim((min(y_coordinates) - 2, max(y_coordinates) + 2))
         plt.axis("off")
 
         # Create a legend outside plt.legend
@@ -95,14 +88,16 @@ def plot_2d(protein: Protein, colors: Tuple[str, str, str], filename: str) -> No
         ]
         plt.legend(legend_handles, legend_labels, loc="upper right")
 
-
+        # Add a text annotation for the score
         score_text = f"Score: {protein.get_score()}"
-        plt.text(x_min - 2, y_max + 1, score_text, fontsize=12.5, color='red')
+        plt.text(min(x_coordinates) - 2, max(y_coordinates) + 1, score_text, fontsize=12.5, color='red')
 
+        # Save the plot as an SVG file
         plt.savefig(filename, format='svg')
         print(f"{filename} created")
 
     elif "C" in protein._sequence:
+        # If there are Cysteine residues in the sequence
         curr_pos = protein.get_head()
         coordinates = [(curr_pos.position[0], curr_pos.position[1])]
         colors_ = [
@@ -127,29 +122,20 @@ def plot_2d(protein: Protein, colors: Tuple[str, str, str], filename: str) -> No
         x_coordinates = [x for x, _ in coordinates]
         y_coordinates = [y for _, y in coordinates]
 
+        # Create a new figure for the plot
         plt.figure("Protein Alignment")
 
+        # Scatter plot for amino acid positions
         for x, y, color in zip(x_coordinates, y_coordinates, colors_):
             plt.scatter(x, y, s=50, color=color, marker="o")
 
+        # Line plot connecting amino acid positions
         plt.plot(x_coordinates, y_coordinates,
                  linestyle="-", color="black", alpha=0.7)
 
-        x_min, y_min = min(x_coordinates), min(y_coordinates)
-        x_max, y_max = max(x_coordinates), max(y_coordinates)
-
-        if (x_min <= y_min):
-            minimum = x_min
-        else:
-            minimum = y_min
-
-        if (x_max >= y_max):
-            maximum = x_max
-        else:
-            maximum = y_max
-
-        plt.xlim((x_min - 2, x_max + 2))
-        plt.ylim((y_min - 2, y_max + 2))
+        # Set plot limits and turn off axis
+        plt.xlim((min(x_coordinates) - 2, max(x_coordinates) + 2))
+        plt.ylim((min(y_coordinates) - 2, max(y_coordinates) + 2))
         plt.axis("off")
 
         # Create a legend outside plt.legend
@@ -167,8 +153,10 @@ def plot_2d(protein: Protein, colors: Tuple[str, str, str], filename: str) -> No
         ]
         plt.legend(legend_handles, legend_labels, loc="upper right")
 
+        # Add a text annotation for the score
         score_text = f"Score: {protein.get_score()}"
-        plt.text(x_min - 2, y_max + 1, score_text, fontsize=12.5, color='red')
+        plt.text(min(x_coordinates) - 2, max(y_coordinates) + 1, score_text, fontsize=12.5, color='red')
 
+        # Save the plot as an SVG file
         plt.savefig(filename, format='svg')
         print(f"{filename} created")
