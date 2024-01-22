@@ -1,9 +1,10 @@
 import copy
 import random
-from typing import List, Optional, Tuple
+from typing import List, Optional
 from .random import RandomFold
 from ..classes.aminoacid import Aminoacid
 from ..classes.protein import Protein
+from ..visualization import visualization_2D  # , visualization_3D
 
 
 class HillclimberFold:
@@ -87,20 +88,24 @@ class HillclimberFold:
         """
         # Start with a random fold
         start_state = RandomFold(self._protein, self._dimensions, True)
-        start_state.run()
+        protein = start_state.run()
+
+        visualization_2D.plot_2d(
+            protein, ("red", "blue", "green"), "data/output/plot/hillclimber_start.png", "png")
+
+        protein.create_csv("data/output/csv/hillclimber_start.csv")
 
         # Start the highscore with the score of the random fold
-        self._highscore = (self._protein, self._protein.get_score())
-
-        # Copy the protein
-        protein = copy.deepcopy(self._protein)
+        self._highscore = (protein, protein.get_score())
 
         # Run the algorithm for the specified number of iterations
-        for iteration in range(self._iterations):
+        for _ in range(self._iterations):
             protein = self._run_experiment(protein)
-            if self._verbose:
-                protein.create_csv(
-                    f"data/output/csv/hillclimber_test_{iteration}.csv")
+
+        visualization_2D.plot_2d(
+            protein, ("red", "blue", "green"), "data/output/plot/hillclimber_end.png", "png")
+
+        protein.create_csv("data/output/csv/hillclimber_end.csv")
 
         # Return the highest scoring protein
         return self._highscore[0]
@@ -120,16 +125,14 @@ class HillclimberFold:
         """
         # Get a random snippet of the protein and give it an intial fold
         snippet = self._get_snippet(protein)
-        protein = self._fold_snippet(snippet, protein)
+        changed_protein = self._fold_snippet(snippet, protein)
 
         # Fold the snippet until a valid fold is found
-        count = 0
-        while not self._is_valid(snippet) or count < 1000:
-            count += 1
-            protein = self._fold_snippet(snippet, protein)
+        while not self._is_valid(snippet):
+            changed_protein = self._fold_snippet(snippet, changed_protein)
 
         # Change the protein to the new fold if it is a new highscore
-        if self._check_highscore(protein):
+        if self._check_highscore(changed_protein):
             return self._highscore[0]
 
         return protein
@@ -153,18 +156,25 @@ class HillclimberFold:
 
         # Get random length and start position
         length = random.randint(3, len(protein))
-        length = min(length, 10)
+        length = min(length, 20)
         start_position = random.randint(0, len(protein) - length)
+        positions = []
 
         current = protein.get_head()
 
         # Find the start position
         for _ in range(start_position):
+            positions.append(current.position)
             current = current.link
 
         # Add the amino acids to the snippet
         for _ in range(length):
             snippet.append(current)
+            positions.append(current.position)
+            current = current.link
+
+        while current:
+            positions.append(current.position)
             current = current.link
 
         return snippet
@@ -208,10 +218,15 @@ class HillclimberFold:
                 == 3 else [(0, 1, 0), (0, -1, 0), (-1, 0, 0), (1, 0, 0)]
 
             # Get the possible positions for the head and tail
-            head_possible_positions = self._get_possible_positions(
-                head, protein_copy, directions)
-            tail_possible_positions = self._get_possible_positions(
-                tail, protein_copy, directions)
+            head_possible_positions = [position for position in
+                                       (tuple(x + y for x, y in zip(head.predecessor.position, direction))
+                                        for direction in directions) if position not in
+                                       protein_copy.get_grid()]
+
+            tail_possible_positions = [position for position in
+                                       (tuple(x + y for x, y in zip(tail.link.position, direction))
+                                        for direction in directions) if position not in
+                                       protein_copy.get_grid()]
 
             # Get a random position for the head and tail
             while head.position in protein_copy.get_grid() and \
@@ -234,39 +249,11 @@ class HillclimberFold:
             if len(snippet_copy) > 0:
                 snippet_copy.pop(-1)
 
-        if self._is_valid(snippet_copy):
+        if protein_copy.is_valid():
             snippet = snippet_copy
             return protein_copy
 
         return protein
-
-    def _get_possible_positions(self, acid: Aminoacid, protein: Protein,
-                                directions: List[Tuple[int, int, int]]) -> \
-            List[Tuple[int, int, int]]:
-        """
-        Get the possible positions for the amino acid.
-
-        Parameters
-        ----------
-        acid : Aminoacid
-            The amino acid.
-        protein : Protein
-            The protein.
-        directions : List[Tuple[int, int, int]]
-            The possible directions for the amino acid.
-
-        Returns
-        -------
-        List[Tuple[int, int, int]]
-            The possible positions.
-        """
-
-        possible_positions = [position for position in
-                              (tuple(x + y for x, y in zip(acid.position, direction))
-                               for direction in directions) if position not in
-                              protein.get_grid()]
-
-        return possible_positions
 
     def _check_highscore(self, protein: Protein) -> bool:
         """

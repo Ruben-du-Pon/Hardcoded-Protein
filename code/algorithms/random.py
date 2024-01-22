@@ -79,12 +79,17 @@ class RandomFold:
         self._avoid_overlap = avoid_overlap
         self._verbose = verbose
 
-    def run(self) -> None:
+    def run(self) -> Protein:
         """
         Perform the random folding on the protein sequence.
 
         If avoid_overlap is True, ensures that no two amino acids occupy the
         same position by repeatedly selecting a new position until a unique one is found.
+
+        Returns
+        -------
+        Protein
+            The protein sequence with the random folding applied.
         """  # noqa
 
         if not self._avoid_overlap:
