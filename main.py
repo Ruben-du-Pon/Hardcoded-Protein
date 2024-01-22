@@ -45,7 +45,7 @@ def main() -> None:
     """
     if len(sys.argv) != 4 and len(sys.argv) != 5:
         print(
-            "Usage: python main.py <fold_algorithm> <dimensions> <iterations> [C]")
+            "Usage: python main.py <fold_algorithm> <dimensions> <iterations> [C/c]")
         sys.exit(1)
 
     fold_algorithm: str = sys.argv[1].lower()
@@ -62,6 +62,7 @@ def main() -> None:
 
     iterations: int = int(sys.argv[3])
 
+    # Check if the specified fold algorithm is valid
     if fold_algorithm not in ALGORITHM_FILES:
         raise ValueError("Invalid fold type.")
 
@@ -70,13 +71,14 @@ def main() -> None:
                              f"{fold_algorithm}Fold"])
     fold_class = getattr(fold_module, f"{fold_algorithm.capitalize()}Fold")
 
+    # Read the protein sequences from the CSV file
     if len(sys.argv) == 4:
         filename: str = "data/input/sequences_H_P.csv"
 
     if len(sys.argv) == 5:
-        if sys.argv[4] != "C":
+        if sys.argv[4].lower != "c":
             print(
-                "Usage: python main.py <fold_algorithm> <dimensions> <iterations> [C]")
+                "Usage: python main.py <fold_algorithm> <dimensions> <iterations> [C/c]")
             sys.exit(4)
 
         filename: str = "data/input/sequences_H_P_C.csv"
@@ -85,10 +87,12 @@ def main() -> None:
         reader = csv.reader(file)
         line_number: int = 0
 
+        # Read the file line by line until an empty line is reached
         for row in reader:
             if not row:
                 break
 
+            # Create Protein objects for each sequence
             sequence: str = row[0]
             test_protein: Protein = Protein(sequence)
 
@@ -98,6 +102,7 @@ def main() -> None:
             # Call the run method of the folding algorithm
             fold_instance.run()
 
+            # Set the output filenames
             if dimensions == 2:
                 filename = f"data/output/csv/{fold_algorithm}_{line_number}_2D.csv"
                 plotname = f"data/output/plot/{fold_algorithm}_{line_number}_2D.svg"
@@ -105,6 +110,7 @@ def main() -> None:
                 filename = f"data/output/csv/{fold_algorithm}_{line_number}_3D.csv"
                 plotname = f"data/output/plot/{fold_algorithm}_{line_number}_3D.svg"
 
+            # Write the results to a CSV file and the visualization to an SVG file
             test_protein.create_csv(filename)
             if dimensions == 2:
                 visualization_2D.plot_2d(

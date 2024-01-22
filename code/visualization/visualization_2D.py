@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 from typing import Tuple
 from ..classes.protein import Protein
 
+
 def plot_2d(protein: Protein, colors: Tuple[str, str, str], filename: str) -> None:
     """
     Plot a 2D representation of the protein structure.
@@ -35,7 +36,6 @@ def plot_2d(protein: Protein, colors: Tuple[str, str, str], filename: str) -> No
     my_protein = Protein(protein_sequence)
     plot_2d(my_protein, colors, "my_protein.png")
     """
-
     # Clear the previous plot
     plt.clf()
 
@@ -90,7 +90,8 @@ def plot_2d(protein: Protein, colors: Tuple[str, str, str], filename: str) -> No
 
         # Add a text annotation for the score
         score_text = f"Score: {protein.get_score()}"
-        plt.text(min(x_coordinates) - 2, max(y_coordinates) + 1, score_text, fontsize=12.5, color='red')
+        plt.text(min(x_coordinates) - 2, max(y_coordinates) +
+                 1, score_text, fontsize=12.5, color='red')
 
         # Save the plot as an SVG file
         plt.savefig(filename, format='svg')
@@ -155,7 +156,8 @@ def plot_2d(protein: Protein, colors: Tuple[str, str, str], filename: str) -> No
 
         # Add a text annotation for the score
         score_text = f"Score: {protein.get_score()}"
-        plt.text(min(x_coordinates) - 2, max(y_coordinates) + 1, score_text, fontsize=12.5, color='red')
+        plt.text(min(x_coordinates) - 2, max(y_coordinates) +
+                 1, score_text, fontsize=12.5, color='red')
 
         # Save the plot as an SVG file
         plt.savefig(filename, format='svg')

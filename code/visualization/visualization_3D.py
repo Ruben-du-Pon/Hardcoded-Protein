@@ -2,7 +2,8 @@ import matplotlib.pyplot as plt
 from typing import Tuple
 from ..classes.protein import Protein
 
-def plot_3d(protein: Protein, colors: Tuple[str, str, str], filename:str) -> None:
+
+def plot_3d(protein: Protein, colors: Tuple[str, str, str], filename: str) -> None:
     """
     Plot a 3D representation of the protein structure.
 
@@ -15,10 +16,8 @@ def plot_3d(protein: Protein, colors: Tuple[str, str, str], filename:str) -> Non
         The protein structure to be visualized.
     colors : Tuple[str, str, str]
         A tuple of three colors representing different amino acid types (Hydrophobic, Polar, Cysteine).
-    line_number : int
-        An index used to name the output image file.
-    algorithm : str
-        The algorithm used for folding.
+    filename : str
+        The name of the output image file.
 
     Raises
     ------
@@ -35,7 +34,7 @@ def plot_3d(protein: Protein, colors: Tuple[str, str, str], filename:str) -> Non
     colors = ("red", "blue", "green")
     protein_sequence = "HCPHPHPHCHHHHPCCPPHPPPHPPPPCPPPHPPPHPHHHHCHPHPHPHH"
     my_protein = Protein(protein_sequence)
-    plot_3d(my_protein, colors, line_number=0, algorithm="my_algorithm")
+    plot_3d(my_protein, colors, "my_protein.png")
     """
     # Clear the previous plot
     plt.clf()
@@ -76,8 +75,10 @@ def plot_3d(protein: Protein, colors: Tuple[str, str, str], filename:str) -> Non
                 color="black",
             )
 
-        x_min, y_min, z_min = min(x_coordinates), min(y_coordinates), min(z_coordinates)
-        x_max, y_max, z_max = max(x_coordinates), max(y_coordinates), max(z_coordinates)
+        x_min, y_min, z_min = min(x_coordinates), min(
+            y_coordinates), min(z_coordinates)
+        x_max, y_max, z_max = max(x_coordinates), max(
+            y_coordinates), max(z_coordinates)
 
         if (x_min <= y_min) and (x_min <= z_min):
             minimum = x_min
@@ -85,7 +86,7 @@ def plot_3d(protein: Protein, colors: Tuple[str, str, str], filename:str) -> Non
             minimum = y_min
         else:
             minimum = z_min
-        
+
         if (x_max >= y_max) and (x_max >= z_max):
             maximum = x_max
         elif (y_max >= x_max) and (y_max >= z_max):
@@ -113,7 +114,8 @@ def plot_3d(protein: Protein, colors: Tuple[str, str, str], filename:str) -> Non
         plt.legend(legend_handles, legend_labels, loc="upper right")
 
         score_text = f"Score: {protein.get_score()}"
-        ax.text(x_min - 2, y_max + 2, z_max + 2, score_text, fontsize=12.5, color='red')
+        ax.text(x_min - 2, y_max + 2, z_max + 2,
+                score_text, fontsize=12.5, color='red')
 
         plt.savefig(filename, format='svg')
         print(f"{filename} created")
@@ -163,8 +165,10 @@ def plot_3d(protein: Protein, colors: Tuple[str, str, str], filename:str) -> Non
                 color="black",
             )
 
-        x_min, y_min, z_min = min(x_coordinates), min(y_coordinates), min(z_coordinates)
-        x_max, y_max, z_max = max(x_coordinates), max(y_coordinates), max(z_coordinates)
+        x_min, y_min, z_min = min(x_coordinates), min(
+            y_coordinates), min(z_coordinates)
+        x_max, y_max, z_max = max(x_coordinates), max(
+            y_coordinates), max(z_coordinates)
 
         if (x_min <= y_min) and (x_min <= z_min):
             minimum = x_min
@@ -172,7 +176,7 @@ def plot_3d(protein: Protein, colors: Tuple[str, str, str], filename:str) -> Non
             minimum = y_min
         else:
             minimum = z_min
-        
+
         if (x_max >= y_max) and (x_max >= z_max):
             maximum = x_max
         elif (y_max >= x_max) and (y_max >= z_max):
@@ -200,8 +204,8 @@ def plot_3d(protein: Protein, colors: Tuple[str, str, str], filename:str) -> Non
         plt.legend(legend_handles, legend_labels, loc="upper right")
 
         score_text = f"Score: {protein.get_score()}"
-        ax.text(x_min - 2, y_max + 2, z_max + 2, score_text, fontsize=12.5, color='red')
-
+        ax.text(x_min - 2, y_max + 2, z_max + 2,
+                score_text, fontsize=12.5, color='red')
 
         plt.savefig(filename, format='svg')
         print(f"{filename} created")
