@@ -3,17 +3,46 @@ from typing import List, Tuple
 
 
 class SpiralFold:
+    """
+    A class that folds a protein into a spiral.
+
+    Attributes
+    ----------
+    _protein : Protein
+        The protein to fold.
+    _dimensions : int
+        The dimensions of the protein.
+    _movements : List[Tuple[int, int, int]]
+        The possible movements in the grid.
+    _steps : int
+        The number of steps to take in the current direction.
+
+    Methods
+    -------
+    run()
+        Runs the spiral folding algorithm.
+    """
+
     def __init__(self, protein: Protein, dimensions: int) -> None:
         """
-        Initialize the SpiralFold object.
+        Initializes a SpiralFold object.
 
         Parameters
         ----------
         protein : Protein
-            The protein structure to which the spiral folding algorithm is applied.
+            The protein to fold.
         dimensions : int
-            Represents the dimensions of folding (2 or 3).
+            The dimensions of the protein.
+
+        Raises
+        ------
+        ValueError
+            If the dimensions are not 2 or 3.
         """
+        if dimensions not in (2, 3):
+            raise ValueError(
+                "Please enter dimensions as 2 or 3 for 2D or 3D folding.")
+
         self._protein = protein
         self._dimensions = dimensions
         self._movements: List[Tuple[int, int, int]] = [
@@ -23,7 +52,7 @@ class SpiralFold:
 
     def run(self) -> None:
         """
-        Apply a spiral folding algorithm to the given protein.
+        Runs the spiral folding algorithm.
 
         Raises
         ------

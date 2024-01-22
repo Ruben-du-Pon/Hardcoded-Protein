@@ -2,21 +2,23 @@ from ..classes.protein import Protein
 import random
 from typing import List
 
-# NOTE: WORKS ONLY FOR 2D FOR NOW!!!
 
 class BfsFold:
-    def __init__(self, protein: Protein, when_cutting=6, step=1):
+    def __init__(self, protein: Protein, dimensions: int, when_cutting=6, step=1):
         """
         Initialize BfsFold instance.
 
         Parameters:
         - protein (Protein): The protein structure to be folded.
+        - dimensions (int): Folding done in 2D or 3D.
         - when_cutting (int): The length at which to start cutting the protein sequence during folding.
         - step (int): The step size to use during folding.
         """
         self._protein = protein
+        self._sequence = protein._sequence
         self._cut = when_cutting
         self._step = step
+        self.dimensions = dimensions
 
 
     def cutting_seq(self, protein: Protein, cut=10) -> List[str]:
@@ -41,22 +43,42 @@ class BfsFold:
         Returns:
         - dict: A nested dictionary representing possible folding positions.
         """
-        aminoacid = protein._head
+        if self.dimensions == 2:
+            aminoacid = protein._head
 
-        if aminoacid.link is None or depth == 1:
-            return {"pos": pos[-1]}
+            if aminoacid.link is None or depth == 1:
+                return {"pos": pos[-1]}
 
-        result_dict = {"pos": pos[-1]}
-        for key in keys:
-            if (
-                (key == "R" and prev == "L")
-                or (key == "L" and prev == "R")
-                or (key == "U" and prev == "D")
-                or (key == "D" and prev == "U")
-            ):
-                continue
-            else:
-                move = {"R": (1, 0, 0), "L": (-1, 0, 0), "U": (0, 1, 0), "D": (0, -1, 0)}
+            result_dict = {"pos": pos[-1]}
+            for key in keys:
+                if (
+                    (key == "R" and prev == "L")
+                    or (key == "L" and prev == "R")
+                    or (key == "U" and prev == "D")
+                    or (key == "D" and prev == "U")
+                ):
+                    continue
+                else:
+                    move = {"R": (1, 0, 0), "L": (-1, 0, 0), "U": (0, 1, 0), "D": (0, -1, 0)}
+                    result_dict[key] = self.__create_nested_dict(
+                        protein,
+                        keys,
+                        depth - 1,
+                        key,
+                        pos + [tuple(x + y for x, y in zip(pos[-1], move[key]))],
+                    )
+
+            return result_dict
+        
+        elif self.dimensions == 3:
+            aminoacid = protein._head
+
+            if aminoacid.link is None or depth == 1:
+                return {"pos": pos[-1]}
+
+            result_dict = {"pos": pos[-1]}
+            for key in keys:
+                move = {"R": (1, 0, 0), "L": (-1, 0, 0), "U": (0, 1, 0), "D": (0, -1, 0), "F": (0, 0, 1), "B": (0, 0, -1)}
                 result_dict[key] = self.__create_nested_dict(
                     protein,
                     keys,
@@ -65,7 +87,7 @@ class BfsFold:
                     pos + [tuple(x + y for x, y in zip(pos[-1], move[key]))],
                 )
 
-        return result_dict
+            return result_dict 
 
     def __valid_combinations(self, keys, prev=None, length=2, it=0):
         """
@@ -219,7 +241,7 @@ class BfsFold:
         types = ["R", "L", "U", "D"]
         min_keys = []
 
-        when_cutting = 6
+        when_cutting = 7
         step = 1
 
         for depth in range(when_cutting, length_protein, step):
