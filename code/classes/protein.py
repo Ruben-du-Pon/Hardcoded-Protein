@@ -16,6 +16,8 @@ class Protein:
         A grid mapping positions to amino acids in the protein structure.
     _head : Aminoacid
         The head of the double-linked list representing the protein structure.
+    _tail : Aminoacid
+        The tail of the double-linked list representing the protein structure.
     _score : int
         The stability score of the protein based on its structure.
 
@@ -35,7 +37,7 @@ class Protein:
     get_folding() -> List[Dict[str, int]]:
         Get the folding information of the protein.
 
-    create_csv(index: int = 0, algorithm: str = '') -> None:
+    create_csv(filename: str) -> None:
         Creates a CSV file that displays a specific folding of a protein.
 
     is_valid() -> bool:
@@ -47,8 +49,17 @@ class Protein:
     get_head() -> Aminoacid:
         Get the head of the double-linked list representing the protein structure.
 
+    get_tail() -> Aminoacid:
+        Get the tail of the double-linked list representing the protein structure.
+
+    get_grid() -> Dict[Tuple[int, int, int], Aminoacid]:
+        Get the protein grid.
+
     add_to_grid(position: Tuple[int, int, int], acid: Aminoacid) -> None:
         Add an amino acid to the protein grid at the specified position.
+
+    remove_from_grid(position: Tuple[int, int, int]) -> None:
+        Remove an amino acid from the protein grid at the specified position.
 
     __str__() -> str:
         Return the string representation of the protein.
@@ -72,10 +83,7 @@ class Protein:
         self._tail: Aminoacid = self.get_tail()
         self._score: int = 0
 
-    def __len__(self):
-        return len(self._sequence)
-
-    def __create_double_linked_list(self):
+    def __create_double_linked_list(self) -> Aminoacid:
         """
         Create a double-linked list based on the provided amino acid sequence.
 
@@ -93,9 +101,9 @@ class Protein:
         head = Aminoacid(type=self._sequence[0])
         current = head
 
-        for _, type in enumerate(self._sequence[1:], start=1):
+        for _, amino_type in enumerate(self._sequence[1:], start=1):
             new_aminoacid = Aminoacid(
-                type=type, predecessor=current)
+                type=amino_type, predecessor=current)
             current.link = new_aminoacid
             current = new_aminoacid
 
@@ -117,8 +125,6 @@ class Protein:
         self._score = 0
         current = self._head
         while current:
-            # Add current.predecessor.position and current.link.position to the
-            # connections list if they are not None
             connections = [pos for node in [current.predecessor, current.link]
                            if node and (pos := getattr(node, 'position', None))
                            and isinstance(pos, Tuple) and len(pos) == 3]
@@ -126,8 +132,6 @@ class Protein:
             adjacent_positions = [(1, 0, 0), (-1, 0, 0),
                                   (0, 1, 0), (0, -1, 0), (0, 0, 1), (0, 0, -1)]
 
-            # Calculate all positions adjacent to current.position and subtract
-            # the positions in connections
             check_positions = [(c + adj[0], d + adj[1], e + adj[2]) for
                                (c, d, e), adj in zip([current.position] *
                                                      len(adjacent_positions),
@@ -135,38 +139,14 @@ class Protein:
                                (c + adj[0], d + adj[1], e + adj[2]) not in
                                connections]
 
-            for tuple in check_positions:
-                if tuple in self._grid:
-                    self._score += current.stability_score(self._grid[tuple])
+            for pos_tuple in check_positions:
+                if pos_tuple in self._grid:
+                    self._score += current.get_stability_score(
+                        self._grid[pos_tuple])
 
             current = current.link
 
         return (self._score // 2)
-
-        # def are_connected(amino1: Aminoacid, amino2: Aminoacid) -> bool:
-        #     """Check if two amino acids are connected in the sequence."""
-        #     return amino1.link == amino2 or amino2.link == amino1
-
-        # def calculate_distance(position1: Tuple[int, int, int],
-        #                        position2: Tuple[int, int, int]) -> int:
-        #     """Calculate the Manhattan distance between two positions."""
-        #     return sum(abs(p1 - p2) for p1, p2 in zip(position1, position2))
-
-        # visited: Set[Aminoacid] = set()
-        # current = self._head
-
-        # while current:
-        #     if current not in visited:
-        #         visited.add(current)
-        #         for other in visited:
-        #             if current is not other and not are_connected(current,
-        #                                                           other):
-        #                 if calculate_distance(current.position,
-        #                                       other.position) == 1:
-        #                     self._score += current.stability_score(other)
-        #     current = current.link
-
-        # return self._score
 
     def get_folding(self) -> List[Dict[str, int]]:
         """
@@ -185,7 +165,6 @@ class Protein:
             return folding  # Return empty list in this case
 
         while current is not None:
-            # If current is the last amino acid, there's no next position
             if current.link is None:
                 fold = 0
             else:
@@ -262,6 +241,14 @@ class Protein:
         return self._head
 
     def get_tail(self) -> Aminoacid:
+        """
+        Get the tail of the double-linked list representing the protein structure.
+
+        Returns
+        -------
+        Aminoacid
+            The tail of the double-linked list.
+        """
         current = self._head.link
         while current.link is not None:
             current = current.link
@@ -269,6 +256,14 @@ class Protein:
         return current
 
     def get_grid(self) -> Dict[Tuple[int, int, int], Aminoacid]:
+        """
+        Get the protein grid.
+
+        Returns
+        -------
+        Dict[Tuple[int, int, int], Aminoacid]
+            The protein grid mapping positions to amino acids.
+        """
         return self._grid
 
     def add_to_grid(self, position: Tuple[int, int, int], acid: Aminoacid) -> None:
@@ -294,7 +289,6 @@ class Protein:
             The position from which the amino acid should be removed.
         """
         if position in self._grid:
-            # Remove the amino acid from the grid and update its position to None
             removed_acid = self._grid.pop(position)
             removed_acid.position = None
 
@@ -308,3 +302,14 @@ class Protein:
             The amino acid sequence of the protein.
         """
         return self._sequence
+
+    def __len__(self) -> int:
+        """
+        Return the length of the amino acid sequence.
+
+        Returns
+        -------
+        int
+            The length of the amino acid sequence.
+        """
+        return len(self._sequence)
