@@ -24,8 +24,9 @@ class Aminoacid:
     get_type() -> str
         Get the type of the amino acid.
 
-    stability_score(other: Aminoacid) -> int
-        Calculate the stability score of the amino acid pair.
+    get_stability_score(other: Aminoacid) -> int
+        Calculate the stability score of the amino acid pair. The score is 0 if either amino acid is of type 'P'. 
+        If either amino acid is of type 'H', the score is -1. If the amino acid is of type 'C', the score is -5.
 
     __str__() -> str
         Return the string representation of the amino acid.
@@ -61,9 +62,10 @@ class Aminoacid:
         """
         return self._type
 
-    def stability_score(self, other: "Aminoacid") -> int:
+    def get_stability_score(self, other: "Aminoacid") -> int:
         """
-        Calculate the stability score of the amino acid pair.
+        Calculate the stability score of the amino acid pair. The score is 0 if either amino acid is of type 'P'. 
+        If either amino acid is of type 'H', the score is -1. If the amino acid is of type 'C', the score is -5.
 
         Parameters
         ----------
