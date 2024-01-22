@@ -3,17 +3,43 @@ from typing import List, Tuple
 
 
 class HelixFold:
-    def __init__(self, protein: Protein, dimensions: int):
+    """
+    A class that folds a protein into a helix.
+
+    Attributes
+    ----------
+    _protein : Protein
+        The protein to fold.
+    _dimensions : int
+        The dimensions of the protein.
+    _movements : List[Tuple[int, int, int]]
+        The possible movements in the grid.
+
+    Methods
+    -------
+    run()
+        Runs the helix folding algorithm.
+    """
+
+    def __init__(self, protein: Protein, dimensions: int) -> None:
         """
-        Initialize the HelixFold object.
+        Initializes a HelixFold object.
 
         Parameters
         ----------
         protein : Protein
-            The protein structure to which the helical folding algorithm is applied.
+            The protein to fold.
         dimensions : int
-            Represents the dimensions of folding (2D or 3D).
+            The dimensions of the protein.
+
+        Raises
+        ------
+        ValueError
+            If the dimensions are not 2 or 3.
         """
+        if dimensions not in (2, 3):
+            raise ValueError(
+                "Please enter dimensions as 2 or 3 for 2D or 3D folding.")
 
         self._protein = protein
         self._dimensions = dimensions
@@ -23,7 +49,7 @@ class HelixFold:
 
     def run(self) -> None:
         """
-        Apply a helical folding algorithm to the given protein.
+        Runs the helix folding algorithm.
 
         Raises
         ------
