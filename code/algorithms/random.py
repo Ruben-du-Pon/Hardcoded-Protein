@@ -91,12 +91,9 @@ class RandomFold:
             current = self._protein.get_head()
             self._protein.add_to_grid(current.position, current)
 
-            move_history = []
-            x = 0
             while current:
                 self.set_position(current)
                 current = current.link
-                x += 1
         else:
             self.backtracking()
 
