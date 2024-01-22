@@ -97,6 +97,8 @@ class RandomFold:
         else:
             self.backtracking()
 
+        return self._protein
+
     def set_position(self, acid: Aminoacid) -> None:
         """
         Set the position of an amino acid based on a random direction.
