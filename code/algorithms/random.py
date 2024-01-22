@@ -173,6 +173,7 @@ class RandomFold:
                             current = current.link
 
                         return self.backtracking(self._protein)
+                    self._protein.remove_from_grid(acid.position)
                     acid = acid.predecessor
                     backtracking_bool = True
                     print(
