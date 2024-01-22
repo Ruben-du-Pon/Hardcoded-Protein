@@ -46,7 +46,7 @@ class RandomFold:
     """  # noqa
 
     def __init__(self, protein: Protein, dimensions: int,
-                 no_crossing: Optional[bool] = True, verbose: Optional[bool] = False) -> None:
+                 avoid_overlap: Optional[bool] = True, verbose: Optional[bool] = False) -> None:
         """
         Initialize the RandomFold object.
 
