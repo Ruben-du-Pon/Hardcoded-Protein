@@ -204,14 +204,28 @@ class Protein:
 
     def is_valid(self) -> bool:
         """
-        Check if every amino acid in the protein has a different position.
+        Check if every amino acid in the protein has a different position and
+        the distance between two consecutive aminoacids is always 1.
 
         Returns
         -------
         bool
-            True if every amino acid has a different position, False otherwise.
+            True if every amino acid has a different position and the distance
+            between two consecutive aminoacids is always 1, False otherwise.
         """
-        return len(self._sequence) == len(self._grid)
+        current = self._head
+
+        while current.link:
+
+            # Check if the distance between two consecutive aminoacids is always 1
+            if abs(current.position[0] - current.link.position[0]) + \
+                    abs(current.position[1] - current.link.position[1]) + \
+                    abs(current.position[2] - current.link.position[2]) != 1:
+                return False
+            current = current.link
+
+        # Check if every amino acid has a different position
+        return len(self._grid) == len(self._sequence)
 
     def is_valid_fold(self, position: Tuple[int, int, int]) -> bool:
         """
