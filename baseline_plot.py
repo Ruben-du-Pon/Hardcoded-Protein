@@ -1,5 +1,5 @@
 import os
-from code.visualization.visualization_random_algo import plot_random
+from code.visualization.visualization_algorithms import plot_random
 
 folder_path = "data/output/baseline/"
 
