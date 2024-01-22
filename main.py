@@ -109,10 +109,10 @@ def main() -> None:
             # Set the output filenames
             if dimensions == 2:
                 filename = f"data/output/csv/{fold_algorithm}_{line_number}_2D.csv"
-                plotname = f"data/output/plot/{fold_algorithm}_{line_number}_2D.{sys.argv[4].lower() if len(sys.argv) == 5 else 'svg'}"
+                plotname = f"data/output/plot/{fold_algorithm}_{line_number}_2D.{sys.argv[4].lower() if len(sys.argv) == 5 and sys.argv[4] == 'png' else 'svg'}"
             else:
                 filename = f"data/output/csv/{fold_algorithm}_{line_number}_3D.csv"
-                plotname = f"data/output/plot/{fold_algorithm}_{line_number}_3D.{sys.argv[4].lower() if len(sys.argv) == 5 else 'svg'}"
+                plotname = f"data/output/plot/{fold_algorithm}_{line_number}_3D.{sys.argv[4].lower() if len(sys.argv) == 5 and sys.argv[4] == 'svg' else 'png'}"
 
             # Write the results to a CSV file and the visualization to a file
             test_protein.create_csv(filename)
