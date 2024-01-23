@@ -23,16 +23,17 @@ def reading_the_csv_file(file):
     for row in csvreader:
         rows.append(row)
 
-    x = 1000
-    c, y, avg, amount_seq = [], [], [], math.floor(len(rows) / 999)
+    number_of_gens = 10**5
+    x = number_of_gens
+    c, y, avg, amount_seq = [], [], [], math.floor(len(rows) / (number_of_gens - 1))
 
     for _ in range(amount_seq):
-        for i in rows[x - 1000:x]:
+        for i in rows[x - number_of_gens:x]:
             y.append(int(i[-1]))
             if i[-2] not in c:
                 c.append(i[-2])
         avg.append(rows[x + 1])
-        x += 1004
+        x += number_of_gens + 4
 
     return c, y, avg, amount_seq
 
@@ -50,14 +51,20 @@ def plot_random(file):
     c, y, avg, amount_seq = reading_the_csv_file(file)
     lst = []
 
-    for count, val in enumerate(range(1000, (amount_seq + 1) * 1000, 1000)):
+    number_of_gens = 10**5
+
+    for count, val in enumerate(range(number_of_gens, (amount_seq + 1) * number_of_gens, number_of_gens)):
         # Create a new Figure and Axes for each plot
         fig, ax = plt.subplots()
 
-        ax.hist(y[val - 1000:val], bins=np.arange(min(y[val - 1000:val]), max(y[val - 1000:val]), 0.5))
+        bin_start = min(min(y[val - number_of_gens:val]), 0)  # Start bins at the lesser of the minimum value or 0
+        bin_end = max(y[val - number_of_gens:val]) + 1      # End bins just beyond the max value
+        bins = np.arange(bin_start, bin_end, 0.5)
+
+        ax.hist(y[val - number_of_gens:val], bins=bins)
         ax.grid(True, alpha=0.5)  # Add grid lines
         average_value = float(avg[count][-1])
-        min_val = float(min(y[val - 1000:val]))
+        min_val = float(min(y[val - number_of_gens:val]))
         ax.axvline(average_value, color='red', linestyle='dashed', linewidth=2, label='Average: ' + str(average_value))
         ax.axvline(min_val, color='green', linestyle='dashed', linewidth=2, label='Min: ' + str(min_val))
         ax.legend()
