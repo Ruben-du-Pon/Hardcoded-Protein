@@ -328,8 +328,7 @@ class Protein:
         position : Tuple[int, int, int]
             The position from which the amino acid should be removed.
         """
-        if position in self._grid:
-            self._grid.pop(position)
+        self._grid.pop(position, None)
 
     def reset_grid(self) -> None:
         """
