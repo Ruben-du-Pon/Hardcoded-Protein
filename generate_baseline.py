@@ -42,8 +42,8 @@ def generate_baseline(dimensions: int, C: bool) -> None:
             
             scores = []
 
-            # Run the algorithm 1000 times and write the results to the output file
-            for iteration in range(1000):
+            # Run the algorithm 10**5 times and write the results to the output file
+            for iteration in range(10**5):
                 test_protein: Protein = Protein(sequence)
                 test = RandomFold(test_protein, dimensions, True)
                 test_protein = test.run()
