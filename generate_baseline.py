@@ -39,13 +39,14 @@ def generate_baseline(dimensions: int, C: bool) -> None:
 
             # Create Protein objects for each sequence
             sequence: str = row[0]
-            test_protein: Protein = Protein(sequence)
-            test = RandomFold(test_protein, dimensions, True)
+            
             scores = []
 
             # Run the algorithm 1000 times and write the results to the output file
             for iteration in range(1000):
-                test.run()
+                test_protein: Protein = Protein(sequence)
+                test = RandomFold(test_protein, dimensions, True)
+                test_protein = test.run()
                 scores.append(test_protein.get_score())
 
                 with open(outputfile, "a") as file:
