@@ -2,11 +2,11 @@
 
 ### Opzet
 
-Voor onze baseline hebben we een willekeurige vouwing voor 4 eiwitten met H en P aminozuren en 5 eiwitten met H, P en C aminozuren in 2D en in 3D gemaakt. Dit hebben we elk 1000 keer herhaald voor een totaal van 18000 datapunten. De scores voor deze willekeurige vouwingen zijn afgebeeld in de figuren hieronder.
+Voor onze baseline hebben we een willekeurige vouwing voor 4 eiwitten met H en P aminozuren en 5 eiwitten met H, P en C aminozuren in 2D en in 3D gemaakt. Dit hebben we elk 100,000 keer herhaald voor een totaal van 18000 datapunten. De scores voor deze willekeurige vouwingen zijn afgebeeld in de figuren hieronder.
 
 Ons willekeurig algoritme hebben we zo geïmplementeerd dat invalide oplossingen (oplossingen waarbij het eiwit zichzelf kruist) niet worden gegenereerd. Dit doen we door de willekeurige keten te laten 'backtracken' als er een doodlopend pad voorkomt. Dit betekent dat onze baseline uitsluitend valide oplossingen meeneemt.
 
-Met het oog op de beschikbare tijd hebben we 2 verschillende eiwitten, en voor elk eiwit 1000 willekeurige vouwingen gegenereerd. Dit is een vrij kleine steekproef, maar door de gemiddelde score van deze 1000 vouwingen te berekenen kunnen we toch een idee krijgen van wat de score van een willekeurige vouwing is. Op basis hiervan kunnen we bepalen hoe 'goed' onze algoritmen zijn.
+Met het oog op de beschikbare tijd hebben we 2 verschillende eiwitten, en voor elk eiwit 100,000 willekeurige vouwingen gegenereerd. Dit is een vrij kleine steekproef, maar door de gemiddelde score van deze 100,000 vouwingen te berekenen kunnen we toch een idee krijgen van wat de score van een willekeurige vouwing is. Op basis hiervan kunnen we bepalen hoe 'goed' onze algoritmen zijn.
 
 We zullen het aantal eiwitten vergroten voor onze baseline, aangezien wij ons hebben gefocused op de code voor het verkrijgen van de data. Na het hebben van ons daadwerkelijke algoritme dan zijn wij in staat om voor beiden het aantal eiwitten te vergroten en meer representatieve resultaten te verkrijgen. Nu we de basisgegevens hebben verzameld, kunnen we verder gaan met het ontwikkelen en verfijnen van ons algoritme.
 
