@@ -16,8 +16,6 @@ class Protein:
         A grid mapping positions to amino acids in the protein structure.
     _head : Aminoacid
         The head of the double-linked list representing the protein structure.
-    _tail : Aminoacid
-        The tail of the double-linked list representing the protein structure.
     _score : int
         The stability score of the protein based on its structure.
 
@@ -61,6 +59,9 @@ class Protein:
     remove_from_grid(position: Tuple[int, int, int]) -> None:
         Remove an amino acid from the protein grid at the specified position.
 
+    reset_grid():
+        Clear the grid and add back all the positions of the amino acids.
+
     __str__() -> str:
         Return the string representation of the protein.
 
@@ -80,7 +81,6 @@ class Protein:
         self._sequence: str = sequence
         self._grid: Dict[Tuple[int, int, int], Aminoacid] = {}
         self._head: Aminoacid = self.__create_double_linked_list()
-        self._tail: Aminoacid = self.get_tail()
         self._score: int = 0
 
     def __create_double_linked_list(self) -> Aminoacid:
@@ -98,9 +98,11 @@ class Protein:
         if not self._sequence:
             return None
 
+        # Create the first amino acid in the sequence
         head = Aminoacid(type=self._sequence[0])
         current = head
 
+        # Create the rest of the amino acids in the sequence
         for _, amino_type in enumerate(self._sequence[1:], start=1):
             new_aminoacid = Aminoacid(
                 type=amino_type, predecessor=current)
@@ -124,14 +126,19 @@ class Protein:
         """
         self._score = 0
         current = self._head
+
         while current:
+
+            # Get the positions of the amino acids connected to the current amino acid
             connections = [pos for node in [current.predecessor, current.link]
                            if node and (pos := getattr(node, 'position', None))
                            and isinstance(pos, Tuple) and len(pos) == 3]
 
+            # Define the adjacent positions to the current amino acid
             adjacent_positions = [(1, 0, 0), (-1, 0, 0),
                                   (0, 1, 0), (0, -1, 0), (0, 0, 1), (0, 0, -1)]
 
+            # Check if the adjacent positions are not yet in the connections
             check_positions = [(c + adj[0], d + adj[1], e + adj[2]) for
                                (c, d, e), adj in zip([current.position] *
                                                      len(adjacent_positions),
@@ -139,6 +146,7 @@ class Protein:
                                (c + adj[0], d + adj[1], e + adj[2]) not in
                                connections]
 
+            # Add the stability score of the current amino acid to the total score
             for pos_tuple in check_positions:
                 if pos_tuple in self._grid:
                     self._score += current.get_stability_score(
@@ -146,6 +154,7 @@ class Protein:
 
             current = current.link
 
+        # Return the total score divided by 2 since every connection is counted twice
         return (self._score // 2)
 
     def get_folding(self) -> List[Dict[str, int]]:
@@ -161,12 +170,19 @@ class Protein:
         folding = []
         current = self._head
 
+        # Return empty list if the protein is empty
         if current is None or current.link is None:
-            return folding  # Return empty list in this case
+            return folding
 
+        # Get the folding information of the protein
         while current is not None:
+
+            # Set the fold to 0 if the current amino acid is the last one
             if current.link is None:
                 fold = 0
+
+            # Calculate the fold based on the difference between the current
+            # and next amino acid
             else:
                 next_amino = current.link
                 difference = tuple(
@@ -175,6 +191,7 @@ class Protein:
 
             folding.append({'amino': current.get_type(), 'fold': fold})
             current = current.link
+
         return folding
 
     def create_csv(self, filename: str) -> None:
@@ -192,12 +209,21 @@ class Protein:
         The file includes a header "amino", "fold", a footer "score", <score>,
         and a body with amino acid types P, H, or C followed by directions 1, -1, 2, -2, 3, or -3.
         """
+
+        # Create the CSV file
         with open(filename, 'w', newline='') as file:
+
+            # Define the header and writer
             header = ["amino", "fold"]
             writer = csv.DictWriter(file, fieldnames=header)
+
+            # Retrieve the folding information
             folding = self.get_folding()
+
+            # Add the score to the folding information
             folding.append({'amino': 'score', 'fold': self.get_score()})
 
+            # Write the folding information to the CSV file
             writer.writeheader()
             writer.writerows(folding)
             print(f"{filename} created.")
@@ -302,8 +328,21 @@ class Protein:
         position : Tuple[int, int, int]
             The position from which the amino acid should be removed.
         """
-        if position in self._grid:
-            self._grid.pop(position)
+        self._grid.pop(position, None)
+
+    def reset_grid(self) -> None:
+        """
+        Clear the grid and add back all the positions of the amino acids.
+        """
+
+        # Clear the grid
+        self._grid.clear()
+
+        # Add back all the positions of the amino acids
+        current = self.get_head()
+        while current:
+            self._grid[current.position] = current
+            current = current.link
 
     def __str__(self) -> str:
         """

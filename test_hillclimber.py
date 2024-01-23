@@ -6,7 +6,7 @@ if __name__ == "__main__":
 
     test_protein = Protein("HHPHPHPHPHHHPPHHHHHHHHHH")
     # Create HillclimberFold object
-    hillclimber = HillclimberFold(test_protein, 2, 100, True)
+    hillclimber = HillclimberFold(test_protein, 2, 1000, True)
 
     # Run the hillclimber algorithm
     protein = hillclimber.run()
