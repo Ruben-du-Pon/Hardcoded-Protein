@@ -120,7 +120,6 @@ class HillclimberFold:
             for index, acid in enumerate(list):
                 protein.get_list()[start_position +
                                    index].position = acid.position
-                protein.reset_grid()
                 self._check_highscore(protein)
 
         # Return the protein if it is a new highscore

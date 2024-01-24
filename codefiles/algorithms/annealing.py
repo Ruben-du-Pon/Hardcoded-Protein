@@ -1,7 +1,9 @@
 import copy
 import random
 from typing import Optional
+from .random import RandomFold
 from ..classes.protein import Protein
+from ..visualization import visualization_2D, visualization_3D
 from .hillclimber import HillclimberFold
 
 
@@ -56,37 +58,45 @@ class AnnealingFold(HillclimberFold):
             If the dimensions are not 2 or 3.
         """
         super().__init__(protein, dimensions, iterations, verbose)
-        self._temperature = 1000.0
-        self._cooling_rate = 0.003
+        self._temperature = 10.0
+        self._cooling_rate = 0.0005
         self._old_score = self._protein.get_score()
 
-    def _run_experiment(self, protein: Protein) -> None:
+    def run(self) -> Protein:
         """
-        Runs a single experiment of the simulated annealing algorithm.
-
-        Parameters
-        ----------
-        protein : Protein
-            The protein to fold.
+        Runs the Simulated Annealing fold algorithm.
 
         Returns
         -------
-        None
+        Protein
+            The highest scoring protein found.
         """
-        # Create a copy of the protein
-        protein_copy = copy.deepcopy(protein)
-        self._old_score = protein_copy.get_score()
+        # Start with a random fold
+        start_state = RandomFold(self._protein, self._dimensions, True)
+        protein = start_state.run()
 
-        # Get a random snippet of the protein
-        snippet = self._get_snippet(protein_copy)
+        if self._dimensions == 2:
+            visualization_2D.plot_2d(
+                protein, ("red", "blue", "green"), "data/output/plot/annealing_start.png", "png")
 
-        # Fold the snippet until a valid fold is found
-        while not self._is_valid(snippet):
-            self._fold_snippet(snippet, protein_copy)
+        elif self._dimensions == 3:
+            visualization_3D.plot_3d(
+                protein, ("red", "blue", "green"), "data/output/plot/annealing_start.png", "png")
 
-        # Change the protein to the new fold if it is a new highscore
-        if self._check_highscore(protein_copy):
-            protein = self._highscore[0]
+        protein.create_csv("data/output/csv/annealing_start.csv")
+
+        # Start the highscore with the score of the random fold
+        starting_fold = copy.deepcopy(protein)
+        self._highscore = (starting_fold, starting_fold.get_score())
+
+        # Run the algorithm for the specified number of iterations
+        for _ in range(self._iterations):
+            print(f"Iteration {_ + 1}") if self._verbose else None
+            protein = self._run_experiment(protein)
+            self._temperature *= 1 - self._cooling_rate
+
+        # Return the highest scoring protein
+        return self._highscore[0]
 
     def _check_highscore(self, protein: Protein) -> bool:
         """
@@ -102,13 +112,23 @@ class AnnealingFold(HillclimberFold):
         bool
             True if the current protein's score is a new highscore, False otherwise.
         """
+        # Reset the grid
+        protein.reset_grid()
+
+        # Get the old and new score
         old_score = self._old_score
         new_score = protein.get_score()
+
+        # Get the temperature and update it
         temperature = self._temperature
-        self._temperature *= 1 - self._cooling_rate
+
+        # Calculate the chance of accepting the new protein
         chance = 2 ** ((old_score - new_score) / temperature)
+
+        # Check if the new protein is better than the old one and if it should be accepted
         if (protein.get_score() < self._highscore[1]) and \
                 (chance > random.random()):
             self._highscore = (protein, protein.get_score())
             return True
+
         return False
