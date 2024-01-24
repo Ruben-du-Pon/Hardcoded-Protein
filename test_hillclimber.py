@@ -1,10 +1,10 @@
-from code.algorithms.hillclimber import HillclimberFold
-from code.classes.protein import Protein
-from code.visualization import visualization_2D  # , visualization_3D
+from codefiles.classes.protein import Protein
+from codefiles.algorithms.hillclimber import HillclimberFold
+from codefiles.visualization import visualization_2D
 
 if __name__ == "__main__":
 
-    test_protein = Protein("HHPHPHPHPHHHPPHHHHHHHHHH")
+    test_protein = Protein("HHCCPHPHPHPHHHPPHHHHCHH")
     # Create HillclimberFold object
     hillclimber = HillclimberFold(test_protein, 2, 1000, True)
 

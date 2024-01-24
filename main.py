@@ -1,9 +1,9 @@
 import os
 import csv
 import sys
-from code.classes.protein import Protein
-from code.visualization import visualization_2D
-from code.visualization import visualization_3D
+from codefiles.classes.protein import Protein
+from codefiles.visualization import visualization_2D
+from codefiles.visualization import visualization_3D
 
 # Dynamically get filenames without extensions from the algorithms directory
 ALGORITHM_FILES = [

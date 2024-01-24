@@ -1,7 +1,7 @@
 import csv
 import sys
-from code.algorithms.random import RandomFold
-from code.classes.protein import Protein
+from codefiles.algorithms.random import RandomFold
+from codefiles.classes.protein import Protein
 
 
 def generate_baseline(dimensions: int, C: bool) -> None:
@@ -39,7 +39,7 @@ def generate_baseline(dimensions: int, C: bool) -> None:
 
             # Create Protein objects for each sequence
             sequence: str = row[0]
-            
+
             scores = []
 
             # Run the algorithm 10**5 times and write the results to the output file

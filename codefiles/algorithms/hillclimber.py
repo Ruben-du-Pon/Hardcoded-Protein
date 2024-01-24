@@ -114,65 +114,74 @@ class HillclimberFold:
 
         return snippet, start_position
 
+    def _translate_positions(self, current: Aminoacid, translation: Tuple[int, int, int]) -> None:
+        while current:
+            current.position = tuple(
+                x + y for x, y in zip(current.position, translation))
+            current = current.link
+
+    def _set_snippet_positions(self, snippet: List[Aminoacid], snippet_protein: Protein) -> None:
+        current = snippet_protein.get_head()
+        x = 0
+        while current:
+            snippet[x].position = current.position
+            x += 1
+            current = current.link
+
+    def _translate_rest_of_protein(self, protein: Protein, snippet: List[Aminoacid], snippet_start: int) -> Aminoacid:
+        new_current = protein.get_head()
+        for _ in range(1, snippet_start + 1):
+            new_current = new_current.link
+
+        for index in range(len(snippet) - 1):
+            new_current.position = snippet[index].position
+            new_current = new_current.link
+
+        return new_current
+
+    def _reset_positions(self, protein: Protein, new_copy: Protein) -> None:
+        current1 = protein.get_head()
+        current2 = new_copy.get_head()
+        while current1 and current2:
+            current1.position = current2.position
+            current1 = current1.link
+            current2 = current2.link
+
     def _fold_snippet(self, snippet: List[Aminoacid], snippet_start: int, protein: Protein) -> Tuple[List[Aminoacid], Protein]:
-        """
-        """
-        # Copy the snippet and protein
         snippet_copy = copy.deepcopy(snippet)
         protein_copy = copy.deepcopy(protein)
 
-        # Remove the first amino acid from the snippet
         snippet.pop(0)
 
-        # Create a protein object from the snippet
         sequence = ''.join(str(acid) for acid in snippet)
         snippet_protein = Protein(sequence)
 
-        # Fold the snippet randomly
         RandomFold(snippet_protein, self._dimensions, True).run()
 
-        # Define the translations
         translations = self._find_translations(
             snippet_copy[0], snippet_protein.get_head())
 
-        # Translate the positions of the acids in snippet_protein
         for translation in translations:
-            current = snippet_protein.get_head()
-            while current:
-                current.position = tuple(
-                    map(sum, zip(current.position, translation)))
-                current = current.link
+            self._translate_positions(snippet_protein.get_head(), translation)
 
-            # Check if the protein is still a valid fold
             if snippet_protein.is_valid():
-                # Set the snippet positions to the new positions
-                current = snippet_protein.get_head()
-                x = 0
-                while current:
-                    snippet[x].position = current.position
-                    x += 1
-                    current = current.link
+                self._set_snippet_positions(snippet, snippet_protein)
 
-                # Translate the positions of the rest of the acids in the protein
-                new_current = protein.get_head()
-                for _ in range(snippet_start):
-                    new_current = new_current.link
-
-                for index in range(len(snippet)):
-                    new_current.position = snippet[index].position
-                    new_current = new_current.link
+                new_current = self._translate_rest_of_protein(
+                    protein, snippet, snippet_start)
 
                 second_translations = self._find_translations(
                     new_current, snippet_protein.get_tail())
+                new_copy = copy.deepcopy(protein)
                 for second_translation in second_translations:
-                    while new_current:
-                        new_current.position = tuple(
-                            map(sum, zip(new_current.position, second_translation)))
-                        new_current = new_current.link
+                    self._translate_positions(new_current, second_translation)
 
+                    protein.reset_grid()
                     if protein.is_valid():
                         print("Valid folding found!")
                         return snippet, protein
+
+                    self._reset_positions(protein, new_copy)
 
         return snippet_copy, protein_copy
 
@@ -180,14 +189,13 @@ class HillclimberFold:
                            acid2: Aminoacid) -> List[Tuple[int, int, int]]:
         """
         """
-        directions = [(1, 0, 0), (-1, 0, 0), (0, 1, 0), (0, -1, 0) if
-                      self._dimensions == 2 else (1, 0, 0), (-1, 0, 0),
-                      (0, 1, 0), (0, -1, 0), (0, 0, 1), (0, 0, -1)]
+        directions = [(1, 0, 0), (-1, 0, 0), (0, 1, 0), (0, -1, 0)] + \
+            ([(0, 0, 1), (0, 0, -1)] if self._dimensions == 3 else [])
 
         positions = [tuple(x + y for x, y in zip(acid1.position, direction))
                      for direction in directions]
 
-        translations = [tuple(x - y for x, y in zip(acid2.position, position))
+        translations = [tuple(x - y for x, y in zip(position, acid2.position))
                         for position in positions]
 
         return translations
