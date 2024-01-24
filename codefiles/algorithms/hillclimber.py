@@ -1,20 +1,50 @@
 import copy
 import random
-from typing import List, Optional, Tuple
+from typing import Optional, Tuple
 from .random import RandomFold
 from .bfs import BreadthFirstSearch
-from ..classes.aminoacid import Aminoacid
 from ..classes.protein import Protein
-from ..visualization import visualization_2D  # , visualization_3D
+from ..visualization import visualization_2D, visualization_3D
 
 
 class HillclimberFold:
     """
+    A class to perform a hillclimber fold on a protein.
+
+    Attributes
+    ----------
+    _protein : Protein
+        The protein to fold.
+    _dimensions : int
+        The number of dimensions to fold in.
+    _iterations : int
+        The number of iterations to run the algorithm.
+    _highscore : Tuple[Protein, int]
+        The highest scoring protein found.
+    _verbose : bool
+        Whether to print the progress of the algorithm.
     """
 
     def __init__(self, protein: Protein, dimensions: int, iterations: int,
                  verbose: Optional[bool] = False) -> None:
         """
+        Initializes the HillclimberFold class.
+
+        Parameters
+        ----------
+        protein : Protein
+            The protein to fold.
+        dimensions : int
+            The number of dimensions to fold in.
+        iterations : int
+            The number of iterations to run the algorithm.
+        verbose : Optional[bool]
+            Whether to print the progress of the algorithm.
+
+        Raises
+        ------
+        ValueError
+            If dimensions is not 2 or 3.
         """
         if dimensions not in (2, 3):
             raise ValueError(
@@ -28,13 +58,24 @@ class HillclimberFold:
 
     def run(self) -> Protein:
         """
+        Runs the hillclimber fold algorithm.
+
+        Returns
+        -------
+        Protein
+            The highest scoring protein found.
         """
         # Start with a random fold
         start_state = RandomFold(self._protein, self._dimensions, True)
         protein = start_state.run()
 
-        visualization_2D.plot_2d(
-            protein, ("red", "blue", "green"), "data/output/plot/hillclimber_start.png", "png")
+        if self._dimensions == 2:
+            visualization_2D.plot_2d(
+                protein, ("red", "blue", "green"), "data/output/plot/hillclimber_start.png", "png")
+
+        elif self._dimensions == 3:
+            visualization_3D.plot_3d(
+                protein, ("red", "blue", "green"), "data/output/plot/hillclimber_start.png", "png")
 
         protein.create_csv("data/output/csv/hillclimber_start.csv")
 
@@ -47,19 +88,22 @@ class HillclimberFold:
             print(f"Iteration {_ + 1}") if self._verbose else None
             protein = self._run_experiment(protein)
 
-        visualization_2D.plot_2d(
-            protein, ("red", "blue", "green"), "data/output/plot/hillclimber_end.png", "png")
-
-        protein.create_csv("data/output/csv/hillclimber_end.csv")
-
-        visualization_2D.plot_2d(
-            self._highscore[0], ("red", "blue", "green"), "data/output/plot/hillclimber_highscore.png", "png")
-
         # Return the highest scoring protein
         return self._highscore[0]
 
     def _run_experiment(self, protein: Protein) -> Protein:
         """
+        Runs an experiment on the protein.
+
+        Parameters
+        ----------
+        protein : Protein
+            The protein to fold.
+
+        Returns
+        -------
+        Protein
+            The protein with the highest score.
         """
         # Get a random snippet of the protein
         start_position, end_position = self._get_snippet(protein)
@@ -74,7 +118,8 @@ class HillclimberFold:
         # Try all options
         for list in options:
             for index, acid in enumerate(list):
-                protein.get_list()[start_position + index] = acid
+                protein.get_list()[start_position +
+                                   index].position = acid.position
                 protein.reset_grid()
                 self._check_highscore(protein)
 
@@ -87,6 +132,17 @@ class HillclimberFold:
 
     def _get_snippet(self, protein: Protein) -> Tuple[int, int]:
         """
+        Generates a random start and end position for a snippet of the protein.
+
+        Parameters
+        ----------
+        protein : Protein
+            The protein to fold.
+
+        Returns
+        -------
+        Tuple[int, int]
+            The start and end position of the snippet.
         """
         # Get a random length
         length = random.randint(3, len(protein))
@@ -104,6 +160,18 @@ class HillclimberFold:
 
     def _check_highscore(self, protein: Protein) -> bool:
         """
+        Checks if the protein is a new highscore and updates the highscore if
+        it is.
+
+        Parameters
+        ----------
+        protein : Protein
+            The protein to fold.
+
+        Returns
+        -------
+        bool
+            Whether the protein is a new highscore.
         """
         # Reset the grid
         protein.reset_grid()
