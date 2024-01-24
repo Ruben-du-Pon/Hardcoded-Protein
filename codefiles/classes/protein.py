@@ -82,6 +82,7 @@ class Protein:
         self._grid: Dict[Tuple[int, int, int], Aminoacid] = {}
         self._head: Aminoacid = self.__create_double_linked_list()
         self._score: int = 0
+        self._list: List[Aminoacid] = []
 
     def __create_double_linked_list(self) -> Aminoacid:
         """
@@ -101,6 +102,7 @@ class Protein:
         # Create the first amino acid in the sequence
         head = Aminoacid(type=self._sequence[0])
         current = head
+        self._list.append(current)
 
         # Create the rest of the amino acids in the sequence
         for _, amino_type in enumerate(self._sequence[1:], start=1):
@@ -108,6 +110,7 @@ class Protein:
                 type=amino_type, predecessor=current)
             current.link = new_aminoacid
             current = new_aminoacid
+            self._list.append(current)
 
         return head
 
@@ -294,6 +297,17 @@ class Protein:
             current = current.link
 
         return current
+
+    def get_list(self) -> List[Aminoacid]:
+        """
+        Get the list of amino acids in the protein.
+
+        Returns
+        -------
+        List[Aminoacid]
+            The list of amino acids in the protein.
+        """
+        return self._list
 
     def get_grid(self) -> Dict[Tuple[int, int, int], Aminoacid]:
         """
