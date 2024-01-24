@@ -105,7 +105,7 @@ class BfsFold:
 
             return result_dict
 
-    def __valid_combinations(self, keys, prev=None, length=2, it=0, prev_valid={}) -> List[str]:
+    def __valid_combinations(self, keys, prev=None, length=2, it=0, prev_valid=set()) -> List[str]:
         """
         Generate valid combinations of folding directions.
 
@@ -122,10 +122,7 @@ class BfsFold:
             if it == length:
                 return {''}
 
-            if prev_valid == {}:
-                valid_combos = set()
-            else:
-                valid_combos = prev_valid
+            valid_combos = set()
 
             for key in keys:
                 if (
@@ -147,10 +144,7 @@ class BfsFold:
             if it == length:
                 return {''}
 
-            if prev_valid == {}:
-                valid_combos = set()
-            else:
-                valid_combos = prev_valid
+            valid_combos = set()
 
             for key in keys:
 
@@ -171,8 +165,46 @@ class BfsFold:
 
             return valid_combos
 
+
+    def __add_combinations(self, prev_valid):
+        new_foldings = set()
+
+        if self.dimensions == 2:
+            types = {"R", "L", "U", "D"}
+        elif self.dimensions == 3:
+            types = {"R", "L", "U", "D", "F", "B"}
+
+
+        for prev in prev_valid:
+            last = prev[-1]
+            if self.dimensions == 2 or self.dimensions == 3:
+                if last == "R":
+                    types.remove("L")
+                elif last == "L":
+                    types.remove("R")
+                elif last == "U":
+                    types.remove("D")
+                elif last == "D":
+                    types.remove("U")
+            if self.dimensions == 3:
+                if last == "F":
+                    types.remove("B")
+                elif last == "B":
+                    types.remove("F")
+
+            for direction in types:
+                new_foldings.add(prev+direction)
+
+            if self.dimensions == 2:
+                types = {"R", "L", "U", "D"}
+            elif self.dimensions == 3:
+                types = {"R", "L", "U", "D", "F", "B"}
+
+        return new_foldings
+    
+
     def __create_dict(
-        self, protein: Protein, protein_sequence, keys, depth, step_size, best_options={}
+        self, protein: Protein, protein_sequence, keys, depth, step_size, best_options=set()
     ) -> dict:
             """
             Create a dictionary of possible folding sequences and their corresponding scores.
@@ -193,8 +225,10 @@ class BfsFold:
             if depth > len(protein_sequence):
                 depth = len(protein_sequence)
 
-
-            valid_combos = self.__valid_combinations(keys, length=depth)
+            if best_options != set():
+                valid_combos = self.__add_combinations(best_options)
+            else:
+                valid_combos = self.__valid_combinations(keys, length=depth)
                 
             for steps in valid_combos:
                 if len(best_options) != 0:
@@ -304,6 +338,10 @@ class BfsFold:
 
             min_key = min(create_d, key=lambda k: create_d[k])
             min_keys = {k for k, v in create_d.items() if v == create_d[min_key]}
+            if len(min_keys) >= 2:
+                # Randomly select 1/2 of the set
+                one_third_size = len(min_keys) // 2
+                min_keys = set(random.sample(min_keys, one_third_size))
 
         nested_dict = self.__create_nested_dict(protein, types, length_protein)
         aminoacid_ = protein.get_head().link
@@ -400,10 +438,9 @@ class BfsFold:
         start_time = time.time()
 
         result = self.__bfsfold(self._protein, self._cut, self._step)
-
+        
         end_time = time.time()  # Record the end time
         elapsed_time = end_time - start_time
-
         print(f"Elapsed time: {elapsed_time} seconds")
 
         return result
