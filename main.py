@@ -8,7 +8,7 @@ from codefiles.visualization import visualization_3D
 # Dynamically get filenames without extensions from the algorithms directory
 ALGORITHM_FILES = [
     os.path.splitext(file)[0]
-    for file in os.listdir("code/algorithms")
+    for file in os.listdir("codefiles/algorithms")
     if file.endswith(".py") and file != "__init__.py"
 ]
 
@@ -70,7 +70,7 @@ def main() -> None:
         raise ValueError("Invalid fold type.")
 
     # Import the selected folding algorithm dynamically
-    fold_module = __import__(f"code.algorithms.{fold_algorithm}", fromlist=[
+    fold_module = __import__(f"codefiles.algorithms.{fold_algorithm}", fromlist=[
                              f"{fold_algorithm}Fold"])
     fold_class = getattr(fold_module, f"{fold_algorithm.capitalize()}Fold")
 
