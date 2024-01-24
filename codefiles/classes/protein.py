@@ -79,10 +79,10 @@ class Protein:
             A string representing the amino acid sequence of the protein.
         """
         self._sequence: str = sequence
+        self._list: List[Aminoacid] = []
         self._grid: Dict[Tuple[int, int, int], Aminoacid] = {}
         self._head: Aminoacid = self.__create_double_linked_list()
         self._score: int = 0
-        self._list: List[Aminoacid] = []
 
     def __create_double_linked_list(self) -> Aminoacid:
         """
