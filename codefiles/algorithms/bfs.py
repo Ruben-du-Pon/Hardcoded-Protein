@@ -21,10 +21,10 @@ class BfsFold:
         self.dimensions = dimensions
 
     def cutting_seq(self, protein: Protein, cut=8) -> Set[str]:
-        length, seq, proteins = len(protein), protein._sequence, {}
+        length, seq, proteins = len(protein), protein._sequence, []
 
         for x in range(0, length, cut):
-            proteins.append(seq[x:x+cut]) 
+            proteins.append(Protein(seq[x:x+cut])) 
 
         return proteins
 
@@ -326,9 +326,15 @@ class BfsFold:
         - Protein: The folded protein structure.
         """
         start_time = time.time()
-
+        # proteins = []
         result = self.__bfsfold(self._protein, self._cut, self._step)
+        # cuts = self.cutting_seq(self._protein, cut=8)
 
+        # for cut in cuts:
+        #     proteins.append(self.__bfsfold(cut, when_cutting=2, step=1))
+
+        # for port in proteins:
+        #     print(port.get_grid())
         end_time = time.time()  # Record the end time
         elapsed_time = end_time - start_time
         print(f"Elapsed time: {elapsed_time} seconds")
