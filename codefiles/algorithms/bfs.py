@@ -343,7 +343,6 @@ class BfsFold:
     """
     NOTE: This function is for 'Simulated Annealing'
     """
-
     def get_possible_foldings(self, protein: Protein, first_coordinate: Tuple[int, int, int], last_coordinate: Tuple[int, int, int]) -> List[List[Aminoacid]]:
         valid_foldings, proteins, aminoacids, protein_aminoacids, length = [], [], [], [], len(protein)
         move = {"R": (1, 0, 0), "L": (-1, 0, 0), "U": (0, 1, 0), "D": (0, -1, 0), "F": (0, 0, 1), "B": (0, 0, -1)}
@@ -399,20 +398,12 @@ class BfsFold:
         - Protein: The folded protein structure.
         """
         start_time = time.time()
-        # lst_proteins, folded_proteins = self.cut_protein_seq(self._protein, dimensions=2), []
-        # folded_proteins = []
-        
-        # proteins = []
+
         result = self.__bfsfold(self._protein, self._cut, self._step)
-        # cuts = self.cutting_seq(self._protein, cut=8)
 
-        # for cut in cuts:
-        #     proteins.append(self.__bfsfold(cut, when_cutting=2, step=1))
-
-        # for port in proteins:
-        #     print(port.get_grid())
         end_time = time.time()  # Record the end time
         elapsed_time = end_time - start_time
+
         print(f"Elapsed time: {elapsed_time} seconds")
 
         return result
