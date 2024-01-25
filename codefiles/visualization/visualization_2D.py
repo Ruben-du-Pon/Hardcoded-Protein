@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 from typing import Tuple
 from ..classes.protein import Protein
+import numpy as np
 
 
 def plot_2d(protein: Protein, colors: Tuple[str, str, str], filename: str, output: str = "svg") -> None:
@@ -64,6 +65,28 @@ def plot_2d(protein: Protein, colors: Tuple[str, str, str], filename: str, outpu
         for x, y, color in zip(x_coordinates, y_coordinates, colors_):
             plt.scatter(x, y, s=50, color=color, marker="o")
 
+        check_curr = protein.get_head()
+        x_cor, y_cor = [], []
+
+        for i in range(len(x_coordinates) - 1):
+
+            current = check_curr.link.link
+            
+            while current is not None:
+                diff = tuple(np.array(check_curr.position) - np.array(current.position))
+                if check_curr._type == "H" and current._type == "H" and (diff == (1, 0, 0) or diff == (-1, 0, 0) or diff == (0, 1, 0) or diff == (0, -1, 0)):
+                    coordinates = tuple(np.array(current.position) + np.array(tuple(value / 2 for value in diff)))
+                    x_cor.append(coordinates[0])
+                    y_cor.append(coordinates[1])
+
+                current = current.link
+            
+            check_curr = check_curr.link
+
+        for i, j in zip(x_cor, y_cor):
+            plt.text(i, j-0.05, '*', fontsize=12, color='black', ha='center', va='center')
+
+
         # Line plot connecting amino acid positions
         plt.plot(x_coordinates, y_coordinates,
                  linestyle="-", color="black", alpha=0.7)
@@ -92,6 +115,8 @@ def plot_2d(protein: Protein, colors: Tuple[str, str, str], filename: str, outpu
         score_text = f"Score: {protein.get_score()}"
         plt.text(min(x_coordinates) - 2, max(y_coordinates) +
                  1, score_text, fontsize=12.5, color='red')
+        
+        plt.text(0.4, 0.3, "(0, 0)", fontsize=6, color='black', ha='right', va='top', fontdict={'fontweight': 'bold', 'style': 'italic'})
 
         # Save the plot as an SVG file
         if output == "png":
@@ -133,6 +158,38 @@ def plot_2d(protein: Protein, colors: Tuple[str, str, str], filename: str, outpu
         for x, y, color in zip(x_coordinates, y_coordinates, colors_):
             plt.scatter(x, y, s=50, color=color, marker="o")
 
+
+        check_curr = protein.get_head()
+        x_cor_H, x_cor_C, y_cor_H, y_cor_C = [], [], [], []
+
+        for i in range(len(x_coordinates) - 1):
+
+            current = check_curr.link.link
+            
+            while current is not None:
+                diff = tuple(np.array(check_curr.position) - np.array(current.position))
+                if (((check_curr._type == "H" and current._type == "H") or (check_curr._type == "C" and current._type == "H") or (check_curr._type == "H" and current._type == "C")) and (diff == (1, 0, 0) or diff == (-1, 0, 0) or diff == (0, 1, 0) or diff == (0, -1, 0))):
+                    coordinates = tuple(np.array(current.position) + np.array(tuple(value / 2 for value in diff)))
+                    x_cor_H.append(coordinates[0])
+                    y_cor_H.append(coordinates[1])
+                elif check_curr._type == "C" and current._type == "C" and (diff == (1, 0, 0) or diff == (-1, 0, 0) or diff == (0, 1, 0) or diff == (0, -1, 0)):
+                    coordinates = tuple(np.array(current.position) + np.array(tuple(value / 2 for value in diff)))
+                    x_cor_C.append(coordinates[0])
+                    y_cor_C.append(coordinates[1])
+
+                current = current.link
+            
+            check_curr = check_curr.link
+
+        for i, j in zip(x_cor_H, y_cor_H):
+            plt.text(i, j-0.05, '*', fontsize=12, color='black', ha='center', va='center')
+
+
+        for i, j in zip(x_cor_C, y_cor_C):
+            plt.text(i, j-0.05, '#', fontsize=12, color='black', ha='center', va='center')
+
+
+
         # Line plot connecting amino acid positions
         plt.plot(x_coordinates, y_coordinates,
                  linestyle="-", color="black", alpha=0.7)
@@ -161,6 +218,8 @@ def plot_2d(protein: Protein, colors: Tuple[str, str, str], filename: str, outpu
         score_text = f"Score: {protein.get_score()}"
         plt.text(min(x_coordinates) - 2, max(y_coordinates) +
                  1, score_text, fontsize=12.5, color='red')
+        
+        plt.text(0.4, 0.3, "(0, 0)", fontsize=6, color='black', ha='right', va='top', fontdict={'fontweight': 'bold', 'style': 'italic'})
 
         # Save the plot as an SVG file
         if output == "png":
