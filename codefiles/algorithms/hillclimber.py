@@ -2,7 +2,7 @@ import copy
 import random
 from typing import Optional, Tuple
 from .random import RandomFold
-from .bfs import BreadthFirstSearch
+from .bfs import BfsFold
 from ..classes.protein import Protein
 from ..visualization import visualization_2D, visualization_3D
 
@@ -85,13 +85,12 @@ class HillclimberFold:
 
         # Run the algorithm for the specified number of iterations
         for _ in range(self._iterations):
-            print(f"Iteration {_ + 1}") if self._verbose else None
-            protein = self._run_experiment(protein)
+            self._run_experiment(self._highscore[0])
 
         # Return the highest scoring protein
         return self._highscore[0]
 
-    def _run_experiment(self, protein: Protein) -> Protein:
+    def _run_experiment(self, protein: Protein) -> None:
         """
         Runs an experiment on the protein.
 
@@ -108,26 +107,30 @@ class HillclimberFold:
         # Get a random snippet of the protein
         start_position, end_position = self._get_snippet(protein)
 
-        # Store a copy of the protein
-        protein_copy = copy.deepcopy(protein)
+        # Get the snippet
+        snippet_acids = protein.get_list()[start_position:end_position]
+        sequence = "".join([str(acid) for acid in snippet_acids])
+        snippet = Protein(sequence)
+
+        # Get the coordinates of the snippet
+        start_coordinates = snippet_acids[0].position
+        end_coordinates = snippet_acids[-1].position
 
         # Perform a breadth first search on the snippet
-        search = BreadthFirstSearch(protein, self._dimensions)
-        options = search.chunk(start_position, end_position)
+        search = BfsFold(protein, self._dimensions)
+        options = search.get_possible_foldings(
+            snippet, start_coordinates, end_coordinates)
 
         # Try all options
         for list in options:
             for index, acid in enumerate(list):
                 protein.get_list()[start_position +
                                    index].position = acid.position
-                self._check_highscore(protein)
+                protein.reset_grid()
 
-        # Return the protein if it is a new highscore
-        if self._check_highscore(protein):
-            return protein
-
-        # Return the original copy if a new highscore was not found
-        return protein_copy
+                # Check if the protein is valid
+                if protein.is_valid():
+                    self._check_highscore(protein)
 
     def _get_snippet(self, protein: Protein) -> Tuple[int, int]:
         """
@@ -146,8 +149,8 @@ class HillclimberFold:
         # Get a random length
         length = random.randint(3, len(protein))
 
-        # Set length to a maximum of 5
-        length = min(length, 5)
+        # Set length to a maximum of 10
+        length = min(length, 10)
 
         # Get a random start position
         start_position = random.randint(0, len(protein) - length)
@@ -175,17 +178,13 @@ class HillclimberFold:
         # Reset the grid
         protein.reset_grid()
 
-        # Print the current highscore and score if verbose is True
-        if self._verbose:
-            print(f"Highscore: {self._highscore}")
-            print(f"Current highscore: {self._highscore[1]}")
-            print(f"Current score: {protein.get_score()}")
-
         # Check if the protein is a new highscore
-        if protein.get_score() < self._highscore[1]:
-            self._highscore = (protein, protein.get_score())
-            if self._verbose:
-                print(f"New highscore found: {self._highscore[1]}")
+        if protein.is_valid() and protein.get_score() < self._highscore[1]:
+            # Store a copy of the protein
+            highscore = copy.deepcopy(protein)
+            self._highscore = (highscore, highscore.get_score())
+            print(
+                f"New highscore found: {self._highscore[1]}") if self._verbose else None
             return True
 
         return False
