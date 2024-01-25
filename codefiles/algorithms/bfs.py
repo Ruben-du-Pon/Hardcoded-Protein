@@ -343,8 +343,10 @@ class BfsFold:
             move = {"R": (1, 0, 0), "L": (-1, 0, 0), "U": (0, 1, 0), "D": (0, -1, 0), "F": (0, 0, 1), "B": (0, 0, -1)}
         min_keys = set()
         
-        if "C" in self._sequence:
+        if "C" in self._sequence and self.dimensions == 2:
             when_cutting = 6
+        elif self.dimensions == 3:
+            when_cutting = 4
         else:
             when_cutting = 4
         
