@@ -113,7 +113,7 @@ def plot_2d(protein: Protein, colors: Tuple[str, str, str], filename: str, outpu
 
         # Add a text annotation for the score
         score_text = f"Score: {protein.get_score()}"
-        plt.text(min(x_coordinates) - 2, max(y_coordinates) +
+        plt.text(min(x_coordinates) / 2.5, max(y_coordinates) +
                  1, score_text, fontsize=12.5, color='red')
         
         plt.text(0.4, 0.3, "(0, 0)", fontsize=6, color='black', ha='right', va='top', fontdict={'fontweight': 'bold', 'style': 'italic'})
@@ -216,7 +216,7 @@ def plot_2d(protein: Protein, colors: Tuple[str, str, str], filename: str, outpu
 
         # Add a text annotation for the score
         score_text = f"Score: {protein.get_score()}"
-        plt.text(min(x_coordinates) - 2, max(y_coordinates) +
+        plt.text(min(x_coordinates) / 2.5, max(y_coordinates) +
                  1, score_text, fontsize=12.5, color='red')
         
         plt.text(0.4, 0.3, "(0, 0)", fontsize=6, color='black', ha='right', va='top', fontdict={'fontweight': 'bold', 'style': 'italic'})

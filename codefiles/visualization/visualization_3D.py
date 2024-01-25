@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 from typing import Tuple
 from ..classes.protein import Protein
+import numpy as np
 
 
 def plot_3d(protein: Protein, colors: Tuple[str, str, str], filename: str, output: str="svg") -> None:
@@ -75,6 +76,31 @@ def plot_3d(protein: Protein, colors: Tuple[str, str, str], filename: str, outpu
                 color="black",
             )
 
+
+        check_curr = protein.get_head()
+        x_cor, y_cor, z_cor = [], [], []
+
+        for i in range(len(x_coordinates) - 1):
+
+            current = check_curr.link.link
+            
+            while current is not None:
+                diff = tuple(np.array(check_curr.position) - np.array(current.position))
+                if check_curr._type == "H" and current._type == "H" and (diff == (1, 0, 0) or diff == (-1, 0, 0) or diff == (0, 1, 0) or diff == (0, -1, 0) or diff == (0, 0, 1) or diff == (0, 0, -1)):
+                    coordinates = tuple(np.array(current.position) + np.array(tuple(value / 2 for value in diff)))
+                    x_cor.append(coordinates[0])
+                    y_cor.append(coordinates[1])
+                    z_cor.append(coordinates[2])
+
+                current = current.link
+            
+            check_curr = check_curr.link
+
+        for x, y, z in zip(x_cor, y_cor, z_cor):
+            ax.text(x, y-0.05, z-0.05, '*', fontsize=10, color='black', ha='center', va='center')
+
+
+
         x_min, y_min, z_min = min(x_coordinates), min(
             y_coordinates), min(z_coordinates)
         x_max, y_max, z_max = max(x_coordinates), max(
@@ -114,8 +140,11 @@ def plot_3d(protein: Protein, colors: Tuple[str, str, str], filename: str, outpu
         plt.legend(legend_handles, legend_labels, loc="upper right")
 
         score_text = f"Score: {protein.get_score()}"
+
         ax.text(x_min - 2, y_max + 2, z_max + 2,
                 score_text, fontsize=12.5, color='red')
+
+        ax.text(0.3, 0.3, 0.4, "(0, 0, 0)", fontsize=4, color='black', ha='right', va='top', fontdict={'fontweight': 'bold', 'style': 'italic'})
 
         if output == "png":
             plt.savefig(filename, format='png')
@@ -167,6 +196,37 @@ def plot_3d(protein: Protein, colors: Tuple[str, str, str], filename: str, outpu
                 [z_coordinates[i - 1], z_coordinates[i]],
                 color="black",
             )
+
+        check_curr = protein.get_head()
+        x_cor_H, x_cor_C, y_cor_H, y_cor_C, z_cor_H, z_cor_C = [], [], [], [], [], []
+
+        for i in range(len(x_coordinates) - 1):
+
+            current = check_curr.link.link
+            
+            while current is not None:
+                diff = tuple(np.array(check_curr.position) - np.array(current.position))
+                if (((check_curr._type == "H" and current._type == "H") or (check_curr._type == "C" and current._type == "H") or (check_curr._type == "H" and current._type == "C")) and (diff == (1, 0, 0) or diff == (-1, 0, 0) or diff == (0, 1, 0) or diff == (0, -1, 0))):
+                    coordinates = tuple(np.array(current.position) + np.array(tuple(value / 2 for value in diff)))
+                    x_cor_H.append(coordinates[0])
+                    y_cor_H.append(coordinates[1])
+                    z_cor_H.append(coordinates[2])
+                elif check_curr._type == "C" and current._type == "C" and (diff == (1, 0, 0) or diff == (-1, 0, 0) or diff == (0, 1, 0) or diff == (0, -1, 0)):
+                    coordinates = tuple(np.array(current.position) + np.array(tuple(value / 2 for value in diff)))
+                    x_cor_C.append(coordinates[0])
+                    y_cor_C.append(coordinates[1])
+                    z_cor_C.append(coordinates[2])
+
+                current = current.link
+            
+            check_curr = check_curr.link
+
+        for x, y, z in zip(x_cor_H, y_cor_H, z_cor_H):
+            ax.text(x, y-0.05, z-0.05, '*', fontsize=12, color='black', ha='center', va='center')
+
+
+        for z, y, z in zip(x_cor_C, y_cor_C, z_cor_C):
+            ax.text(x, y-0.05, z-0.05, '#', fontsize=12, color='black', ha='center', va='center')
 
         x_min, y_min, z_min = min(x_coordinates), min(
             y_coordinates), min(z_coordinates)
