@@ -36,7 +36,7 @@ class FressFold:
         best_random_score = 0
         best_protein = None
         best_random_protein = None
-        for _ in range(1):
+        while best_random_score == 0:
             protein_copy = self._clear_deepcopy()
             fold = RandomFold(protein_copy, self._dimensions, avoid_overlap=True, verbose=False).run()
             current_random_score = fold.get_score()
@@ -46,9 +46,7 @@ class FressFold:
 
         print(f"Best random score: {best_random_score}")
         print("Running _analyzeChain()")
-        self._analyzeChain(best_random_protein)
-        best_protein = best_random_protein # TEMP
-        return best_protein
+        return self._analyzeChain(best_random_protein)
 
     def _analyzeChain(self, input_protein) -> None:
         """
@@ -108,11 +106,7 @@ class FressFold:
         # Store the results
         self.good_points = good_points
 
-        # If verbose, print the results
-        if self._verbose:
-            print("Good points in the protein sequence:")
-            print(good_points)
-            print(self._suggest_improvement(df_chain_analysis, input_protein, len(input_protein._sequence)))
+        return self._suggest_improvement(df_chain_analysis, input_protein, len(input_protein._sequence))
 
     def _suggest_improvement(self, df_chain_analysis, input_protein, max_range_length, percentage=0.333):
         max_range_length = len(input_protein._sequence)
@@ -120,7 +114,7 @@ class FressFold:
 
         # Calculate the average number of H's per segment
         total_h_count = input_protein._sequence.count('H')
-        avg_h_per_segment = total_h_count / 3 - 0.15 * total_h_count # Since we have 3 segments: START, MIDDLE, END
+        avg_h_per_segment = (total_h_count / 3) # Since we have 3 segments: START, MIDDLE, END 
 
         # Define the indices for each segment
         start_index = range(0, range_length)
@@ -138,18 +132,48 @@ class FressFold:
 
         # Analyze and suggest improvements
         min_avg = min(start_avg, middle_avg, end_avg)
-        if min_avg == start_avg and start_h_count >= avg_h_per_segment:
+        if min_avg == start_avg and float(start_h_count) >= avg_h_per_segment:
             suggestion = "Consider making changes at the START of the protein to improve stability."
-        elif min_avg == middle_avg and middle_h_count >= avg_h_per_segment:
+        elif min_avg == middle_avg and float(middle_h_count) >= avg_h_per_segment:
             suggestion = "Consider making changes in the MIDDLE of the protein to improve stability."
-        elif min_avg == end_avg and end_h_count >= avg_h_per_segment:
+        elif min_avg == end_avg and float(end_h_count) >= avg_h_per_segment:
             suggestion = "Consider making changes at the END of the protein to improve stability."
         else:
-            suggestion = "Improvement is less clear due to evenly distributed or low hydrophobic (H) content."
+            suggestion = " NONE "
+        
+        if self._verbose:
+            print(suggestion)
 
-        return suggestion
 
-    def _calculate_stability(self) -> float:
+        if " NONE " not in suggestion:
+            return self._get_refold_range(input_protein, suggestion)
+        return input_protein
+
+    def _get_refold_range(self, input_protein: Protein, suggestion: str) -> Tuple[int, int]:
+        """
+        Determines the start and end indices for refolding based on the suggestion.
+
+        Parameters:
+        suggestion : str
+            The suggestion on where to refold.
+
+        Returns:
+        Tuple[int, int]
+            The start and end indices for the refolding section.
+        """
+        print(suggestion)
+        if "START" in suggestion:
+            refold_range =  (0, math.ceil(len(self._protein._sequence) / 3))
+        elif "MIDDLE" in suggestion:
+            mid = len(self._protein._sequence) // 2
+            refold_range =  (math.floor(mid - len(self._protein._sequence) / 6), math.ceil(mid + len(self._protein._sequence) / 6))
+        elif "END" in suggestion:
+            refold_range = (math.floor(len(self._protein._sequence) * 2 / 3), len(self._protein._sequence) - 1)
+
+        return self._refold_section(input_protein, refold_range)
+        
+
+    def _calculate_stability(self, input_protein: Protein) -> float:
         """
         Computes the stability score of the protein's current structure based on its folding.
         
@@ -157,7 +181,81 @@ class FressFold:
         float
             The calculated stability score for the current protein structure.
         """
-        pass
+        return input_protein.get_score()
+    
+    def _refold_section(self, input_protein: Protein, index_range, num_attempts: int = 1) -> Protein:
+        """
+        Randomly refolds a section of the protein and keeps the best fold.
+
+        Parameters:
+        input_protein : Protein
+            The current protein structure.
+        num_attempts : int
+            The number of refolding attempts to make.
+
+        Returns:
+        Protein
+            The protein structure with the best fold found in this step.
+        """
+        best_protein = input_protein
+        best_score = self._calculate_stability(input_protein)
+
+        start_index, end_index = index_range  # Determine the refold range based on the suggestion
+        print(start_index, end_index)
+        for _ in range(num_attempts):
+            protein_copy = copy.deepcopy(best_protein)
+            
+            # Randomly refold the specified section
+            fold = self._random_refold(protein_copy, start_index, end_index)
+
+            # Check if the new fold is better
+            new_score = self._calculate_stability(fold)
+            # if new_score <= best_score:
+            #     best_protein = fold
+            #     best_score = new_score
+            best_protein = fold
+            best_score = new_score
+
+        return best_protein # REPLACE with self._analyzeChain(best_protein)
+                            # For recursion
+
+    def _random_refold(self, protein: Protein, start_index: int, end_index: int) -> None:
+        """
+        Performs a random refold on a specified section of the protein.
+
+        Parameters:
+        protein : Protein
+            The protein to be refolded.
+        start_index : int
+            The start index of the section to refold.
+        end_index : int
+            The end index of the section to refold.
+        """
+
+            
+        # Create a deep copy of the protein to work with
+        protein_copy = self._clear_deepcopy()
+        print(protein_copy)
+        new_acid = protein_copy.get_head()
+
+        # Traverse the original protein chain
+        acid = protein.get_head()
+        index = 0
+        while acid:
+            # Preserve positions outside the specified refolding range
+            if index < start_index or index > end_index:
+                new_acid.position = acid.position
+            else:
+                new_acid.position = (0, 0, index - start_index + 1)
+                # You can apply random, translations, and other transformations here
+            
+            print(f"{new_acid}[{index}]: {new_acid.position}")
+            protein_copy.add_to_grid(new_acid.position, new_acid) # add to the grid
+            acid = acid.link
+            new_acid = new_acid.link
+            index += 1
+        
+        return protein_copy
 
     def _clear_deepcopy(self):
         deepcopy = copy.deepcopy(self._protein)
@@ -167,36 +265,3 @@ class FressFold:
             current.position = (0, 0, 0)
             current = current.link
         return deepcopy
-    
-    def optimizeChain(self) -> None:
-        """
-        Applies optimization techniques to improve the protein's folding and stability.
-        """
-        pass
-
-    def _get_best_structure(self) -> Protein:
-        """
-        Retrieves the most stable protein structure discovered during optimization.
-        
-        Returns:
-        Protein
-            The protein structure with the best stability score.
-        """
-        pass
-
-    def _iterate_optimization(self) -> None:
-        """
-        Conducts a single iteration of the optimization algorithm, adjusting the protein folding as needed.
-        """
-        pass
-
-    def _update_optimization_parameters(self, new_params: Dict[str, float]) -> None:
-        """
-        Updates the set of parameters that guide the optimization process.
-        
-        Parameters:
-        new_params : Dict[str, float]
-            A dictionary containing the new parameter values to be used in optimization.
-        """
-        self.optimization_parameters.update(new_params)
-
