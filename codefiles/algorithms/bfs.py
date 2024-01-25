@@ -235,8 +235,6 @@ class BfsFold:
             for steps in valid_combos:
                 if len(best_options) != 0:
                     for option in best_options:
-                        # print(9, best_options)
-                        # print(10, valid_combos)
                         if option in steps[: depth - step_size+1] and len(steps) > len(option):
                             prt = Protein(protein_sequence[: depth + 1])
 
@@ -248,8 +246,6 @@ class BfsFold:
                                 current = current.link
 
                             dict_ = self.__create_nested_dict(protein, keys, 2, pos=[posit[-1]])
-
-                            # print(dict_)
 
                             for step in steps[-1]:
                                 dict_ = dict_[step]
@@ -265,7 +261,6 @@ class BfsFold:
 
                             current = prt.get_head()
                             while current is not None:
-                                # print(current.position)
                                 prt.add_to_grid(current.position, current)
                                 current = current.link
 
@@ -344,16 +339,18 @@ class BfsFold:
         min_keys = set()
         
         if "C" in self._sequence and self.dimensions == 2:
-            when_cutting = 6
+            when_cutting = 5
         elif self.dimensions == 3:
             when_cutting = 4
         else:
             when_cutting = 4
+
+        while len(self._sequence) <= when_cutting:
+                when_cutting -= 1
         
         step = 1
 
         for depth in range(when_cutting, length_protein, step):
-            # print(8, min_keys)
             create_d = self.__create_dict(
                 protein, sequence_protein, types, depth, step, min_keys, posit
             )
@@ -361,7 +358,6 @@ class BfsFold:
 
             min_key = min(create_d, key=lambda k: create_d[k])
             min_keys = {k for k, v in create_d.items() if v == create_d[min_key]}
-            # print(2, min_keys)
             if len(min_keys) >= 2:
                 # Randomly select 1 of the set
                 min_keys = random.sample(min_keys, 1)
@@ -369,6 +365,7 @@ class BfsFold:
                 min_keys = list(min_keys)
             for key in min_keys[0]:
                 posit.append(tuple(np.array(posit[-1]) + np.array(move[key])))
+            # print(min_keys)
 
         nested_dict = self.__create_nested_dict(protein, types, length_protein)
         aminoacid_ = protein.get_head().link
@@ -394,11 +391,9 @@ class BfsFold:
 
         if dimensions == 2:
             for seq_l in range(0, seq_len, 10):
-                # print(seq[seq_l:seq_l+10])
                 lst_proteins.append(Protein(seq[seq_l:seq_l+10]))
         elif dimensions == 3:
             for seq_l in range(0, seq_len, 8):
-                # print(seq[seq_l:seq_l+8])
                 lst_proteins.append(Protein(seq[seq_l:seq_l+8]))
 
         return lst_proteins
