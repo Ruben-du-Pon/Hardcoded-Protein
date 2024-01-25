@@ -342,8 +342,12 @@ class BfsFold:
             types = {"R", "L", "U", "D", "F", "B"}
             move = {"R": (1, 0, 0), "L": (-1, 0, 0), "U": (0, 1, 0), "D": (0, -1, 0), "F": (0, 0, 1), "B": (0, 0, -1)}
         min_keys = set()
-
-        when_cutting = 5
+        
+        if "C" in self._sequence:
+            when_cutting = 6
+        else:
+            when_cutting = 4
+        
         step = 1
 
         for depth in range(when_cutting, length_protein, step):
