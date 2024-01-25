@@ -379,3 +379,30 @@ class Protein:
             The length of the amino acid sequence.
         """
         return len(self._sequence)
+
+    def __getstate__(self) -> Tuple[str, List[Aminoacid],
+                                    Dict[Tuple[int, int, int], Aminoacid],
+                                    Aminoacid, int]:
+        """
+        Return state values to be pickled.
+
+        Returns
+        -------
+        Tuple[str, List[Aminoacid], Dict[Tuple[int, int, int], Aminoacid], Aminoacid, int]
+            The state values to be pickled.
+        """  # noqa
+        return (self._sequence, self._list, self._grid,
+                self._head, self._score)
+
+    def __setstate__(self, state: Tuple[str, List[Aminoacid],
+                                        Dict[Tuple[int, int, int], Aminoacid],
+                                        Aminoacid, int]) -> None:
+        """
+        Restore state from the unpickled state values.
+
+        Parameters
+        ----------
+        state : Tuple[str, List[Aminoacid], Dict[Tuple[int, int, int], Aminoacid], Aminoacid, int]
+            The state values to be unpickled.
+        """  # noqa
+        self._sequence, self._list, self._grid, self._head, self._score = state
