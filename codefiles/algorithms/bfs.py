@@ -31,82 +31,6 @@ class BfsFold:
 
         return proteins
 
-    def __create_nested_dict(
-        self, protein: Protein, keys, depth, prev=None, pos=[(0, 0, 0)]
-    ) -> dict:
-        """
-        Recursively create a nested dictionary representing possible folding positions.
-
-        Parameters:
-        - protein (Protein): The protein structure being folded.
-        - keys (list): The possible folding directions (e.g., ["R", "L", "U", "D"]).
-        - depth (int): The current depth in the folding process.
-        - prev (str): The direction of the previous fold step.
-        - pos (list): The list of positions representing the folded structure.
-
-        Returns:
-        - dict: A nested dictionary representing possible folding positions.
-        """
-        if self.dimensions == 2:
-            aminoacid = protein._head
-
-            if aminoacid.link is None or depth == 1:
-                return {"pos": pos[-1]}
-
-            result_dict = {"pos": pos[-1]}
-            for key in keys:
-                if (
-                    (key == "R" and prev == "L")
-                    or (key == "L" and prev == "R")
-                    or (key == "U" and prev == "D")
-                    or (key == "D" and prev == "U")
-                ):
-                    continue
-                else:
-                    move = {"R": (1, 0, 0), "L": (-1, 0, 0),
-                            "U": (0, 1, 0), "D": (0, -1, 0)}
-                    result_dict[key] = self.__create_nested_dict(
-                        protein,
-                        keys,
-                        depth - 1,
-                        key,
-                        pos +
-                        [tuple(x + y for x, y in zip(pos[-1], move[key]))],
-                    )
-
-            return result_dict
-
-        elif self.dimensions == 3:
-            aminoacid = protein._head
-
-            if aminoacid.link is None or depth == 1:
-                return {"pos": pos[-1]}
-
-            result_dict = {"pos": pos[-1]}
-            for key in keys:
-                if (
-                    (key == "R" and prev == "L")
-                    or (key == "L" and prev == "R")
-                    or (key == "U" and prev == "D")
-                    or (key == "D" and prev == "U")
-                    or (key == "F" and prev == "B")
-                    or (key == "B" and prev == "F")
-                ):
-                    continue
-                else:
-                    move = {"R": (1, 0, 0), "L": (-1, 0, 0), "U": (0, 1, 0),
-                            "D": (0, -1, 0), "F": (0, 0, 1), "B": (0, 0, -1)}
-                    result_dict[key] = self.__create_nested_dict(
-                        protein,
-                        keys,
-                        depth - 1,
-                        key,
-                        pos +
-                        [tuple(x + y for x, y in zip(pos[-1], move[key]))],
-                    )
-
-            return result_dict
-
     def __valid_combinations(self, keys, prev=None, length=2, it=0, prev_valid=set()) -> List[str]:
         """
         Generate valid combinations of folding directions.
@@ -202,8 +126,84 @@ class BfsFold:
 
         return new_foldings
 
+    def __create_nested_dict(
+        self, protein: Protein, keys, depth, prev=None, pos=[(0, 0, 0)]
+    ) -> dict:
+        """
+        Recursively create a nested dictionary representing possible folding positions.
+
+        Parameters:
+        - protein (Protein): The protein structure being folded.
+        - keys (list): The possible folding directions (e.g., ["R", "L", "U", "D"]).
+        - depth (int): The current depth in the folding process.
+        - prev (str): The direction of the previous fold step.
+        - pos (list): The list of positions representing the folded structure.
+
+        Returns:
+        - dict: A nested dictionary representing possible folding positions.
+        """
+        if self.dimensions == 2:
+            aminoacid = protein._head
+
+            if aminoacid.link is None or depth == 1:
+                return {"pos": pos[-1]}
+
+            result_dict = {"pos": pos[-1]}
+            for key in keys:
+                if (
+                    (key == "R" and prev == "L")
+                    or (key == "L" and prev == "R")
+                    or (key == "U" and prev == "D")
+                    or (key == "D" and prev == "U")
+                ):
+                    continue
+                else:
+                    move = {"R": (1, 0, 0), "L": (-1, 0, 0),
+                            "U": (0, 1, 0), "D": (0, -1, 0)}
+                    result_dict[key] = self.__create_nested_dict(
+                        protein,
+                        keys,
+                        depth - 1,
+                        key,
+                        pos +
+                        [tuple(x + y for x, y in zip(pos[-1], move[key]))],
+                    )
+
+            return result_dict
+
+        elif self.dimensions == 3:
+            aminoacid = protein._head
+
+            if aminoacid.link is None or depth == 1:
+                return {"pos": pos[-1]}
+
+            result_dict = {"pos": pos[-1]}
+            for key in keys:
+                if (
+                    (key == "R" and prev == "L")
+                    or (key == "L" and prev == "R")
+                    or (key == "U" and prev == "D")
+                    or (key == "D" and prev == "U")
+                    or (key == "F" and prev == "B")
+                    or (key == "B" and prev == "F")
+                ):
+                    continue
+                else:
+                    move = {"R": (1, 0, 0), "L": (-1, 0, 0), "U": (0, 1, 0),
+                            "D": (0, -1, 0), "F": (0, 0, 1), "B": (0, 0, -1)}
+                    result_dict[key] = self.__create_nested_dict(
+                        protein,
+                        keys,
+                        depth - 1,
+                        key,
+                        pos +
+                        [tuple(x + y for x, y in zip(pos[-1], move[key]))],
+                    )
+
+            return result_dict
+
     def __create_dict(
-        self, protein: Protein, protein_sequence, keys, depth, step_size, best_options=set()
+        self, protein: Protein, protein_sequence, keys, depth, step_size, best_options=set(), posit=None
     ) -> dict:
         """
         Create a dictionary of possible folding sequences and their corresponding scores.
@@ -224,27 +224,51 @@ class BfsFold:
         if depth > len(protein_sequence):
             depth = len(protein_sequence)
 
-        if best_options != set():
-            valid_combos = self.__add_combinations(best_options)
-        else:
-            valid_combos = self.__valid_combinations(keys, length=depth)
+            if best_options != set():
+                valid_combos = self.__add_combinations(best_options)
+            else:
+                valid_combos = self.__valid_combinations(keys, length=depth)
 
-        for steps in valid_combos:
-            if len(best_options) != 0:
-                for option in best_options:
-                    if steps[: depth - step_size] in option and len(steps) > len(option):
-                        prt = Protein(protein_sequence[: depth + 1])
-                        dict_ = self.__create_nested_dict(
-                            protein, keys, depth + 1)
+            for steps in valid_combos:
+                if len(best_options) != 0:
+                    for option in best_options:
+                        # print(9, best_options)
+                        # print(10, valid_combos)
+                        if option in steps[: depth - step_size+1] and len(steps) > len(option):
+                            prt = Protein(protein_sequence[: depth + 1])
 
-                        aminoacid_ = prt._head.link
+                            current = prt.get_head()
+                            for i in posit:
+                                current.position = i
+                                if i != (0, 0, 0):
+                                    pos.append(i)
+                                current = current.link
 
-                        for step in steps:
-                            dict_ = dict_[step]
-                            if isinstance(dict_, dict):
-                                aminoacid_.position = dict_["pos"]
-                                pos.append(aminoacid_.position)
-                                seq += step
+                            dict_ = self.__create_nested_dict(
+                                protein, keys, 2, pos=[posit[-1]])
+
+                            # print(dict_)
+
+                            for step in steps[-1]:
+                                dict_ = dict_[step]
+                                if isinstance(dict_, dict):
+                                    current.position = dict_["pos"]
+                                    pos.append(current.position)
+                                    seq += step
+                                else:
+                                    current.position = dict_[-1]
+                                    pos.append(current.position)
+                                    seq += step
+
+                            current = prt.get_head()
+                            while current is not None:
+                                # print(current.position)
+                                prt.add_to_grid(current.position, current)
+                                current = current.link
+
+                            if prt.is_valid():
+                                score_dict[option+seq] = prt.get_score()
+                                seq, pos = "", [(0, 0, 0)]
                             else:
                                 aminoacid_.position = dict_[-1]
                                 pos.append(aminoacid_.position)
@@ -320,28 +344,39 @@ class BfsFold:
         - Protein: The folded protein structure.
         """
         length_protein = len(protein)
+        posit = [(0, 0, 0)]
         sequence_protein = protein._sequence
         if self.dimensions == 2:
             types = {"R", "L", "U", "D"}
+            move = {"R": (1, 0, 0), "L": (-1, 0, 0),
+                    "U": (0, 1, 0), "D": (0, -1, 0)}
         elif self.dimensions == 3:
             types = {"R", "L", "U", "D", "F", "B"}
+            move = {"R": (1, 0, 0), "L": (-1, 0, 0), "U": (0, 1, 0),
+                    "D": (0, -1, 0), "F": (0, 0, 1), "B": (0, 0, -1)}
         min_keys = set()
 
         when_cutting = 5
         step = 1
 
         for depth in range(when_cutting, length_protein, step):
+            # print(8, min_keys)
             create_d = self.__create_dict(
-                protein, sequence_protein, types, depth, step, min_keys
+                protein, sequence_protein, types, depth, step, min_keys, posit
             )
+            posit = [(0, 0, 0)]
 
             min_key = min(create_d, key=lambda k: create_d[k])
             min_keys = {k for k, v in create_d.items() if v ==
                         create_d[min_key]}
+            # print(2, min_keys)
             if len(min_keys) >= 2:
-                # Randomly select 1/2 of the set
-                one_third_size = len(min_keys) // 2
-                min_keys = set(random.sample(min_keys, one_third_size))
+                # Randomly select 1 of the set
+                min_keys = random.sample(min_keys, 1)
+            else:
+                min_keys = list(min_keys)
+            for key in min_keys[0]:
+                posit.append(tuple(np.array(posit[-1]) + np.array(move[key])))
 
         nested_dict = self.__create_nested_dict(protein, types, length_protein)
         aminoacid_ = protein.get_head().link
@@ -366,11 +401,11 @@ class BfsFold:
 
         if dimensions == 2:
             for seq_l in range(0, seq_len, 10):
-                print(seq[seq_l:seq_l+10])
+                # print(seq[seq_l:seq_l+10])
                 lst_proteins.append(Protein(seq[seq_l:seq_l+10]))
         elif dimensions == 3:
             for seq_l in range(0, seq_len, 8):
-                print(seq[seq_l:seq_l+8])
+                # print(seq[seq_l:seq_l+8])
                 lst_proteins.append(Protein(seq[seq_l:seq_l+8]))
 
         return lst_proteins
