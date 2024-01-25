@@ -1,10 +1,10 @@
 import copy
 import random
-from typing import Optional, Tuple
+from typing import List, Optional, Tuple
 from .random import RandomFold
 from .bfs import BfsFold
 from ..classes.protein import Protein
-from ..visualization import visualization_2D, visualization_3D
+from tqdm import tqdm
 
 
 class HillclimberFold:
@@ -65,27 +65,26 @@ class HillclimberFold:
         Protein
             The highest scoring protein found.
         """
+        # Give feedback that the algorithm has started
+        print("Starting hillclimber fold.")
         # Start with a random fold
         start_state = RandomFold(self._protein, self._dimensions, True)
         protein = start_state.run()
-
-        if self._dimensions == 2:
-            visualization_2D.plot_2d(
-                protein, ("red", "blue", "green"), "data/output/plot/hillclimber_start.png", "png")
-
-        elif self._dimensions == 3:
-            visualization_3D.plot_3d(
-                protein, ("red", "blue", "green"), "data/output/plot/hillclimber_start.png", "png")
-
-        protein.create_csv("data/output/csv/hillclimber_start.csv")
 
         # Start the highscore with the score of the random fold
         starting_fold = copy.deepcopy(protein)
         self._highscore = (starting_fold, starting_fold.get_score())
 
         # Run the algorithm for the specified number of iterations
-        for _ in range(self._iterations):
-            self._run_experiment(self._highscore[0])
+        for iteration in tqdm(range(self._iterations)):
+            best_fold = copy.deepcopy(self._highscore[0])
+            self._run_experiment(best_fold)
+            best_fold.reset_grid()
+
+            # Write data to file
+            sequence = "".join([str(acid) for acid in best_fold.get_list()])
+            protein.create_csv(
+                f"data/output/hillclimber_data/{sequence}_{iteration}.csv")
 
         # Return the highest scoring protein
         return self._highscore[0]
@@ -116,21 +115,14 @@ class HillclimberFold:
         start_coordinates = snippet_acids[0].position
         end_coordinates = snippet_acids[-1].position
 
-        # Perform a breadth first search on the snippet
-        search = BfsFold(protein, self._dimensions)
-        options = search.get_possible_foldings(
-            snippet, start_coordinates, end_coordinates)
+        # Process the snippet
+        args = (snippet, protein, start_coordinates,
+                end_coordinates, start_position)
+        score = self.process_snippet(args)
 
-        # Try all options
-        for list in options:
-            for index, acid in enumerate(list):
-                protein.get_list()[start_position +
-                                   index].position = acid.position
-                protein.reset_grid()
-
-                # Check if the protein is valid
-                if protein.is_valid():
-                    self._check_highscore(protein)
+        # Update the highscore if necessary
+        if score < self._highscore[1]:
+            self._highscore = (protein, score)
 
     def _get_snippet(self, protein: Protein) -> Tuple[int, int]:
         """
@@ -159,6 +151,34 @@ class HillclimberFold:
         end_position = start_position + length
 
         return start_position, end_position
+
+    def process_snippet(self, args: Tuple[Protein, Protein, Tuple[int, int],
+                                          Tuple[int, int], int]) -> List[int]:
+        snippet, protein, start_coordinates, end_coordinates, start_position = args
+
+        # Create a deep copy of the protein for this process
+        protein_copy = copy.deepcopy(protein)
+
+        # Perform a breadth first search on the snippet
+        search = BfsFold(protein_copy, self._dimensions)
+        options = search.get_possible_foldings(
+            snippet, start_coordinates, end_coordinates)
+
+        # Try all options and return the best score
+        best_score = None
+        for list in options:
+            for index, acid in enumerate(list):
+                protein_copy.get_list()[start_position +
+                                        index].position = acid.position
+                protein_copy.reset_grid()
+
+                # Check if the protein is valid
+                if protein_copy.is_valid():
+                    score = protein_copy.get_score()
+                    if best_score is None or score < best_score:
+                        best_score = score
+
+        return best_score
 
     def _check_highscore(self, protein: Protein) -> bool:
         """
