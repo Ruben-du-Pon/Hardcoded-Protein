@@ -197,7 +197,7 @@ class Protein:
 
         return folding
 
-    def create_csv(self, filename: str) -> None:
+    def create_csv(self, filename: str, verbose: bool = False) -> None:
         """
         Creates a CSV file that displays a specific folding of a protein.
 
@@ -229,7 +229,7 @@ class Protein:
             # Write the folding information to the CSV file
             writer.writeheader()
             writer.writerows(folding)
-            print(f"{filename} created.")
+            print(f"{filename} created.") if verbose else None
 
     def is_valid(self) -> bool:
         """

@@ -115,7 +115,7 @@ def main() -> None:
                 plotname = f"data/output/plot/{fold_algorithm}_{line_number}_3D.{sys.argv[4].lower() if (len(sys.argv) == 5 or len(sys.argv) == 6)  and sys.argv[4] == 'svg' else 'png'}"
 
             # Write the results to a CSV file and the visualization to a file
-            test_protein.create_csv(filename)
+            test_protein.create_csv(filename, verbose=True)
             if dimensions == 2:
                 visualization_2D.plot_2d(
                     test_protein, ("red", "blue", "green"), plotname, sys.argv[4].lower() if (len(sys.argv) == 5 or len(sys.argv) == 6) and sys.argv[4] == 'png' else 'svg')
