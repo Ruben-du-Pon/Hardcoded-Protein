@@ -166,7 +166,7 @@ class MctsFold(BfsFold):
                 types.remove("F")
 
             for type in types:
-                for iteration in range(100000):
+                for iteration in range(50000):
                     while length_protein != (len(min_keys_[0]) + 1):
                         if self.dimensions == 2:
                             types_ = {"R", "L", "U", "D"}
@@ -209,6 +209,7 @@ class MctsFold(BfsFold):
                 coordinates_ = self.__get_coordinates(min_keys__)
 
             min_keys = min_keys__
+            min_keys_ = min_keys
             dict_scores = {}
 
             if self.dimensions == 2:
