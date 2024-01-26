@@ -33,7 +33,6 @@ class BfsFold:
 
 
 
-
     def _valid_combinations(self, keys, prev=None, length=2, it=0, prev_valid=set()) -> List[str]:
         """
         Generate valid combinations of folding directions.
@@ -351,11 +350,9 @@ class BfsFold:
         min_keys = set()
         
         if "C" in self._sequence and self.dimensions == 2:
-            when_cutting = 5
+            when_cutting = 7
         elif self.dimensions == 3:
-            when_cutting = 4
-        else:
-            when_cutting = 4
+            when_cutting = 5
 
         while len(self._sequence) <= when_cutting:
                 when_cutting -= 1
