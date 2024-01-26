@@ -6,7 +6,7 @@ from codefiles.visualization import visualization_3D
 if __name__ == "__main__":
     dimensions = 2
     test_protein = Protein(
-        "HHPHHHPHPHHHPH")
+        "PPHPCPCHCPPPPPPPPHPPPCPHPCCHHCHHPCHHHCCHPCHCCPCCCHCHPHPCHCHHPPCPPPPPHCHPPPPHPHHHPPHHPHCPCPCHHCPC")
     # Create FressFold object
     fress = FressFold(test_protein, dimensions, 100, True)
 
