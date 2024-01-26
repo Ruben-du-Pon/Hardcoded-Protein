@@ -1,4 +1,5 @@
 import copy
+import csv
 import random
 from typing import List, Optional, Tuple
 from .random import RandomFold
@@ -26,6 +27,8 @@ class HillclimberFold:
     """
 
     def __init__(self, protein: Protein, dimensions: int, iterations: int,
+                 scores: Optional[List[int]] = None,
+                 outputfile: Optional[str] = None,
                  verbose: Optional[bool] = False) -> None:
         """
         Initializes the HillclimberFold class.
@@ -54,6 +57,8 @@ class HillclimberFold:
         self._dimensions = dimensions
         self._iterations = iterations
         self._highscore = (None, None)
+        self._scores = scores
+        self._outputfile = outputfile
         self._verbose = verbose
 
     def run(self) -> Protein:
@@ -77,16 +82,24 @@ class HillclimberFold:
 
         # Run the algorithm for the specified number of iterations
         for iteration in tqdm(range(self._iterations)):
-            best_fold = copy.deepcopy(self._highscore[0])
-            self._run_experiment(best_fold)
-            best_fold.reset_grid()
+            next_fold = copy.deepcopy(self._highscore[0])
+            self._run_experiment(next_fold)
+            next_fold.reset_grid()
 
             # Write data to file
-            sequence = "".join([str(acid) for acid in best_fold.get_list()])
-            protein.create_csv(
-                f"data/output/hillclimber_data/{sequence}_{iteration}.csv")
+            if self._outputfile:
+
+                self._scores.append(next_fold.get_score())
+
+                with open(self._outputfile, "a") as file:
+                    writer = csv.writer(file)
+                    writer.writerow(
+                        [iteration, str(next_fold), next_fold.get_score()])
 
         # Return the highest scoring protein
+        if self._scores:
+            return self._highscore[0], self._scores
+
         return self._highscore[0]
 
     def _run_experiment(self, protein: Protein) -> None:
@@ -118,11 +131,11 @@ class HillclimberFold:
         # Process the snippet
         args = (snippet, protein, start_coordinates,
                 end_coordinates, start_position)
-        score = self.process_snippet(args)
+        best_protein = self.process_snippet(args)
 
         # Update the highscore if necessary
-        if score < self._highscore[1]:
-            self._highscore = (protein, score)
+        if best_protein.get_score() < self._highscore[1]:
+            self._highscore = (best_protein, best_protein.get_score())
 
     def _get_snippet(self, protein: Protein) -> Tuple[int, int]:
         """
@@ -153,7 +166,7 @@ class HillclimberFold:
         return start_position, end_position
 
     def process_snippet(self, args: Tuple[Protein, Protein, Tuple[int, int],
-                                          Tuple[int, int], int]) -> List[int]:
+                                          Tuple[int, int], int]) -> Protein:
         snippet, protein, start_coordinates, end_coordinates, start_position = args
 
         # Create a deep copy of the protein for this process
@@ -166,6 +179,7 @@ class HillclimberFold:
 
         # Try all options and return the best score
         best_score = None
+        best_protein = protein
         for list in options:
             for index, acid in enumerate(list):
                 protein_copy.get_list()[start_position +
@@ -176,9 +190,9 @@ class HillclimberFold:
                 if protein_copy.is_valid():
                     score = protein_copy.get_score()
                     if best_score is None or score < best_score:
-                        best_score = score
+                        best_protein = protein_copy
 
-        return best_score
+        return best_protein
 
     def _check_highscore(self, protein: Protein) -> bool:
         """
