@@ -2,6 +2,7 @@ from ..classes.protein import Protein
 from ..classes.protein import Aminoacid
 from .bfs import BfsFold
 import random
+import math
 from typing import List
 import time
 import numpy as np
@@ -47,24 +48,24 @@ class MctsFold(BfsFold):
             move = {"R": (1, 0, 0), "L": (-1, 0, 0), "U": (0, 1, 0), "D": (0, -1, 0), "F": (0, 0, 1), "B": (0, 0, -1)}
         min_keys = set()
         
-        if "C" in self._sequence and self.dimensions == 2:
-            when_cutting = 6
+        if self.dimensions == 2:
+            when_cutting = 7
         elif self.dimensions == 3:
             when_cutting = 5
-        else:
-            when_cutting = 5
+
 
         while len(self._sequence) <= when_cutting:
                 when_cutting -= 1
         
         step = 1
 
-        if len(self._protein) <= 10:
+        if len(self._protein) <= 12:
             going_till = len(self._protein) - 1
         else:
-            going_till = 10
+            going_till = 12
 
         for depth in range(when_cutting, going_till, step):
+            print(depth)
             create_d = self._create_dict(
                 protein, sequence_protein, types, depth, step, min_keys, posit
             )
@@ -176,7 +177,7 @@ class MctsFold(BfsFold):
                 types.remove("F")
 
             for type in types:
-                for iteration in range(500):
+                for iteration in range(5000):
                     while length_protein != (len(min_keys_[0]) + 1):
                         if self.dimensions == 2:
                             types_ = {"R", "L", "U", "D"}
@@ -205,7 +206,7 @@ class MctsFold(BfsFold):
 
                     min_keys_ = min_keys
                 
-                dict_scores[type] = dict_scores[type] / 500
+                dict_scores[type] = dict_scores[type] / 5000 
                 print(dict_scores)
             
             min_keys__ = [min_keys[0] + min(dict_scores, key=dict_scores.get)]
@@ -213,6 +214,9 @@ class MctsFold(BfsFold):
 
             while len(coordinates_) != len(set(coordinates_)):
                 del dict_scores[min(dict_scores, key=dict_scores.get)]
+                # If he is stuck
+                if len(dict_scores) == 0:
+                    return False
                 min_keys__ = [min_keys[0] + min(dict_scores, key=dict_scores.get)]
                 coordinates_ = self.__get_coordinates(min_keys__)
 
@@ -237,7 +241,7 @@ class MctsFold(BfsFold):
         if len(self._protein) >= 10:
             min_keys = self._bfsfold(self._protein, self._cut, self._step) 
             # print(min_keys)
-            for _ in range(20):
+            for _ in range(2):
                 result = self._mcts(min_keys)
                 results.append(result)
         else:
@@ -250,9 +254,10 @@ class MctsFold(BfsFold):
         min_prt = results[0]
         
         for result in results:
-            if result.get_score() < min_result:
-                min_prt = result
-                min_result = result.get_score()
+            if result is not False:
+                if result.get_score() < min_result:
+                    min_prt = result
+                    min_result = result.get_score()
 
         return min_prt
                 
