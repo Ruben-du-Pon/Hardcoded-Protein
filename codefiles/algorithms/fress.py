@@ -31,7 +31,6 @@ class FressFold(RandomFold):
 
         self._number_of_improvements = 0
 
-
     def run(self) -> Protein:
         """
         Execute the FRESS algorithm on a random protein sequence.
@@ -69,7 +68,6 @@ class FressFold(RandomFold):
         else:
             raise ValueError("No valid protein found")
 
-
     def _analyzeChain(self, input_protein: Protein) -> Protein:
         """
         Analyzes the protein chain to identify regions for potential optimization.
@@ -88,20 +86,21 @@ class FressFold(RandomFold):
             connections_info = []
             minus_one_count = 0
 
+            # Collecting positions connected to the current amino acid
             connections = [pos for node in [current.predecessor, current.link]
-                        if node and (pos := getattr(node, 'position', None))
-                        and isinstance(pos, tuple) and len(pos) == 3]
+                           if node and (pos := getattr(node, 'position', None))
+                           and isinstance(pos, tuple) and len(pos) == 3]
 
-            adjacent_positions = [(1, 0, 0), (-1, 0, 0),
-                                (0, 1, 0), (0, -1, 0), (0, 0, 1), (0, 0, -1)]
+            # Defining all adjacent positions
+            adjacent_positions = [(1, 0, 0), (-1, 0, 0), (0, 1, 0), (0, -1, 0), (0, 0, 1), (0, 0, -1)]
 
+            # Filtering out adjacent positions that are not already connected
             check_positions = [(c + adj[0], d + adj[1], e + adj[2]) for
-                            (c, d, e), adj in zip([current.position] *
-                                                    len(adjacent_positions),
-                                                    adjacent_positions) if
-                            (c + adj[0], d + adj[1], e + adj[2]) not in
-                            connections]
+                               (c, d, e), adj in zip([current.position] * len(adjacent_positions),
+                                                     adjacent_positions) if
+                               (c + adj[0], d + adj[1], e + adj[2]) not in connections]
 
+            # Evaluating each position for stability contribution
             for pos_tuple in check_positions:
                 if pos_tuple in input_protein._grid:
                     stability_score = current.get_stability_score(input_protein._grid[pos_tuple])
@@ -114,6 +113,7 @@ class FressFold(RandomFold):
                     }
                     connections_info.append(connection_detail)
 
+            # Collecting information about each amino acid
             amino_acid_info = {
                 'current_position': current.position,
                 'connections': connections_info,
@@ -123,14 +123,9 @@ class FressFold(RandomFold):
 
             current = current.link
 
-        # Convert to DataFrame for easier analysis
-        # Note: DataFrame will have nested lists, which may need special handling for some operations
+        # Analyzing the chain to find points of interest
         df_chain_analysis = pd.DataFrame(chain_analysis)
-
-        # Identify 'good points'
         good_points = df_chain_analysis[df_chain_analysis['minus_one_count'] > 0]
-
-        # Store the results
         self.good_points = good_points
 
         return self._suggest_improvement(df_chain_analysis, input_protein, len(input_protein._sequence))
@@ -149,12 +144,16 @@ class FressFold(RandomFold):
         Returns:
         Protein: The protein with suggested improvements.
         """
+        # Calculate the maximum range length based on the protein's sequence length
         max_range_length = len(input_protein._sequence)
+        
+        # Calculate the actual range length based on the percentage
         range_length = math.ceil(max_range_length * percentage)
 
         # Calculate the average number of H's per segment
         total_h_count = input_protein._sequence.count('H')
-        avg_h_per_segment = (total_h_count / 3) - 0.1# Since we have 3 segments: START, MIDDLE, END 
+        avg_h_per_segment = (total_h_count / 3) - 0.1  # Since we have 3 segments: START, MIDDLE, END
+
         # Define the indices for each segment
         start_index = range(0, range_length)
         middle_index = range(range_length, 2 * range_length)
@@ -171,7 +170,7 @@ class FressFold(RandomFold):
 
         # Analyze and suggest improvements
         min_avg = min(start_avg, middle_avg, end_avg)
-        #suggestion = "Consider making changes at the MIDDLE of the protein to improve stability."
+        
         if min_avg == start_avg and float(start_h_count) >= avg_h_per_segment:
             suggestion = "Consider making changes at the START of the protein to improve stability."
         elif min_avg == middle_avg and float(middle_h_count) >= avg_h_per_segment:
@@ -181,10 +180,11 @@ class FressFold(RandomFold):
         else:
             suggestion = " NONE "
         
+        # Print the suggestion if verbose mode is enabled
         if self._verbose:
             print(suggestion)
 
-
+        # Check if a valid suggestion is made and the maximum number of improvements is not reached
         if " NONE " not in suggestion and self._number_of_improvements <= 30:
             self._number_of_improvements += 1
             return self._get_refold_range(input_protein, suggestion)
@@ -204,15 +204,22 @@ class FressFold(RandomFold):
         Returns:
         Tuple[int, int]: The start and end indices for the refolding section.
         """
-        print(suggestion)
+        # Calculate the start and end indices for refolding based on the suggestion
         if "START" in suggestion:
-            refold_range =  (0, math.ceil(len(self._protein._sequence) / 3))
+            refold_range = (0, math.ceil(len(self._protein._sequence) / 3))
         elif "MIDDLE" in suggestion:
             mid = len(self._protein._sequence) / 2
-            refold_range =  (math.floor(mid - len(self._protein._sequence) / 6), math.ceil(mid + len(self._protein._sequence) / 6))
+            refold_range = (
+                math.floor(mid - len(self._protein._sequence) / 6),
+                math.ceil(mid + len(self._protein._sequence) / 6)
+            )
         elif "END" in suggestion:
-            refold_range = (math.floor(len(self._protein._sequence) * 2 / 3), len(self._protein._sequence) - 1)
+            refold_range = (
+                math.floor(len(self._protein._sequence) * 2 / 3),
+                len(self._protein._sequence) - 1
+            )
 
+        # Return the refolded protein based on the calculated range
         return self._refold_section(input_protein, refold_range)
         
 
@@ -244,7 +251,7 @@ class FressFold(RandomFold):
         best_score = self._calculate_stability(input_protein)
 
         start_index, end_index = index_range  # Determine the refold range based on the suggestion
-        #print(start_index, end_index)
+
         for _ in range(num_attempts):
             protein_copy = copy.deepcopy(best_protein)
             
@@ -258,7 +265,8 @@ class FressFold(RandomFold):
                 best_protein = fold
                 best_score = new_score
 
-        return self._analyzeChain(best_protein) # REPLACE with self._analyzeChain(best_protein) | best_protein
+        # Return the protein with the best fold
+        return self._analyzeChain(best_protein)  # Replace with self._analyzeChain(best_protein) | best_protein
                                                 # For recursion | once
 
     def _random_refold(self, protein: Protein, start_index: int, end_index: int) -> Protein:
@@ -273,32 +281,24 @@ class FressFold(RandomFold):
         Returns:
         Protein: The protein after performing the random refold.
         """
-        # Create a deep copy of the protein to work with
-        #protein_copy = self._clear_deepcopy()
+        # Get the amino acids at the specified start and end indices
         start_acid = self._get_acid_at_index(protein, start_index)
         assert start_acid is not None, "Expected start_acid to be Aminoacid, got None"
-
 
         end_acid = self._get_acid_at_index(protein, end_index)
         assert end_acid is not None, "Expected end_acid to be Aminoacid, got None"
 
-
-
-        # Start and end positions for the refolding range
-        start_position = start_acid.predecessor.position if start_acid.predecessor else (0,0,0)
+        # Determine the start and end positions for the refolding range
+        start_position = start_acid.predecessor.position if start_acid.predecessor else (0, 0, 0)
         end_position = end_acid.link.position if end_acid.link else None
 
-        # Perform refold
-        #f"{start_index}{start_position}\n{end_index}{end_position}")
-        
+        # Extract positions for the front and back ridget parts
         index = 0
         acid = protein.get_head()
         ridget_part_front = []
         ridget_part_back = []
-        front_directions = []
-        back_directions = []
+
         while acid:
-            #print(f"{acid}[{index}]: {acid.position}")
             if index <= start_index:
                 ridget_part_front.append(acid.position)
             if index >= end_index:
@@ -306,34 +306,39 @@ class FressFold(RandomFold):
             index += 1
             acid = acid.link
 
+        # Calculate directions for front and back ridget parts
+        front_directions = [tuple(ridget_part_front[i + 1][j] - ridget_part_front[i][j] for j in range(3))
+                            for i in range(len(ridget_part_front) - 1)]
+        back_directions = [tuple(ridget_part_back[i + 1][j] - ridget_part_back[i][j] for j in range(3))
+                           for i in range(len(ridget_part_back) - 1)]
 
-        for i in range(len(ridget_part_front) - 1):
-            front_directions.append(tuple(ridget_part_front[i + 1][j] - ridget_part_front[i][j] for j in range(3)))
-        for i in range(len(ridget_part_back) - 1):
-            back_directions.append(tuple(ridget_part_back[i + 1][j] - ridget_part_back[i][j] for j in range(3)))
-        
+        # Generate new fold for the middle section
         middle_directions = self._generate_new_fold(protein, start_index, end_index)
 
+        # Merge directions for the entire refolded region
         merged_list = front_directions.copy()
         merged_list.extend(middle_directions)
         merged_list.extend(back_directions)
 
-        all_positions = [(0,0,0)]
+        # Calculate new positions for all atoms in the refolded region
+        all_positions = [(0, 0, 0)]
 
         for i in range(0, len(merged_list)):
             all_positions.append(tuple(map(add, all_positions[i], merged_list[i])))
+
+        # Ensure uniqueness of positions to avoid overlaps
         while len(all_positions) != len(set(all_positions)):
             middle_directions = self._generate_new_fold(protein, start_index, end_index)
-            merged_list = front_directions.copy()  
+            merged_list = front_directions.copy()
             merged_list.extend(middle_directions)
             merged_list.extend(back_directions)
-            all_positions = [(0,0,0)]
+            all_positions = [(0, 0, 0)]
+
             for i in range(0, len(merged_list)):
                 all_positions.append(tuple(map(add, all_positions[i], merged_list[i])))
-            
 
+        # Create a new fold using the calculated positions
         return self._create_new_fold(protein, all_positions)
-
 
     def _generate_new_fold(self, protein: Protein, start_index: int, end_index: int) -> List[Tuple[int, int, int]]:
         """
@@ -347,48 +352,60 @@ class FressFold(RandomFold):
         Returns:
         List[Tuple[int, int, int]]: A list of new positions for the specified section.
         """
+        # Create a deep copy of the protein to work with
         protein_copy = self._clear_deepcopy()
+
+        # Initialize acid and index for traversal
         acid = protein_copy.get_head()
         index = 0
         backtracking_bool = False
+
+        # Move to the starting index
         while index < start_index:
             acid = acid.link
-            index +=1 
+            index += 1
 
         path = []
         directions = super()._get_directions()
 
+        # Determine the number of merges required based on the start and end indices
         merges = 1 if index == 0 or end_index == len(protein_copy._sequence) - 1 else 2
+
+        # Handle the first index if it's at the beginning of the sequence
         if index == 0:
-            new_position = (0,0,0)
+            new_position = (0, 0, 0)
             acid.position = new_position
             path.append(new_position)
             acid = acid.link
             index += 1
+
+        # Traverse the specified section and generate a new fold path
         while index < end_index + merges:
             if acid.predecessor:
                 while directions:
                     random_direction = random.choice(directions)
                     new_position = tuple(map(add, acid.predecessor.position, random_direction))
+                    
                     if self._protein.is_valid_fold(new_position):
                         acid.position = new_position
                         path.append(new_position)
                         break
                     else:
-                        # remove direction if not valid
+                        # Remove direction if not valid
                         if random_direction in directions:
                             directions.remove(random_direction)
 
                 if not directions:
-                    # backtracking
+                    # Backtracking is needed
                     avoid_direction_path = tuple(map(sub, path[index - 2], path[index - 3]))
                     avoid_direction_failed_path = tuple(map(sub, path[index - 1], path[index - 2]))
                     directions = super()._get_directions()
+                    
                     if avoid_direction_path in directions:
                         directions.remove(avoid_direction_path)
                     if avoid_direction_failed_path in directions:
                         directions.remove(avoid_direction_failed_path)
-                    print("backtracking needed")
+                    
                     index -= 1
                     self._protein.remove_from_grid(acid.position)
                     acid = acid.predecessor
@@ -397,12 +414,16 @@ class FressFold(RandomFold):
             if not backtracking_bool and acid.predecessor:
                 avoid_direction = tuple(-x for x in random_direction)
                 directions = super()._get_directions()
+                
                 if avoid_direction in directions:
                     directions.remove(avoid_direction)
+                
                 index += 1
                 acid = acid.link
+            
             backtracking_bool = False
         
+        # Calculate directions between consecutive positions in the path
         path_directions = []
         for i in range(len(path) - 1):
             path_directions.append(tuple(path[i + 1][j] - path[i][j] for j in range(3)))
@@ -420,6 +441,7 @@ class FressFold(RandomFold):
         Returns:
         Protein: The protein with the new folding applied.
         """
+        # Create a deep copy of the protein to work with
         protein_copy = self._clear_deepcopy()
         acid = protein_copy.get_head()
 
@@ -428,12 +450,10 @@ class FressFold(RandomFold):
             new_position = path[index]
             acid.position = new_position
             protein_copy.add_to_grid(new_position, acid)
-            #print(f"{acid}[{index}]: {acid.position}") if self._verbose else None
             index += 1
             acid = acid.link
 
         return protein_copy
-
 
     def _get_acid_at_index(self, protein: Protein, index: int) -> Aminoacid:
         """
@@ -462,11 +482,14 @@ class FressFold(RandomFold):
         Returns:
         Protein: A deep copy of the current protein with a cleared grid.
         """
+        # Create a deep copy of the protein
         deepcopy = copy.deepcopy(self._protein)
+        
+        # Clear the grid and reset positions of all amino acids
         current = deepcopy.get_head()
         while current is not None:
             deepcopy.remove_from_grid(current.position)
             current.position = (0, 0, 0)
             current = current.link
+        
         return deepcopy
-
