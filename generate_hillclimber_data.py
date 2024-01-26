@@ -46,7 +46,8 @@ def generate_data(dimensions: int, C: bool) -> None:
             test_protein: Protein = Protein(sequence)
             test = HillclimberFold(
                 test_protein, dimensions, 1000, scores, outputfile)
-            test_protein, scores = test.run()
+            test_protein = test.run()
+            scores = test.get_scores()
 
             # Write the average score to the output file
             with open(outputfile, "a") as file:

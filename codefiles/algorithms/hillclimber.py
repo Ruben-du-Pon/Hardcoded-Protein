@@ -27,7 +27,7 @@ class HillclimberFold:
     """
 
     def __init__(self, protein: Protein, dimensions: int, iterations: int,
-                 scores: Optional[List[int]] = None,
+                 scores: List[int] = [],
                  outputfile: Optional[str] = None,
                  verbose: Optional[bool] = False) -> None:
         """
@@ -56,7 +56,7 @@ class HillclimberFold:
         self._protein = protein
         self._dimensions = dimensions
         self._iterations = iterations
-        self._highscore = (None, None)
+        self._highscore = (protein, 0)
         self._scores = scores
         self._outputfile = outputfile
         self._verbose = verbose
@@ -77,14 +77,12 @@ class HillclimberFold:
         protein = start_state.run()
 
         # Start the highscore with the score of the random fold
-        starting_fold = copy.deepcopy(protein)
-        self._highscore = (starting_fold, starting_fold.get_score())
+        self._highscore = (protein, protein.get_score())
 
         # Run the algorithm for the specified number of iterations
         for iteration in tqdm(range(self._iterations)):
             next_fold = copy.deepcopy(self._highscore[0])
             self._run_experiment(next_fold)
-            next_fold.reset_grid()
 
             # Write data to file
             if self._outputfile:
@@ -97,9 +95,6 @@ class HillclimberFold:
                         [iteration, str(next_fold), next_fold.get_score()])
 
         # Return the highest scoring protein
-        if self._scores:
-            return self._highscore[0], self._scores
-
         return self._highscore[0]
 
     def _run_experiment(self, protein: Protein) -> None:
@@ -134,8 +129,7 @@ class HillclimberFold:
         best_protein = self.process_snippet(args)
 
         # Update the highscore if necessary
-        if best_protein.get_score() < self._highscore[1]:
-            self._highscore = (best_protein, best_protein.get_score())
+        self._check_highscore(best_protein)
 
     def _get_snippet(self, protein: Protein) -> Tuple[int, int]:
         """
@@ -165,8 +159,8 @@ class HillclimberFold:
 
         return start_position, end_position
 
-    def process_snippet(self, args: Tuple[Protein, Protein, Tuple[int, int],
-                                          Tuple[int, int], int]) -> Protein:
+    def process_snippet(self, args: Tuple[Protein, Protein, Tuple[int, int, int],
+                                          Tuple[int, int, int], int]) -> Protein:
         snippet, protein, start_coordinates, end_coordinates, start_position = args
 
         # Create a deep copy of the protein for this process
@@ -222,3 +216,14 @@ class HillclimberFold:
             return True
 
         return False
+
+    def get_scores(self) -> List[int]:
+        """
+        Returns the scores of the algorithm.
+
+        Returns
+        -------
+        List[int]
+            The scores of the algorithm.
+        """
+        return self._scores
