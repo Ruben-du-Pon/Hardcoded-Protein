@@ -186,7 +186,7 @@ def plot_2d(protein: Protein, colors: Tuple[str, str, str], filename: str, outpu
 
 
         for i, j in zip(x_cor_C, y_cor_C):
-            plt.text(i, j-0.05, '#', fontsize=12, color='black', ha='center', va='center')
+            plt.text(i, j-0.05, '#', fontsize=9, color='black', ha='center', va='center')
 
 
 

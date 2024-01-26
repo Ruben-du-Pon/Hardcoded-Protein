@@ -226,7 +226,7 @@ def plot_3d(protein: Protein, colors: Tuple[str, str, str], filename: str, outpu
 
 
         for z, y, z in zip(x_cor_C, y_cor_C, z_cor_C):
-            ax.text(x, y-0.05, z-0.05, '#', fontsize=12, color='black', ha='center', va='center')
+            ax.text(x, y-0.05, z-0.05, '#', fontsize=9, color='black', ha='center', va='center')
 
         x_min, y_min, z_min = min(x_coordinates), min(
             y_coordinates), min(z_coordinates)
