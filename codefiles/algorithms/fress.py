@@ -1,4 +1,5 @@
 from ..classes.protein import Protein
+from ..classes.aminoacid import Aminoacid
 from .random import RandomFold
 from typing import List, Tuple, Dict, Optional
 import copy
@@ -7,15 +8,18 @@ import math
 import random
 from operator import add, sub
 
+
 class FressFold(RandomFold):
     def __init__(self, protein: Protein, dimensions: int, iterations: int,
                  verbose: Optional[bool] = False) -> None:
         """
-        Constructs a FressFold instance for protein folding optimization.
-        
+        Initialize a FressFold object for protein folding optimization.
+
         Parameters:
-        protein : Protein
-            The protein instance on which the folding optimization will be performed.
+        - protein (Protein): The protein to be optimized.
+        - dimensions (int): The number of dimensions for the fold.
+        - iterations (int): The number of iterations for the optimization process.
+        - verbose (Optional[bool]): If set to True, detailed logs will be printed. Defaults to False.
         """
         self._protein = protein
         self._dimensions = dimensions
@@ -28,17 +32,29 @@ class FressFold(RandomFold):
         self._number_of_improvements = 0
 
 
-    def run(self) -> None:
+    def run(self) -> Protein:
         """
-        Perform the FRESS algortim on a random protein sequence.
-        """  # noqa
+        Execute the FRESS algorithm on a random protein sequence.
+
+        Returns:
+        Protein: The best folded protein after running the algorithm.
+        """
         return self._start_random_chain()
 
-    def _start_random_chain(self):
+    def _start_random_chain(self) -> Protein:
+        """
+        Initialize a random folding chain for the protein.
+
+        Randomly folds the protein and identifies the best starting score.
+        Continues until a non-zero best random score is found.
+
+        Returns:
+        Protein: Best randomly folded protein.
+        """
         best_score = 0
         best_random_score = 0
-        best_protein = None
-        best_random_protein = None
+        best_protein: Optional[Protein] = None
+        best_random_protein: Optional[Protein] = None
         while best_random_score == 0:
             protein_copy = self._clear_deepcopy()
             fold = RandomFold(protein_copy, self._dimensions, avoid_overlap=True, verbose=False).run()
@@ -48,13 +64,22 @@ class FressFold(RandomFold):
                 best_random_protein = fold
 
         print(f"Random start score: {best_random_score}")
-        return self._analyzeChain(best_random_protein)
+        if best_random_protein is not None:
+            return self._analyzeChain(best_random_protein)
+        else:
+            raise ValueError("No valid protein found")
 
 
-    def _analyzeChain(self, input_protein) -> None:
+    def _analyzeChain(self, input_protein: Protein) -> Protein:
         """
         Analyzes the protein chain to identify regions for potential optimization.
         This version focuses on the connections of each individual amino acid.
+
+        Parameters:
+        - input_protein (Protein): The protein to be analyzed.
+
+        Returns:
+        Protein: The protein with analysis data added for further processing.
         """
         chain_analysis = []
         current = input_protein._head
@@ -65,7 +90,7 @@ class FressFold(RandomFold):
 
             connections = [pos for node in [current.predecessor, current.link]
                         if node and (pos := getattr(node, 'position', None))
-                        and isinstance(pos, Tuple) and len(pos) == 3]
+                        and isinstance(pos, tuple) and len(pos) == 3]
 
             adjacent_positions = [(1, 0, 0), (-1, 0, 0),
                                 (0, 1, 0), (0, -1, 0), (0, 0, 1), (0, 0, -1)]
@@ -110,7 +135,20 @@ class FressFold(RandomFold):
 
         return self._suggest_improvement(df_chain_analysis, input_protein, len(input_protein._sequence))
 
-    def _suggest_improvement(self, df_chain_analysis, input_protein, max_range_length, percentage=0.333):
+    def _suggest_improvement(self, df_chain_analysis: pd.DataFrame, input_protein: Protein,
+                             max_range_length: int, percentage: float = 0.333) -> Protein:
+        """
+        Suggests potential improvements in protein folding based on analysis.
+
+        Parameters:
+        - df_chain_analysis (pd.DataFrame): DataFrame containing chain analysis data.
+        - input_protein (Protein): The protein to be improved.
+        - max_range_length (int): The maximum length of the range to consider for improvement.
+        - percentage (float): The percentage of total length to consider for segment analysis. Defaults to 0.333.
+
+        Returns:
+        Protein: The protein with suggested improvements.
+        """
         max_range_length = len(input_protein._sequence)
         range_length = math.ceil(max_range_length * percentage)
 
@@ -123,9 +161,9 @@ class FressFold(RandomFold):
         end_index = range(max_range_length - range_length, max_range_length)
 
         # Calculate average stability contribution and count H's for each segment
-        start_avg = df_chain_analysis.iloc[start_index]['minus_one_count'].mean()
-        middle_avg = df_chain_analysis.iloc[middle_index]['minus_one_count'].mean()
-        end_avg = df_chain_analysis.iloc[end_index]['minus_one_count'].mean()
+        start_avg = df_chain_analysis.iloc[list(start_index)]['minus_one_count'].mean()
+        middle_avg = df_chain_analysis.iloc[list(middle_index)]['minus_one_count'].mean()
+        end_avg = df_chain_analysis.iloc[list(end_index)]['minus_one_count'].mean()
 
         start_h_count = input_protein._sequence[:range_length].count('H')
         middle_h_count = input_protein._sequence[range_length:2 * range_length].count('H')
@@ -155,17 +193,16 @@ class FressFold(RandomFold):
 
         return input_protein
 
-    def _get_refold_range(self, input_protein: Protein, suggestion: str) -> Tuple[int, int]:
+    def _get_refold_range(self, input_protein: Protein, suggestion: str) -> Protein:
         """
         Determines the start and end indices for refolding based on the suggestion.
 
         Parameters:
-        suggestion : str
-            The suggestion on where to refold.
+        - input_protein (Protein): The protein to be refolded.
+        - suggestion (str): The suggestion on where to refold.
 
         Returns:
-        Tuple[int, int]
-            The start and end indices for the refolding section.
+        Tuple[int, int]: The start and end indices for the refolding section.
         """
         print(suggestion)
         if "START" in suggestion:
@@ -181,27 +218,27 @@ class FressFold(RandomFold):
 
     def _calculate_stability(self, input_protein: Protein) -> float:
         """
-        Computes the stability score of the protein's current structure based on its folding.
-        
+        Computes the stability score of the protein's current structure.
+
+        Parameters:
+        - input_protein (Protein): The protein whose stability is to be calculated.
+
         Returns:
-        float
-            The calculated stability score for the current protein structure.
+        float: The calculated stability score for the current protein structure.
         """
         return input_protein.get_score()
     
-    def _refold_section(self, input_protein: Protein, index_range, num_attempts: int = 1000) -> Protein:
+    def _refold_section(self, input_protein: Protein, index_range: Tuple[int, int], num_attempts: int = 1000) -> Protein:
         """
         Randomly refolds a section of the protein and keeps the best fold.
 
         Parameters:
-        input_protein : Protein
-            The current protein structure.
-        num_attempts : int
-            The number of refolding attempts to make.
+        - input_protein (Protein): The protein to be refolded.
+        - index_range (Tuple[int, int]): The range of indices to be refolded.
+        - num_attempts (int): The number of refolding attempts to make. Defaults to 1000.
 
         Returns:
-        Protein
-            The protein structure with the best fold found in this step.
+        Protein: The protein structure with the best fold found in this step.
         """
         best_protein = input_protein
         best_score = self._calculate_stability(input_protein)
@@ -224,11 +261,28 @@ class FressFold(RandomFold):
         return self._analyzeChain(best_protein) # REPLACE with self._analyzeChain(best_protein) | best_protein
                                                 # For recursion | once
 
-    def _random_refold(self, protein: Protein, start_index: int, end_index: int) -> None:
+    def _random_refold(self, protein: Protein, start_index: int, end_index: int) -> Protein:
+        """
+        Performs a random refolding of a specified section of the protein.
+
+        Parameters:
+        - protein (Protein): The protein to be refolded.
+        - start_index (int): The starting index of the section to refold.
+        - end_index (int): The ending index of the section to refold.
+
+        Returns:
+        Protein: The protein after performing the random refold.
+        """
         # Create a deep copy of the protein to work with
         #protein_copy = self._clear_deepcopy()
         start_acid = self._get_acid_at_index(protein, start_index)
+        assert start_acid is not None, "Expected start_acid to be Aminoacid, got None"
+
+
         end_acid = self._get_acid_at_index(protein, end_index)
+        assert end_acid is not None, "Expected end_acid to be Aminoacid, got None"
+
+
 
         # Start and end positions for the refolding range
         start_position = start_acid.predecessor.position if start_acid.predecessor else (0,0,0)
@@ -281,7 +335,18 @@ class FressFold(RandomFold):
         return self._create_new_fold(protein, all_positions)
 
 
-    def _generate_new_fold(self, protein, start_index, end_index) -> None:
+    def _generate_new_fold(self, protein: Protein, start_index: int, end_index: int) -> List[Tuple[int, int, int]]:
+        """
+        Generates a new fold path for a specified section of the protein.
+
+        Parameters:
+        - protein (Protein): The protein to be refolded.
+        - start_index (int): The starting index of the section to refold.
+        - end_index (int): The ending index of the section to refold.
+
+        Returns:
+        List[Tuple[int, int, int]]: A list of new positions for the specified section.
+        """
         protein_copy = self._clear_deepcopy()
         acid = protein_copy.get_head()
         index = 0
@@ -316,8 +381,8 @@ class FressFold(RandomFold):
 
                 if not directions:
                     # backtracking
-                    avoid_direction_path = tuple(map(sub, protein_path[index - 2], protein_path[index - 3]))
-                    avoid_direction_failed_path = tuple(map(sub, protein_path[index - 1], protein_path[index - 2]))
+                    avoid_direction_path = tuple(map(sub, path[index - 2], path[index - 3]))
+                    avoid_direction_failed_path = tuple(map(sub, path[index - 1], path[index - 2]))
                     directions = super()._get_directions()
                     if avoid_direction_path in directions:
                         directions.remove(avoid_direction_path)
@@ -344,7 +409,17 @@ class FressFold(RandomFold):
         
         return path_directions
 
-    def _create_new_fold(self, protein, path):
+    def _create_new_fold(self, protein: Protein, path: List[Tuple[int, int, int]]) -> Protein:
+        """
+        Creates a new folding for the protein based on the provided path.
+
+        Parameters:
+        - protein (Protein): The protein to be refolded.
+        - path (List[Tuple[int, int, int]]): The new positions for the protein's folding.
+
+        Returns:
+        Protein: The protein with the new folding applied.
+        """
         protein_copy = self._clear_deepcopy()
         acid = protein_copy.get_head()
 
@@ -360,15 +435,33 @@ class FressFold(RandomFold):
         return protein_copy
 
 
-    def _get_acid_at_index(self, protein: Protein, index: int):
+    def _get_acid_at_index(self, protein: Protein, index: int) -> Aminoacid:
+        """
+        Retrieves the amino acid at a specified index in the protein.
+
+        Parameters:
+        - protein (Protein): The protein from which to retrieve the amino acid.
+        - index (int): The index of the amino acid to retrieve.
+
+        Returns:
+        Aminoacid: The amino acid at the specified index.
+        """
         acid = protein.get_head()
         current_index = 0
         while acid and current_index < index:
             acid = acid.link
             current_index += 1
+        if acid is None:
+            raise ValueError("Aminoacid not found at the specified index")
         return acid
 
-    def _clear_deepcopy(self):
+    def _clear_deepcopy(self) -> Protein:
+        """
+        Creates a deep copy of the current protein and clears its grid.
+
+        Returns:
+        Protein: A deep copy of the current protein with a cleared grid.
+        """
         deepcopy = copy.deepcopy(self._protein)
         current = deepcopy.get_head()
         while current is not None:
