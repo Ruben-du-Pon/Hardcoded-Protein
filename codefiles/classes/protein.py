@@ -242,16 +242,11 @@ class Protein:
             True if every amino acid has a different position and the distance
             between two consecutive aminoacids is always 1, False otherwise.
         """
-        current = self._head
-
-        while current.link:
-
-            # Check if the distance between two consecutive aminoacids is always 1
-            if abs(current.position[0] - current.link.position[0]) + \
-                    abs(current.position[1] - current.link.position[1]) + \
-                    abs(current.position[2] - current.link.position[2]) != 1:
+        for index in range(len(self._list) - 2):
+            distance = sum(abs(self._list[index].position[i] -
+                               self._list[index + 1].position[i]) for i in range(3))
+            if distance != 1:
                 return False
-            current = current.link
 
         # Check if every amino acid has a different position
         return len(self._grid) == len(self._sequence)

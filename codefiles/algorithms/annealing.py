@@ -1,9 +1,10 @@
 import copy
 import random
-from typing import Optional
+import csv
+from tqdm import tqdm
+from typing import List, Optional
 from .random import RandomFold
 from ..classes.protein import Protein
-from ..visualization import visualization_2D, visualization_3D
 from .hillclimber import HillclimberFold
 
 
@@ -37,6 +38,8 @@ class AnnealingFold(HillclimberFold):
     """
 
     def __init__(self, protein: Protein, dimensions: int, iterations: int,
+                 scores: List[int] = [],
+                 outputfile: Optional[str] = None,
                  verbose: Optional[bool] = False) -> None:
         """
         Initializes an AnnealingFold object.
@@ -57,9 +60,9 @@ class AnnealingFold(HillclimberFold):
         ValueError
             If the dimensions are not 2 or 3.
         """
-        super().__init__(protein, dimensions, iterations, verbose)
+        super().__init__(protein, dimensions, iterations, scores, outputfile, verbose)
         self._temperature = 10.0
-        self._cooling_rate = 0.0005
+        self._cooling_rate = 0.0025
         self._old_score = self._protein.get_score()
 
     def run(self) -> Protein:
@@ -75,27 +78,27 @@ class AnnealingFold(HillclimberFold):
         start_state = RandomFold(self._protein, self._dimensions, True)
         protein = start_state.run()
 
-        if self._dimensions == 2:
-            visualization_2D.plot_2d(
-                protein, ("red", "blue", "green"), "data/output/plot/annealing_start.png", "png")
-
-        elif self._dimensions == 3:
-            visualization_3D.plot_3d(
-                protein, ("red", "blue", "green"), "data/output/plot/annealing_start.png", "png")
-
-        protein.create_csv("data/output/csv/annealing_start.csv")
-
         # Start the highscore with the score of the random fold
-        starting_fold = copy.deepcopy(protein)
-        self._highscore = (starting_fold, starting_fold.get_score())
+        self._highscore = (protein, protein.get_score())
 
         # Run the algorithm for the specified number of iterations
-        for _ in range(self._iterations):
-            print(f"Iteration {_ + 1}") if self._verbose else None
-            protein = self._run_experiment(protein)
+        for iteration in tqdm(range(self._iterations)):
+            next_fold = copy.deepcopy(self._highscore[0])
+            self._run_experiment(next_fold)
             self._temperature *= 1 - self._cooling_rate
 
+            # Write data to file
+            if self._outputfile:
+
+                self._scores.append(next_fold.get_score())
+
+                with open(self._outputfile, "a") as file:
+                    writer = csv.writer(file)
+                    writer.writerow(
+                        [iteration, str(next_fold), next_fold.get_score()])
+
         # Return the highest scoring protein
+        self._highscore[0].reset_grid()
         return self._highscore[0]
 
     def _check_highscore(self, protein: Protein) -> bool:
@@ -126,8 +129,8 @@ class AnnealingFold(HillclimberFold):
         chance = 2 ** ((old_score - new_score) / temperature)
 
         # Check if the new protein is better than the old one and if it should be accepted
-        if (protein.get_score() < self._highscore[1]) and \
-                (chance > random.random()):
+        if protein.is_valid() and (protein.get_score() < self._highscore[1]) \
+                and (chance > random.random()):
             self._highscore = (protein, protein.get_score())
             return True
 
