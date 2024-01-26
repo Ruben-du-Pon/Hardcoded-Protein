@@ -34,7 +34,7 @@ class BfsFold:
 
 
 
-    def __valid_combinations(self, keys, prev=None, length=2, it=0, prev_valid=set()) -> List[str]:
+    def _valid_combinations(self, keys, prev=None, length=2, it=0, prev_valid=set()) -> List[str]:
         """
         Generate valid combinations of folding directions.
 
@@ -62,7 +62,7 @@ class BfsFold:
                 ):
                     continue
                 else:
-                    combos = self.__valid_combinations(
+                    combos = self._valid_combinations(
                         keys, prev=key, length=length, it=it + 1
                     )
                     valid_combos.update({key + combo for combo in combos})
@@ -95,7 +95,7 @@ class BfsFold:
             return valid_combos
 
 
-    def __add_combinations(self, prev_valid):
+    def _add_combinations(self, prev_valid):
         new_foldings = set()
 
         if self.dimensions == 2:
@@ -132,7 +132,7 @@ class BfsFold:
         return new_foldings
     
 
-    def __create_nested_dict(
+    def _create_nested_dict(
         self, protein: Protein, keys, depth, prev=None, pos=[(0, 0, 0)]
     ) -> dict:
         """
@@ -165,7 +165,7 @@ class BfsFold:
                     continue
                 else:
                     move = {"R": (1, 0, 0), "L": (-1, 0, 0), "U": (0, 1, 0), "D": (0, -1, 0)}
-                    result_dict[key] = self.__create_nested_dict(
+                    result_dict[key] = self._create_nested_dict(
                         protein,
                         keys,
                         depth - 1,
@@ -194,7 +194,7 @@ class BfsFold:
                     continue
                 else:
                     move = {"R": (1, 0, 0), "L": (-1, 0, 0), "U": (0, 1, 0), "D": (0, -1, 0), "F": (0, 0, 1), "B": (0, 0, -1)}
-                    result_dict[key] = self.__create_nested_dict(
+                    result_dict[key] = self._create_nested_dict(
                         protein,
                         keys,
                         depth - 1,
@@ -205,7 +205,7 @@ class BfsFold:
             return result_dict
 
 
-    def __create_dict(
+    def _create_dict(
         self, protein: Protein, protein_sequence, keys, depth, step_size, best_options=set(), posit=None
     ) -> dict:
             """
@@ -228,9 +228,9 @@ class BfsFold:
                 depth = len(protein_sequence)
 
             if best_options != set():
-                valid_combos = self.__add_combinations(best_options)
+                valid_combos = self._add_combinations(best_options)
             else:
-                valid_combos = self.__valid_combinations(keys, length=depth)
+                valid_combos = self._valid_combinations(keys, length=depth)
                 
             for steps in valid_combos:
                 if len(best_options) != 0:
@@ -245,7 +245,7 @@ class BfsFold:
                                     pos.append(i)
                                 current = current.link
 
-                            dict_ = self.__create_nested_dict(protein, keys, 2, pos=[posit[-1]])
+                            dict_ = self._create_nested_dict(protein, keys, 2, pos=[posit[-1]])
 
                             for step in steps[-1]:
                                 dict_ = dict_[step]
@@ -278,7 +278,7 @@ class BfsFold:
                             continue
                 else:
                     prt = Protein(protein_sequence[: depth + 1])
-                    dict_ = self.__create_nested_dict(protein, keys, depth + 1)
+                    dict_ = self._create_nested_dict(protein, keys, depth + 1)
 
                     aminoacid_ = prt._head.link
 
@@ -313,8 +313,20 @@ class BfsFold:
 
             return score_dict
 
+    def _is_mirror_or_rotation(self, move1, move2):
+        def is_rotation(move1, move2):
+            return any(move2[i:] + move2[:i] == move1 for i in range(len(move2)))
 
-    def __bfsfold(self, protein: Protein, when_cutting, step) -> Protein:
+        if self.dimensions == 2:
+            mirror_dict = {'U': 'D', 'D': 'U', 'L': 'R', 'R': 'L'}
+        elif self.dimenstions == 3:
+            mirror_dict = {'U': 'D', 'D': 'U', 'L': 'R', 'R': 'L', 'U': 'D', 'D': 'U'}
+
+        return is_rotation(move1, move2) or all(mirror_dict[move1[i]] == move2[len(move2) - 1 - i] for i in range(len(move1)))
+
+
+
+    def _bfsfold(self, protein: Protein, when_cutting, step) -> Protein:
         """
         Perform Breadth-First Search (BFS) based folding on the given protein structure.
 
@@ -351,23 +363,33 @@ class BfsFold:
         step = 1
 
         for depth in range(when_cutting, length_protein, step):
-            create_d = self.__create_dict(
+            create_d = self._create_dict(
                 protein, sequence_protein, types, depth, step, min_keys, posit
             )
             posit = [(0, 0, 0)]
 
             min_key = min(create_d, key=lambda k: create_d[k])
             min_keys = {k for k, v in create_d.items() if v == create_d[min_key]}
-            if len(min_keys) >= 2:
-                # Randomly select 1 of the set
-                min_keys = random.sample(min_keys, 1)
-            else:
-                min_keys = list(min_keys)
-            for key in min_keys[0]:
-                posit.append(tuple(np.array(posit[-1]) + np.array(move[key])))
-            # print(min_keys)
+            unique_moves = set()
 
-        nested_dict = self.__create_nested_dict(protein, types, length_protein)
+            # Check for linear transformations
+            for move_ in min_keys:
+                if all(not self._is_mirror_or_rotation(move_, unique_move) for unique_move in unique_moves):
+                    unique_moves.add(move_)
+
+            # print(len(unique_moves))
+            if len(unique_moves) >= 2:
+                # Randomly select 1 of the set
+                unique_moves = random.sample(unique_moves, 1)
+            else:
+                unique_moves = list(unique_moves)
+
+            for key in unique_moves[0]:
+                posit.append(tuple(np.array(posit[-1]) + np.array(move[key])))
+
+            min_keys = unique_moves
+
+        nested_dict = self._create_nested_dict(protein, types, length_protein)
         aminoacid_ = protein.get_head().link
 
         folding = random.choice(list(min_keys))
@@ -412,8 +434,8 @@ class BfsFold:
         elif self.dimensions == 3:
             types = {"R", "L", "U", "D", "F", "B"}
 
-        possible_foldings = self.__valid_combinations(keys=types, prev=None, length=length-1)
-        dict_fold = self.__create_nested_dict(protein, types, length, prev=None, pos=[first_coordinate])
+        possible_foldings = self._valid_combinations(keys=types, prev=None, length=length-1)
+        dict_fold = self._create_nested_dict(protein, types, length, prev=None, pos=[first_coordinate])
 
 
         for folding in possible_foldings:
@@ -459,7 +481,7 @@ class BfsFold:
         """
         start_time = time.time()
 
-        result = self.__bfsfold(self._protein, self._cut, self._step)
+        result = self._bfsfold(self._protein, self._cut, self._step)
         
         end_time = time.time()  # Record the end time
         elapsed_time = end_time - start_time

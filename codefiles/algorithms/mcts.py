@@ -23,7 +23,7 @@ class MctsFold(BfsFold):
 
 
 
-    def __bfsfold(self, protein: Protein, when_cutting, step) -> List[str]:
+    def _bfsfold(self, protein: Protein, when_cutting, step) -> List[str]:
         """
         Perform Breadth-First Search (BFS) based folding on the given protein structure.
 
@@ -37,6 +37,7 @@ class MctsFold(BfsFold):
         - Protein: The folded protein structure.
         """
         posit = [(0, 0, 0)]
+
         sequence_protein = protein._sequence
         if self.dimensions == 2:
             types = {"R", "L", "U", "D"}
@@ -64,21 +65,31 @@ class MctsFold(BfsFold):
             going_till = 10
 
         for depth in range(when_cutting, going_till, step):
-            create_d = super()._BfsFold__create_dict(
+            create_d = self._create_dict(
                 protein, sequence_protein, types, depth, step, min_keys, posit
             )
             posit = [(0, 0, 0)]
 
             min_key = min(create_d, key=lambda k: create_d[k])
             min_keys = {k for k, v in create_d.items() if v == create_d[min_key]}
-            if len(min_keys) >= 2:
+            unique_moves = set()
+
+            # Check for linear transformations
+            for move_ in min_keys:
+                # print(dir(self))
+                if all(not self._is_mirror_or_rotation(move_, unique_move) for unique_move in unique_moves):
+                    unique_moves.add(move_)
+
+            if len(unique_moves) >= 2:
                 # Randomly select 1 of the set
-                min_keys = random.sample(min_keys, 1)
+                unique_moves = random.sample(unique_moves, 1)
             else:
-                min_keys = list(min_keys)
-            for key in min_keys[0]:
+                unique_moves = list(unique_moves)
+
+            for key in unique_moves[0]:
                 posit.append(tuple(np.array(posit[-1]) + np.array(move[key])))
 
+            min_keys = unique_moves
 
         return min_keys
     
@@ -127,7 +138,6 @@ class MctsFold(BfsFold):
 
     
     def __get_coordinates(self, min_keys):
-        # print(min_keys)
         pos = [(0, 0, 0)]
         if self.dimensions == 2:
             move = {"R": (1, 0, 0), "L": (-1, 0, 0), "U": (0, 1, 0), "D": (0, -1, 0)}
@@ -141,7 +151,7 @@ class MctsFold(BfsFold):
     
 
 
-    def __mcts(self, min_keys):
+    def _mcts(self, min_keys):
         length_protein, min_keys_, dict_scores = len(self._protein), min_keys, {}
 
         if self.dimensions == 2:
@@ -166,7 +176,7 @@ class MctsFold(BfsFold):
                 types.remove("F")
 
             for type in types:
-                for iteration in range(50000):
+                for iteration in range(500):
                     while length_protein != (len(min_keys_[0]) + 1):
                         if self.dimensions == 2:
                             types_ = {"R", "L", "U", "D"}
@@ -195,16 +205,14 @@ class MctsFold(BfsFold):
 
                     min_keys_ = min_keys
                 
-                dict_scores[type] = dict_scores[type] / 50000
+                dict_scores[type] = dict_scores[type] / 500
                 print(dict_scores)
             
             min_keys__ = [min_keys[0] + min(dict_scores, key=dict_scores.get)]
             coordinates_ = self.__get_coordinates(min_keys__)
 
             while len(coordinates_) != len(set(coordinates_)):
-                # print(1, coordinates_)
                 del dict_scores[min(dict_scores, key=dict_scores.get)]
-                # print(2, dict_scores)
                 min_keys__ = [min_keys[0] + min(dict_scores, key=dict_scores.get)]
                 coordinates_ = self.__get_coordinates(min_keys__)
 
@@ -224,19 +232,29 @@ class MctsFold(BfsFold):
 
 
     def run(self) -> Protein:
-        start_time = time.time()
+        start_time, results, min_result = time.time(), [], 0
 
-        if len(self._protein) > 10:
-            min_keys = self.__bfsfold(self._protein, self._cut, self._step) 
+        if len(self._protein) >= 10:
+            min_keys = self._bfsfold(self._protein, self._cut, self._step) 
             # print(min_keys)
-            result = self.__mcts(min_keys)
+            for _ in range(20):
+                result = self._mcts(min_keys)
+                results.append(result)
         else:
-            result = super()._BfsFold__bfsfold(self._protein, self._cut, self._step)
+            result = super()._bfsfold(self._protein, self._cut, self._step)
+
         end_time = time.time()  # Record the end time
         elapsed_time = end_time - start_time
         print(f"Elapsed time: {elapsed_time} seconds")
 
-        return result
+        min_prt = results[0]
+        
+        for result in results:
+            if result.get_score() < min_result:
+                min_prt = result
+                min_result = result.get_score()
+
+        return min_prt
                 
 
                 
