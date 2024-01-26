@@ -26,9 +26,6 @@ class FressFold(RandomFold):
         self._verbose = verbose
         self._iterations = iterations
 
-        self.optimization_parameters: Dict[str, float] = {}
-        self.stability_scores: List[float] = []
-
         self._number_of_improvements = 0
 
     def run(self) -> Protein:
