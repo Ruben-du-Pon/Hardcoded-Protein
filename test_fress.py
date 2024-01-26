@@ -2,16 +2,22 @@ from codefiles.algorithms.fress import FressFold
 from codefiles.classes.protein import Protein
 from codefiles.visualization import visualization_2D
 from codefiles.visualization import visualization_3D
+import time
 
 if __name__ == "__main__":
     dimensions = 2
     test_protein = Protein(
-        "PPHPCPCHCPPPPPPPPHPPPCPHPCCHHCHHPCHHHCCHPCHCCPCCCHCHPHPCHCHHPPCPPPPPHCHPPPPHPHHHPPHHPHCPCPCHHCPC")
+        "HHPHPHPHPHHHHPHPPPHPPPHPPPPHPPPHPPPHPHHHHPHPHPHPHH")
     # Create FressFold object
     fress = FressFold(test_protein, dimensions, 100, True)
 
     # Run the fress algorithm
-    test_protein = fress.run()
+    start_time = time.time()
+    test_protein = fress.run() 
+    end_time = time.time()  # Record the end time
+    elapsed_time = end_time - start_time
+    print(f"Elapsed time: {elapsed_time} seconds")
+
 
     # Set the output filenames
     fold_algorithm = "FRESS"
