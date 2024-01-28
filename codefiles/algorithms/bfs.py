@@ -86,7 +86,7 @@ class BfsFold:
                 ):
                     continue
                 else:
-                    combos = self.__valid_combinations(
+                    combos = self._valid_combinations(
                         keys, prev=key, length=length, it=it + 1
                     )
                     valid_combos.update({key + combo for combo in combos})
