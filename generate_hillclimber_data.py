@@ -45,7 +45,7 @@ def generate_data(dimensions: int, C: bool) -> None:
             # Run the algorithm 1000 times and write the results to the output file
             test_protein: Protein = Protein(sequence)
             test = HillclimberFold(
-                test_protein, dimensions, 1000, scores, outputfile)
+                test_protein, dimensions, 5000, scores, outputfile)
             test_protein = test.run()
             scores = test.get_scores()
 
