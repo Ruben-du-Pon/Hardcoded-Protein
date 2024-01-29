@@ -2,7 +2,8 @@ import copy
 import csv
 import random
 from typing import List, Optional, Tuple
-from .random import RandomFold
+# from .random import RandomFold
+from .spiral import SpiralFold
 from .bfs import BfsFold
 from ..classes.protein import Protein
 from tqdm import tqdm
@@ -10,7 +11,7 @@ from tqdm import tqdm
 
 class HillclimberFold:
     """
-    A class to perform a hillclimber fold on a protein.
+    Represents a hillclimber fold algorithm for protein folding.
 
     Attributes
     ----------
@@ -22,8 +23,18 @@ class HillclimberFold:
         The number of iterations to run the algorithm.
     _highscore : Tuple[Protein, int]
         The highest scoring protein found.
-    _verbose : bool
+    _scores : List[int]
+        The scores of the algorithm.
+    _outputfile : Optional[str]
+        The file to write the scores to.
+    _verbose : Optional[bool]
         Whether to print the progress of the algorithm.
+
+    Methods
+    -------
+    run(self) -> Protein:
+    get_scores(self) -> List[int]:
+        Returns the scores of the algorithm.
     """
 
     def __init__(self, protein: Protein, dimensions: int, iterations: int,
@@ -41,8 +52,12 @@ class HillclimberFold:
             The number of dimensions to fold in.
         iterations : int
             The number of iterations to run the algorithm.
-        verbose : Optional[bool]
-            Whether to print the progress of the algorithm.
+        scores : List[int], optional
+            The scores of the algorithm, by default [].
+        outputfile : Optional[str], optional
+            The file to write the scores to, by default None.
+        verbose : Optional[bool], optional
+            Whether to print the progress of the algorithm, by default False.
 
         Raises
         ------
@@ -73,7 +88,7 @@ class HillclimberFold:
         # Give feedback that the algorithm has started
         print("Starting hillclimber fold.")
         # Start with a random fold
-        start_state = RandomFold(self._protein, self._dimensions, True)
+        start_state = SpiralFold(self._protein, self._dimensions)
         protein = start_state.run()
 
         # Start the highscore with the score of the random fold
@@ -126,7 +141,7 @@ class HillclimberFold:
         # Process the snippet
         args = (snippet, protein, start_coordinates,
                 end_coordinates, start_position)
-        best_protein = self.process_snippet(args)
+        best_protein = self._process_snippet(args)
 
         # Update the highscore if necessary
         self._check_highscore(best_protein)
@@ -159,9 +174,12 @@ class HillclimberFold:
 
         return start_position, end_position
 
-    def process_snippet(self, args: Tuple[Protein, Protein, Tuple[int, int, int],
-                                          Tuple[int, int, int], int]) -> Protein:
-        snippet, protein, start_coordinates, end_coordinates, start_position = args
+    def _process_snippet(self, args: Tuple[Protein, Protein,
+                                           Tuple[int, int, int],
+                                           Tuple[int, int, int], int]) -> \
+            Protein:
+        snippet, protein, start_coordinates, end_coordinates, \
+            start_position = args
 
         # Create a deep copy of the protein for this process
         protein_copy = copy.deepcopy(protein)
@@ -212,7 +230,8 @@ class HillclimberFold:
             highscore = copy.deepcopy(protein)
             self._highscore = (highscore, highscore.get_score())
             print(
-                f"New highscore found: {self._highscore[1]}") if self._verbose else None
+                f"New highscore found: {self._highscore[1]}") if \
+                self._verbose else None
             return True
 
         return False

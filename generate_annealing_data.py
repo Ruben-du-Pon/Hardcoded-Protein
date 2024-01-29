@@ -1,6 +1,6 @@
 import csv
 import sys
-from codefiles.algorithms.hillclimber import HillclimberFold
+from codefiles.algorithms.annealing import AnnealingFold
 from codefiles.classes.protein import Protein
 
 
@@ -18,10 +18,10 @@ def generate_data(dimensions: int, C: bool) -> None:
     # Set the input and output filenames
     if C:
         filename: str = "data/input/sequences_H_P_C.csv"
-        outputfile: str = f"data/output/hillclimber_data/{dimensions}D_C.csv"
+        outputfile: str = f"data/output/annealing_data/{dimensions}D_C.csv"
     else:
         filename: str = "data/input/sequences_H_P.csv"
-        outputfile: str = f"data/output/hillclimber_data/{dimensions}D.csv"
+        outputfile: str = f"data/output/annealing_data/{dimensions}D.csv"
 
     # Empty the output file
     with open(outputfile, "w") as file:
@@ -42,7 +42,7 @@ def generate_data(dimensions: int, C: bool) -> None:
             scores = []
 
             test_protein: Protein = Protein(sequence)
-            test = HillclimberFold(
+            test = AnnealingFold(
                 test_protein, dimensions, 2500, scores, outputfile)
             test_protein = test.run()
             scores = test.get_scores()

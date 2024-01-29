@@ -19,7 +19,7 @@ class SpiralFold:
 
     Methods
     -------
-    run()
+    run() -> Protein:
         Runs the spiral folding algorithm.
     """
 
@@ -50,16 +50,21 @@ class SpiralFold:
         ]
         self._steps: int = 1
 
-    def run(self) -> None:
+    def run(self) -> Protein:
         """
         Runs the spiral folding algorithm.
+
+        Returns
+        -------
+        Protein
+            The folded protein.
 
         Raises
         ------
         ValueError
             If a valid folding cannot be found for the given protein.
         """
-        current = self._protein.get_list()
+        current = self._protein.get_head()
         self._protein.add_to_grid(current.position, current)
         movement_index: int = 0
         current = current.link
@@ -81,3 +86,5 @@ class SpiralFold:
         if not self._protein.is_valid():
             raise ValueError(
                 f"Couldn't find a valid folding for protein {self._protein}")
+
+        return self._protein
