@@ -151,7 +151,10 @@ class FressFold(RandomFold):
         total_h_count = input_protein._sequence.count('H')
         total_c_count = input_protein._sequence.count('C')
         total_non_p_count = total_h_count + total_c_count
-        avg_non_p_per_segment = (total_non_p_count / 3) - 0.1  # Since we have 3 segments: START, MIDDLE, END
+        if 'C' in input_protein._sequence: # Since we have 3 segments: START, MIDDLE, END
+            avg_non_p_per_segment = (total_non_p_count / 3) - 1.1
+        else:
+            avg_non_p_per_segment = (total_non_p_count / 3) - 0.1
 
         # Define the indices for each segment
         start_index = range(0, range_length)
@@ -217,7 +220,7 @@ class FressFold(RandomFold):
                 math.floor(len(self._protein._sequence) * 2 / 3),
                 len(self._protein._sequence) - 1
             )
-
+        print(f"refold: {refold_range}")
         # Return the refolded protein based on the calculated range
         return self._refold_section(input_protein, refold_range, 20* len(input_protein._sequence))
         
@@ -314,7 +317,8 @@ class FressFold(RandomFold):
         middle_directions = self._generate_new_fold(protein, start_index, end_index)
 
         # Merge directions for the entire refolded region
-        merged_list = front_directions.copy()
+        merged_list = []
+        merged_list.extend(front_directions)
         merged_list.extend(middle_directions)
         merged_list.extend(back_directions)
 
@@ -324,16 +328,23 @@ class FressFold(RandomFold):
         for i in range(0, len(merged_list)):
             all_positions.append(tuple(map(add, all_positions[i], merged_list[i])))
 
+        max_iter = 0
         # Ensure uniqueness of positions to avoid overlaps
         while len(all_positions) != len(set(all_positions)):
             middle_directions = self._generate_new_fold(protein, start_index, end_index)
-            merged_list = front_directions.copy()
+            merged_list = []
+            merged_list.extend(front_directions)
             merged_list.extend(middle_directions)
             merged_list.extend(back_directions)
             all_positions = [(0, 0, 0)]
+            
 
             for i in range(0, len(merged_list)):
                 all_positions.append(tuple(map(add, all_positions[i], merged_list[i])))
+            
+            if max_iter > 10**3:# inf loop restart
+                return self._start_random_chain()
+            max_iter += 1
 
         # Create a new fold using the calculated positions
         return self._create_new_fold(protein, all_positions)
@@ -378,6 +389,7 @@ class FressFold(RandomFold):
             index += 1
 
         # Traverse the specified section and generate a new fold path
+        
         while index < (end_index + merges):
             if acid.predecessor:
                 while directions:
