@@ -44,9 +44,9 @@ def generate_fress(dimensions: int, C: bool) -> None:
             scores = []
 
             # Run the algorithm 10**5 times and write the results to the output file
-            for iteration in range(10**1):
+            for iteration in range(10**3):
                 test_protein: Protein = Protein(sequence)
-                test = FressFold(test_protein, dimensions, False)
+                test = FressFold(test_protein, dimensions, 100, True)
                 test_protein = test.run()
                 scores.append(test_protein.get_score())
 
