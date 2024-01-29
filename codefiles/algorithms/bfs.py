@@ -7,7 +7,7 @@ import numpy as np
 
 
 class BfsFold:
-    def __init__(self, protein: Protein, dimensions: int, when_cutting=6, step=1):
+    def __init__(self, protein: Protein, dimensions: int, when_cutting=7, step=1):
         """
         Initialize BfsFold instance.
 
@@ -22,15 +22,6 @@ class BfsFold:
         self._cut = when_cutting
         self._step = step
         self.dimensions = dimensions
-
-    def cutting_seq(self, protein: Protein, cut=8) -> Set[str]:
-        length, seq, proteins = len(protein), protein._sequence, []
-
-        for x in range(0, length, cut):
-            proteins.append(Protein(seq[x:x+cut])) 
-
-        return proteins
-
 
 
     def _valid_combinations(self, keys, prev=None, length=2, it=0, prev_valid=set()) -> List[str]:
@@ -86,7 +77,7 @@ class BfsFold:
                 ):
                     continue
                 else:
-                    combos = self.__valid_combinations(
+                    combos = self._valid_combinations(
                         keys, prev=key, length=length, it=it + 1
                     )
                     valid_combos.update({key + combo for combo in combos})
@@ -95,6 +86,15 @@ class BfsFold:
 
 
     def _add_combinations(self, prev_valid):
+        """
+        Add valid combinations based on previous valid directions.
+
+        Parameters:
+        - prev_valid (set): Set of previously valid directions.
+
+        Returns:
+        - set: New set of valid folding directions.
+        """
         new_foldings = set()
 
         if self.dimensions == 2:
@@ -313,13 +313,23 @@ class BfsFold:
             return score_dict
 
     def _is_mirror_or_rotation(self, move1, move2):
+        """
+        Check if two folding moves are mirror or rotation of each other.
+
+        Parameters:
+        - move1 (str): First folding move.
+        - move2 (str): Second folding move.
+
+        Returns:
+        - bool: True if mirror or rotation, False otherwise.
+        """
         def is_rotation(move1, move2):
             return any(move2[i:] + move2[:i] == move1 for i in range(len(move2)))
 
         if self.dimensions == 2:
             mirror_dict = {'U': 'D', 'D': 'U', 'L': 'R', 'R': 'L'}
-        elif self.dimenstions == 3:
-            mirror_dict = {'U': 'D', 'D': 'U', 'L': 'R', 'R': 'L', 'U': 'D', 'D': 'U'}
+        elif self.dimensions == 3:
+            mirror_dict = {'U': 'D', 'D': 'U', 'L': 'R', 'R': 'L', 'F': 'B', 'B': 'F'}
 
         return is_rotation(move1, move2) or all(mirror_dict[move1[i]] == move2[len(move2) - 1 - i] for i in range(len(move1)))
 
@@ -349,7 +359,7 @@ class BfsFold:
             move = {"R": (1, 0, 0), "L": (-1, 0, 0), "U": (0, 1, 0), "D": (0, -1, 0), "F": (0, 0, 1), "B": (0, 0, -1)}
         min_keys = set()
         
-        if "C" in self._sequence and self.dimensions == 2:
+        if self.dimensions == 2:
             when_cutting = 7
         elif self.dimensions == 3:
             when_cutting = 5
@@ -405,24 +415,22 @@ class BfsFold:
         return protein
 
 
-    def cut_protein_seq(self, protein: Protein, dimensions=2) -> List[Protein]:
-        seq, seq_len, lst_proteins = protein._sequence, len(protein), []
-
-        if dimensions == 2:
-            for seq_l in range(0, seq_len, 10):
-                lst_proteins.append(Protein(seq[seq_l:seq_l+10]))
-        elif dimensions == 3:
-            for seq_l in range(0, seq_len, 8):
-                lst_proteins.append(Protein(seq[seq_l:seq_l+8]))
-
-        return lst_proteins
-
-
 
     """
     NOTE: This function is for 'Simulated Annealing'
     """
     def get_possible_foldings(self, protein: Protein, first_coordinate: Tuple[int, int, int], last_coordinate: Tuple[int, int, int]) -> List[List[Aminoacid]]:
+        """
+        Get possible foldings between two coordinates.
+
+        Parameters:
+        - protein (Protein): The protein structure.
+        - first_coordinate (Tuple[int, int, int]): Starting coordinate.
+        - last_coordinate (Tuple[int, int, int]): Ending coordinate.
+
+        Returns:
+        - List[List[Aminoacid]]: List of possible foldings between the coordinates.
+        """
         valid_foldings, proteins, aminoacids, protein_aminoacids, length = [], [], [], [], len(protein)
         move = {"R": (1, 0, 0), "L": (-1, 0, 0), "U": (0, 1, 0), "D": (0, -1, 0), "F": (0, 0, 1), "B": (0, 0, -1)}
         
