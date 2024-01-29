@@ -130,10 +130,7 @@ class AnnealingFold(HillclimberFold):
         temperature = self._temperature
 
         # Calculate the chance of accepting the new protein
-        print(
-            f"old_score: {old_score}, new_score: {new_score}, temperature: {temperature}")
         chance = 2 ** ((old_score - new_score) / temperature)
-        print(f"chance: {chance}")
         chance = min(2, chance)
 
         # Check if the new protein is better than the old one and if it should

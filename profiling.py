@@ -22,7 +22,7 @@ def main() -> None:
         print("Usage: python3 profiling.py <algorithm> <iterations>")
         exit(1)
 
-    if not argv[3].isdigit():
+    if not argv[2].isdigit():
         raise ValueError("Iterations must be an integer.")
 
     algorithm = str(argv[1]).lower()

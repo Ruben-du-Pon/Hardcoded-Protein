@@ -73,7 +73,8 @@ class SpiralFold:
 
             for _ in range(self._steps):
                 current.position = tuple(
-                    sum(x) for x in zip(current.predecessor.position, self._movements[movement_index])
+                    sum(x) for x in zip(current.predecessor.position,
+                                        self._movements[movement_index])
                 )
                 self._protein.add_to_grid(current.position, current)
                 if current.link is None:
