@@ -1,12 +1,13 @@
 import csv
 import sys
-from codefiles.algorithms.hillclimber import HillclimberFold
+from codefiles.algorithms.fress import FressFold
 from codefiles.classes.protein import Protein
+import time
 
 
-def generate_data(dimensions: int, C: bool) -> None:
+def generate_fress(dimensions: int, C: bool) -> None:
     """
-    Generate a baseline for a protein folding problem.
+    Generate a fress for a protein folding problem.
 
     Parameters
     ----------
@@ -14,14 +15,15 @@ def generate_data(dimensions: int, C: bool) -> None:
         The number of dimensions in which the protein folding will be simulated.
     C : bool
         A boolean indicating whether the protein sequence includes cysteine (C) or not.
-    """  # noqa
+
+    """
     # Set the input and output filenames
     if C:
         filename: str = "data/input/sequences_H_P_C.csv"
-        outputfile: str = f"data/output/hillclimber_data/{dimensions}D_C.csv"
+        outputfile: str = f"data/output/fress/{dimensions}D_C.csv"
     else:
         filename: str = "data/input/sequences_H_P.csv"
-        outputfile: str = f"data/output/hillclimber_data/{dimensions}D.csv"
+        outputfile: str = f"data/output/fress/{dimensions}D.csv"
 
     # Empty the output file
     with open(outputfile, "w") as file:
@@ -41,11 +43,17 @@ def generate_data(dimensions: int, C: bool) -> None:
 
             scores = []
 
-            test_protein: Protein = Protein(sequence)
-            test = HillclimberFold(
-                test_protein, dimensions, 1000, scores, outputfile)
-            test_protein = test.run()
-            scores = test.get_scores()
+            # Run the algorithm 10**5 times and write the results to the output file
+            for iteration in range(10**3):
+                test_protein: Protein = Protein(sequence)
+                test = FressFold(test_protein, dimensions, 100, True)
+                test_protein = test.run()
+                scores.append(test_protein.get_score())
+
+                with open(outputfile, "a") as file:
+                    writer = csv.writer(file)
+                    writer.writerow(
+                        [iteration, str(test_protein), test_protein.get_score()])
 
             # Write the average score to the output file
             with open(outputfile, "a") as file:
@@ -61,17 +69,22 @@ def generate_data(dimensions: int, C: bool) -> None:
 
 def main() -> None:
     """
-    The main function that checks command line arguments and calls the
-    generate_data function.
+    The main function that checks command line arguments and calls the generate_fress function.
     """
     if len(sys.argv) != 3:
-        print("Usage: python generate_hillclimber_data.py <dimensions> <t/f>")
+        print("Usage: python generate_fress.py <dimensions> <t/f>")
         sys.exit(1)
 
     dimensions: int = int(sys.argv[1])
     C: bool = sys.argv[2].lower() == "t"
 
-    generate_data(dimensions, C)
+    start_time = time.time()
+
+    generate_fress(dimensions, C)
+
+    end_time = time.time()  # Record the end time
+    elapsed_time = end_time - start_time
+    print(f"Elapsed time: {elapsed_time} seconds")
 
 
 if __name__ == "__main__":
