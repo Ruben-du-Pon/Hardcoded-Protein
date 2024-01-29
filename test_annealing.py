@@ -9,7 +9,7 @@ def main() -> None:
 
     Returns:
         None
-    """
+    """  # noqa
     test_protein = Protein("PPPHHPPHHPPCPPHHHHCHHPPHHPPPPHHCPHPP")
     # Create HillclimberFold object
     annealing = AnnealingFold(test_protein, 2, 5000, verbose=True)
