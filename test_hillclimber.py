@@ -14,4 +14,4 @@ if __name__ == "__main__":
 
     protein.create_csv("data/output/csv/hillclimber_data/result.csv")
     visualization_2D.plot_2d(protein, ("red", "blue", "green"),
-                             "data/output/hillclimber_data/plot/result.png", "png")
+                             "data/output/hillclimber_data/plots/result.png", "png")
