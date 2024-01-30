@@ -8,7 +8,7 @@ import time
 import numpy as np
 
 
-class MctsFold(BfsFold):
+class Bfs_randomFold(BfsFold):
     def __init__(self, protein: Protein, dimensions: int, when_cutting=6, step=1):
         """
         Initialize MctsFold instance.
@@ -50,7 +50,7 @@ class MctsFold(BfsFold):
         min_keys = set()
         
         if self.dimensions == 2:
-            when_cutting = 7
+            when_cutting = 6
         elif self.dimensions == 3:
             when_cutting = 4
 
@@ -60,14 +60,14 @@ class MctsFold(BfsFold):
         
         step = 1
 
-        if len(protein) > 8:
-            going_till = 8
-        else:
+        if len(protein) < 8:
             going_till = len(protein) - 1
+        else:
+            going_till = 8
 
 
         for depth in range(when_cutting, going_till, step):
-            print(depth)
+            # print(depth)
             create_d = self._create_dict(
                 protein, sequence_protein, types, depth, step, min_keys, posit
             )
@@ -75,7 +75,7 @@ class MctsFold(BfsFold):
 
             min_key = min(create_d, key=lambda k: create_d[k])
             min_keys = {k for k, v in create_d.items() if v == create_d[min_key]}
-            print(min_keys)
+            # print(min_keys)
             unique_moves = set()
 
             # Check for linear transformations
@@ -216,7 +216,7 @@ class MctsFold(BfsFold):
                 types.remove("F")
 
             for action_type in types.copy():  # iterate over a copy of types
-                for iteration in range(100):
+                for iteration in range(10):
                     while length_protein != (len(min_keys_[0]) + 1):
                         if self.dimensions == 2:
                             types_ = {"R", "L", "U", "D"}
@@ -246,7 +246,7 @@ class MctsFold(BfsFold):
 
                     min_keys_ = min_keys
                 
-                dict_scores[action_type] = dict_scores[action_type] / 100
+                dict_scores[action_type] = dict_scores[action_type] / 10
 
             
             min_keys__ = [min_keys[0] + min(dict_scores, key=dict_scores.get)]
@@ -301,7 +301,7 @@ class MctsFold(BfsFold):
             writer = csv.writer(file)
             writer.writerow(['Sequence', 'Score'])
         
-        for _ in range(50):
+        for _ in range(1000):
             options.append(Protein(self._sequence))
 
         for prt in options:
@@ -309,7 +309,7 @@ class MctsFold(BfsFold):
 
             if (len(prt) >= 6 and self.dimensions == 3) or (len(prt) >= 8 and self.dimensions == 2):
                 # print(min_keys)
-                for _ in range(100):
+                for _ in range(2):
                     min_keys = self._bfsfold(prt, self._cut, self._step) 
                     result = self._mcts(min_keys)
                     results.append(result)
