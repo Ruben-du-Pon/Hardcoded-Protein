@@ -80,7 +80,7 @@ def main() -> None:
 
     start_time = time.time()
 
-    generate_fress(dimensions, C)
+    generate_bfs(dimensions, C)
 
     end_time = time.time()  # Record the end time
     elapsed_time = end_time - start_time

@@ -216,7 +216,7 @@ class Bfs_randomFold(BfsFold):
                 types.remove("F")
 
             for action_type in types.copy():  # iterate over a copy of types
-                for iteration in range(10):
+                for iteration in range(2):
                     while length_protein != (len(min_keys_[0]) + 1):
                         if self.dimensions == 2:
                             types_ = {"R", "L", "U", "D"}
@@ -246,7 +246,7 @@ class Bfs_randomFold(BfsFold):
 
                     min_keys_ = min_keys
                 
-                dict_scores[action_type] = dict_scores[action_type] / 10
+                dict_scores[action_type] = dict_scores[action_type] / 2
 
             
             min_keys__ = [min_keys[0] + min(dict_scores, key=dict_scores.get)]
@@ -301,18 +301,17 @@ class Bfs_randomFold(BfsFold):
             writer = csv.writer(file)
             writer.writerow(['Sequence', 'Score'])
         
-        for _ in range(1000):
-            options.append(Protein(self._sequence))
+        # for _ in range(1000):
+        #     options.append(Protein(self._sequence))
 
         for prt in options:
             start_time, results, min_result = time.time(), [], 0
 
             if (len(prt) >= 6 and self.dimensions == 3) or (len(prt) >= 8 and self.dimensions == 2):
                 # print(min_keys)
-                for _ in range(2):
-                    min_keys = self._bfsfold(prt, self._cut, self._step) 
-                    result = self._mcts(min_keys)
-                    results.append(result)
+                min_keys = self._bfsfold(prt, self._cut, self._step) 
+                result = self._mcts(min_keys)
+                results.append(result)
             else:
                 result = super()._bfsfold(prt, self._cut, self._step)
                 results.append(result)
