@@ -1,17 +1,17 @@
 from ..classes.protein import Protein
-from ..classes.protein import Aminoacid
 from .bfs import BfsFold
 import random
 import math
+import csv
 from typing import List
 import time
 import numpy as np
 
 
-class MctsFold(BfsFold):
+class Bfs_randomFold(BfsFold):
     def __init__(self, protein: Protein, dimensions: int, when_cutting=6, step=1):
         """
-        Initialize Mcts instance.
+        Initialize MctsFold instance.
 
         Parameters:
         - protein (Protein): The protein structure to be folded.
@@ -20,6 +20,7 @@ class MctsFold(BfsFold):
         - step (int): The step size to use during folding.
         """
         super().__init__(protein, dimensions, when_cutting, step)
+        self._protein = protein
         self._min_keys = []
 
 
@@ -49,9 +50,9 @@ class MctsFold(BfsFold):
         min_keys = set()
         
         if self.dimensions == 2:
-            when_cutting = 7
+            when_cutting = 6
         elif self.dimensions == 3:
-            when_cutting = 5
+            when_cutting = 4
 
 
         while len(self._sequence) <= when_cutting:
@@ -59,13 +60,14 @@ class MctsFold(BfsFold):
         
         step = 1
 
-        if len(self._protein) <= 12:
-            going_till = len(self._protein) - 1
+        if len(protein) < 8:
+            going_till = len(protein) - 1
         else:
-            going_till = 12
+            going_till = 8
+
 
         for depth in range(when_cutting, going_till, step):
-            print(depth)
+            # print(depth)
             create_d = self._create_dict(
                 protein, sequence_protein, types, depth, step, min_keys, posit
             )
@@ -73,6 +75,7 @@ class MctsFold(BfsFold):
 
             min_key = min(create_d, key=lambda k: create_d[k])
             min_keys = {k for k, v in create_d.items() if v == create_d[min_key]}
+            # print(min_keys)
             unique_moves = set()
 
             # Check for linear transformations
@@ -96,6 +99,15 @@ class MctsFold(BfsFold):
     
 
     def __get_protein_score(self, min_keys):
+        """
+        Get the score of the protein folded using the given folding directions.
+
+        Parameters:
+        - min_keys (List[str]): List of folding directions.
+
+        Returns:
+        - int: The score of the folded protein.
+        """
         min_keys_ = min_keys[0]
 
         if self.dimensions == 2:
@@ -118,6 +130,15 @@ class MctsFold(BfsFold):
 
 
     def __create_final_protein(self, min_keys):
+        """
+        Create the final folded protein using the given folding directions.
+
+        Parameters:
+        - min_keys (List[str]): List of folding directions.
+
+        Returns:
+        - Protein: The final folded protein.
+        """
         min_keys_ = min_keys[0]
 
         if self.dimensions == 2:
@@ -139,6 +160,15 @@ class MctsFold(BfsFold):
 
     
     def __get_coordinates(self, min_keys):
+        """
+        Get the coordinates of the protein structure using the given folding directions.
+
+        Parameters:
+        - min_keys (List[str]): List of folding directions.
+
+        Returns:
+        - List[Tuple[int, int, int]]: List of coordinates of the folded protein structure.
+        """
         pos = [(0, 0, 0)]
         if self.dimensions == 2:
             move = {"R": (1, 0, 0), "L": (-1, 0, 0), "U": (0, 1, 0), "D": (0, -1, 0)}
@@ -152,7 +182,16 @@ class MctsFold(BfsFold):
     
 
 
-    def _mcts(self, min_keys):
+    def _mcts(self, min_keys, exploration_constant=1.0):
+        """
+        Perform Monte Carlo Tree Search (MCTS) based folding on the given protein structure.
+
+        Parameters:
+        - min_keys (List[str]): List of folding directions.
+
+        Returns:
+        - Protein or bool: The folded protein structure if successful, False otherwise.
+        """
         length_protein, min_keys_, dict_scores = len(self._protein), min_keys, {}
 
         if self.dimensions == 2:
@@ -162,7 +201,7 @@ class MctsFold(BfsFold):
             types = {"R", "L", "U", "D", "F", "B"}
             types_ = {"R", "L", "U", "D", "F", "B"}
 
-        while length_protein != (len(min_keys[0]) + 1):
+        while length_protein != (len(list(min_keys)[0]) + 1):
             if min_keys_[0][-1] == "R":
                 types.remove("L")
             elif min_keys_[0][-1] == "L":
@@ -176,8 +215,8 @@ class MctsFold(BfsFold):
             elif min_keys_[0][-1] == "B":
                 types.remove("F")
 
-            for type in types:
-                for iteration in range(5000):
+            for action_type in types.copy():  # iterate over a copy of types
+                for iteration in range(10):
                     while length_protein != (len(min_keys_[0]) + 1):
                         if self.dimensions == 2:
                             types_ = {"R", "L", "U", "D"}
@@ -198,16 +237,17 @@ class MctsFold(BfsFold):
                             types_.remove("F")
 
                         min_keys_ = [min_keys_[0] + random.choice(list(types_))]
-                    
-                    if iteration == 0:
-                        dict_scores[type] = self.__get_protein_score(min_keys_)
-                    else:
-                        dict_scores[type] = dict_scores[type] + self.__get_protein_score(min_keys_)
+
+                        if iteration == 0:
+                            dict_scores[action_type] = self.__get_protein_score(min_keys_)
+                        else:
+                            dict_scores[action_type] = dict_scores[action_type] + self.__get_protein_score(min_keys_)
+
 
                     min_keys_ = min_keys
                 
-                dict_scores[type] = dict_scores[type] / 5000 
-                print(dict_scores)
+                dict_scores[action_type] = dict_scores[action_type] / 10
+
             
             min_keys__ = [min_keys[0] + min(dict_scores, key=dict_scores.get)]
             coordinates_ = self.__get_coordinates(min_keys__)
@@ -234,32 +274,73 @@ class MctsFold(BfsFold):
 
         return self.__create_final_protein(min_keys)
 
+                
+
+    def to_csv(self, min_prt, filename):
+        """
+        Save the sequence and score of the final folded protein to a CSV file.
+
+        Parameters:
+        - filename (str): The name of the CSV file to be created.
+        """
+        # min_prt = self.run()  # Ensure the folding is performed before saving to CSV
+
+        with open(filename, mode='a', newline='') as file:
+            writer = csv.writer(file)
+
+            # Write the data for the final folded protein
+            writer.writerow([min_prt._sequence, min_prt.get_score()])
+
+
 
     def run(self) -> Protein:
-        start_time, results, min_result = time.time(), [], 0
+        options, scores = [], []
+        filename = f"MCTS_{self._sequence}_{self.dimensions}D.csv"
 
-        if len(self._protein) >= 10:
-            min_keys = self._bfsfold(self._protein, self._cut, self._step) 
-            # print(min_keys)
-            for _ in range(2):
-                result = self._mcts(min_keys)
-                results.append(result)
-        else:
-            result = super()._bfsfold(self._protein, self._cut, self._step)
-
-        end_time = time.time()  # Record the end time
-        elapsed_time = end_time - start_time
-        print(f"Elapsed time: {elapsed_time} seconds")
-
-        min_prt = results[0]
+        with open(filename, mode='a', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow(['Sequence', 'Score'])
         
-        for result in results:
-            if result is not False:
-                if result.get_score() < min_result:
-                    min_prt = result
-                    min_result = result.get_score()
+        for _ in range(1000):
+            options.append(Protein(self._sequence))
+
+        for prt in options:
+            start_time, results, min_result = time.time(), [], 0
+
+            if (len(prt) >= 6 and self.dimensions == 3) or (len(prt) >= 8 and self.dimensions == 2):
+                # print(min_keys)
+                for _ in range(2):
+                    min_keys = self._bfsfold(prt, self._cut, self._step) 
+                    result = self._mcts(min_keys)
+                    results.append(result)
+            else:
+                result = super()._bfsfold(prt, self._cut, self._step)
+                results.append(result)
+
+            end_time = time.time()  # Record the end time
+            elapsed_time = end_time - start_time
+            print(f"Elapsed time: {elapsed_time} seconds")
+
+            min_prt = results[0]
+            
+            for result in results:
+                if result is not False:
+                    if result.get_score() < min_result:
+                        min_prt = result
+                        min_result = result.get_score()
+
+            if min_prt is not False:    
+                self.to_csv(min_prt, filename)
+
+
+                scores.append(min_result)
+        
+        with open(filename, "a") as file:
+            writer = csv.writer(file)
+            writer.writerow([])
+            writer.writerow(
+                ["Average:", f"{sum(scores) / len(scores)}"])
+            writer.writerow([])
+            writer.writerow([])
 
         return min_prt
-                
-
-                
