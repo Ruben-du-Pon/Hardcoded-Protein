@@ -1,7 +1,7 @@
 from .aminoacid import Aminoacid
 from operator import sub
 import csv
-from typing import Dict, List, Set, Tuple
+from typing import Dict, List, Tuple
 
 
 class Protein:
@@ -12,6 +12,8 @@ class Protein:
     ----------
     _sequence : str
         A string representing the amino acid sequence of the protein.
+    _list : List[Aminoacid]
+        A list of amino acids in the protein.
     _grid : Dict[Tuple[int, int, int], Aminoacid]
         A grid mapping positions to amino acids in the protein structure.
     _head : Aminoacid
@@ -21,14 +23,6 @@ class Protein:
 
     Methods
     -------
-    __init__(sequence: str) -> None:
-        Initialize a Protein object with the given amino acid sequence.
-
-    __create_double_linked_list() -> Aminoacid:
-        Create a double-linked list based on the provided amino acid sequence.
-        This method is used only during the initialization of the Protein object
-        and cannot be called on an already created object.
-
     get_score() -> int:
         Get the stability score of the protein.
 
@@ -50,6 +44,9 @@ class Protein:
     get_tail() -> Aminoacid:
         Get the tail of the double-linked list representing the protein structure.
 
+    get_list() -> List[Aminoacid]:
+        Get the list of amino acids in the protein.
+
     get_grid() -> Dict[Tuple[int, int, int], Aminoacid]:
         Get the protein grid.
 
@@ -61,12 +58,6 @@ class Protein:
 
     reset_grid():
         Clear the grid and add back all the positions of the amino acids.
-
-    __str__() -> str:
-        Return the string representation of the protein.
-
-    __len__() -> int:
-        Return the length of the amino acid sequence.
     """
 
     def __init__(self, sequence: str) -> None:

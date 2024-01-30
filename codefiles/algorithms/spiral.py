@@ -22,6 +22,9 @@ class SpiralFold:
     run() -> Protein:
         Runs the spiral folding algorithm.
     """
+    movements: List[Tuple[int, int, int]] = [
+        (0, 1, 0), (1, 0, 0), (0, -1, 0), (-1, 0, 0)
+    ]
 
     def __init__(self, protein: Protein, dimensions: int) -> None:
         """
@@ -45,9 +48,6 @@ class SpiralFold:
 
         self._protein = protein
         self._dimensions = dimensions
-        self._movements: List[Tuple[int, int, int]] = [
-            (0, 1, 0), (1, 0, 0), (0, -1, 0), (-1, 0, 0)
-        ]
         self._steps: int = 1
 
     def run(self) -> Protein:
@@ -64,24 +64,32 @@ class SpiralFold:
         ValueError
             If a valid folding cannot be found for the given protein.
         """
+        # Add the first amino acid to the grid.
         current = self._protein.get_head()
         self._protein.add_to_grid(current.position, current)
+
+        # Initialize a movement index and move to the next amino acid.
         movement_index: int = 0
         current = current.link
 
+        # Keep setting positions until a valid folding is found.
         while not self._protein.is_valid():
 
+            # Set the position of self._steps amino acids in the current direction.
             for _ in range(self._steps):
                 current.position = tuple(
                     sum(x) for x in zip(current.predecessor.position,
-                                        self._movements[movement_index])
+                                        SpiralFold.movements[movement_index])
                 )
                 self._protein.add_to_grid(current.position, current)
+
+                # If the end of the protein is reached, stop.
                 if current.link is None:
                     break
                 current = current.link
 
-            movement_index = (movement_index + 1) % len(self._movements)
+            # Change the direction and increase the number of steps.
+            movement_index = (movement_index + 1) % len(SpiralFold.movements)
             self._steps += 1 if movement_index % 2 == 0 else 0
 
         if not self._protein.is_valid():

@@ -73,21 +73,24 @@ class AnnealingFold(HillclimberFold):
         Protein
             The highest scoring protein found.
         """
-        # Start with a random fold
+        # Give feedback that the algorithm has started.
+        print("Starting Simulated Annealing fold.")
+
+        # Start with a random fold.
         start_state = SpiralFold(self._protein, self._dimensions)
         protein = start_state.run()
 
-        # Start the highscore with the score of the random fold
+        # Start the highscore with the score of the random fold.
         self._highscore = (protein, protein.get_score())
 
-        # Run the algorithm for the specified number of iterations
+        # Run the algorithm for the specified number of iterations.
         for iteration in tqdm(range(self._iterations)):
             next_fold = copy.deepcopy(self._highscore[0])
             self._run_experiment(next_fold)
             self._temperature *= 1 - self._cooling_rate
             self._temperature = max(1, self._temperature)
 
-            # Write data to file
+            # Write data to file.
             if self._outputfile:
 
                 self._scores.append(next_fold.get_score())
@@ -97,7 +100,7 @@ class AnnealingFold(HillclimberFold):
                     writer.writerow(
                         [iteration, str(next_fold), next_fold.get_score()])
 
-        # Return the highest scoring protein
+        # Return the highest scoring protein.
         self._highscore[0].reset_grid()
         return self._highscore[0]
 
@@ -115,26 +118,26 @@ class AnnealingFold(HillclimberFold):
         bool
             True if the current protein's score is a new highscore, False otherwise.
         """  # noqa
-        # Reset the grid
+        # Reset the grid.
         protein.reset_grid()
 
-        # Early return if the protein is invalid
+        # Early return if the protein is invalid.
         if not protein.is_valid():
             return False
 
-        # Get the old and new score
+        # Get the old and new score.
         old_score = self._highscore[1]
         new_score = protein.get_score()
 
-        # Get the temperature and update it
+        # Get the temperature and update it.
         temperature = self._temperature
 
-        # Calculate the chance of accepting the new protein
+        # Calculate the chance of accepting the new protein.
         chance = 2 ** ((old_score - new_score) / temperature)
         chance = min(2, chance)
 
         # Check if the new protein is better than the old one and if it should
-        # be accepted
+        # be accepted.
         if (new_score < self._highscore[1]) \
                 and (chance > random.random()):
             self._highscore = (protein, new_score)
