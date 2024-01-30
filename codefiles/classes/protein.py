@@ -119,18 +119,18 @@ class Protein:
             The calculated stability score of the protein.
         """
         self._score = 0
-        current = self._head
 
-        while current:
+        # Define the adjacent positions to the current amino acid
+        adjacent_positions = [(1, 0, 0), (-1, 0, 0),
+                              (0, 1, 0), (0, -1, 0), (0, 0, 1), (0, 0, -1)]
 
-            # Get the positions of the amino acids connected to the current amino acid
-            connections = [pos for node in [current.predecessor, current.link]
-                           if node and (pos := getattr(node, 'position', None))
-                           and isinstance(pos, Tuple) and len(pos) == 3]
+        for current in self._list:
 
-            # Define the adjacent positions to the current amino acid
-            adjacent_positions = [(1, 0, 0), (-1, 0, 0),
-                                  (0, 1, 0), (0, -1, 0), (0, 0, 1), (0, 0, -1)]
+            # Get the positions of the amino acids connected to the current
+            # amino acid
+            connections = [node.position for node in [current.predecessor,
+                                                      current.link]
+                           if node and node.position]
 
             # Check if the adjacent positions are not yet in the connections
             check_positions = [(c + adj[0], d + adj[1], e + adj[2]) for
@@ -140,15 +140,15 @@ class Protein:
                                (c + adj[0], d + adj[1], e + adj[2]) not in
                                connections]
 
-            # Add the stability score of the current amino acid to the total score
+            # Add the stability score of the current amino acid to the
+            # total score
             for pos_tuple in check_positions:
                 if pos_tuple in self._grid:
                     self._score += current.get_stability_score(
                         self._grid[pos_tuple])
 
-            current = current.link
-
-        # Return the total score divided by 2 since every connection is counted twice
+        # Return the total score divided by 2 since every connection is
+        # counted twice
         return (self._score // 2)
 
     def get_folding(self) -> List[Dict[str, int]]:
