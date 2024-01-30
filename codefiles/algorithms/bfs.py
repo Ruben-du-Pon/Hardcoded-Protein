@@ -7,6 +7,14 @@ import numpy as np
 
 
 class BfsFold:
+
+    opposite_moves = {"R": "L", "L": "R",
+                      "U": "D", "D": "U", "F": "B", "B": "F"}
+    moves_2d = {"R": (1, 0, 0), "L": (-1, 0, 0),
+                "U": (0, 1, 0), "D": (0, -1, 0)}
+    moves_3d = {"R": (1, 0, 0), "L": (-1, 0, 0), "U": (0, 1, 0),
+                "D": (0, -1, 0), "F": (0, 0, 1), "B": (0, 0, -1)}
+    
     def __init__(self, protein: Protein, dimensions: int, when_cutting=7, step=1):
         """
         Initialize BfsFold instance.

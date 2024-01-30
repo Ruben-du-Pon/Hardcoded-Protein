@@ -50,7 +50,7 @@ class MctsFold(BfsFold):
         min_keys = set()
         
         if self.dimensions == 2:
-            when_cutting = 6
+            when_cutting = 7
         elif self.dimensions == 3:
             when_cutting = 4
 
@@ -60,8 +60,8 @@ class MctsFold(BfsFold):
         
         step = 1
 
-        if len(protein) > 7:
-            going_till = 7
+        if len(protein) > 8:
+            going_till = 8
         else:
             going_till = len(protein) - 1
 
@@ -307,7 +307,7 @@ class MctsFold(BfsFold):
         for prt in options:
             start_time, results, min_result = time.time(), [], 0
 
-            if (len(prt) >= 5 and self.dimensions == 3) or (len(prt) >= 7 and self.dimensions == 2):
+            if (len(prt) >= 6 and self.dimensions == 3) or (len(prt) >= 8 and self.dimensions == 2):
                 # print(min_keys)
                 for _ in range(100):
                     min_keys = self._bfsfold(prt, self._cut, self._step) 
