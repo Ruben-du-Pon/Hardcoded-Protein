@@ -9,16 +9,6 @@ class RandomFold:
     """
     Class for performing a random folding on a protein sequence.
 
-    Parameters
-    ----------
-    protein : Protein
-        The protein sequence on which the random folding is performed.
-    dimensions : int
-        The number of dimensions for the folding (2 for 2D, 3 for 3D).
-    avoid_overlap : Optional[bool], optional
-        If True, ensures that no two amino acids occupy the same position,
-        by repeatedly selecting a new position until a unique one is found.
-
     Attributes
     ----------
     _protein : Protein
@@ -30,12 +20,12 @@ class RandomFold:
 
     Methods
     -------
-    run() -> None:
+    run() -> Protein:
         Perform the random folding on the protein sequence.
         If avoid_overlap is True, ensures that no two amino acids occupy the
         same position by repeatedly selecting a new position until a unique one is found.
 
-    get_random_direction() -> Tuple[int, int, int]:
+    get_random_direction(directions: List[Tuple[int, int, int]]) -> Tuple[int, int, int]:
         Get a random direction for the folding.
         Returns a tuple representing the random direction.
 
@@ -213,6 +203,11 @@ class RandomFold:
     def get_random_direction(self, directions: List[Tuple[int, int, int]]) -> Tuple[int, int, int]:
         """
         Get a random direction for the folding.
+
+        Parameters
+        ----------
+        directions : List[Tuple[int, int, int]]
+            The list of available directions.
 
         Returns
         -------

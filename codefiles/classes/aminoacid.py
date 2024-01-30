@@ -18,24 +18,21 @@ class Aminoacid:
 
     Methods
     -------
-    __init__(type: str, predecessor: Optional[Aminoacid] = None, link: Optional[Aminoacid] = None)
-        Initialize an Aminoacid object with the given type and optional predecessor and link.
-
     get_type() -> str
         Get the type of the amino acid.
 
     get_stability_score(other: Aminoacid) -> int
-        Calculate the stability score of the amino acid pair. The score is 0 if either amino acid is of type 'P'. 
-        If either amino acid is of type 'H', the score is -1. If the amino acid is of type 'C', the score is -5.
-
-    __str__() -> str
-        Return the string representation of the amino acid.
+        Calculate the stability score of the amino acid pair. The score is 0
+        if either amino acid is of type 'P'.
+        If either amino acid is of type 'H', the score is -1. If the amino
+        acid is of type 'C', the score is -5.
     """
 
     def __init__(self, type: str, predecessor: Optional["Aminoacid"] = None,
                  link: Optional["Aminoacid"] = None) -> None:
         """
-        Initialize an Aminoacid object with the given type and optional predecessor and link.
+        Initialize an Aminoacid object with the given type and optional
+        predecessor and link.
 
         Parameters
         ----------
@@ -45,7 +42,7 @@ class Aminoacid:
             The predecessor amino acid in the protein sequence. Defaults to None.
         link : Optional[Aminoacid], optional
             The successor amino acid in the protein sequence. Defaults to None.
-        """
+        """  # noqa
         self.position: Tuple[int, int, int] = (0, 0, 0)
         self.predecessor: Optional["Aminoacid"] = predecessor
         self.link: Optional["Aminoacid"] = link
@@ -64,8 +61,10 @@ class Aminoacid:
 
     def get_stability_score(self, other: "Aminoacid") -> int:
         """
-        Calculate the stability score of the amino acid pair. The score is 0 if either amino acid is of type 'P'. 
-        If either amino acid is of type 'H', the score is -1. If the amino acid is of type 'C', the score is -5.
+        Calculate the stability score of the amino acid pair. The score is 0
+        if either amino acid is of type 'P'.
+        If either amino acid is of type 'H', the score is -1. If the amino
+        acid is of type 'C', the score is -5.
 
         Parameters
         ----------
