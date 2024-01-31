@@ -88,6 +88,8 @@ class Aminoacid:
         if self_type == "C":
             return -5
 
+        return 0
+
     def __str__(self) -> str:
         """
         Return the string representation of the amino acid.

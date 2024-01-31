@@ -77,7 +77,7 @@ class FressFold(RandomFold):
         Protein: The protein with analysis data added for further processing.
         """
         chain_analysis = []
-        current = input_protein._head
+        current: Optional[Aminoacid] = input_protein._head
 
         while current:
             connections_info = []
@@ -295,7 +295,7 @@ class FressFold(RandomFold):
 
         # Extract positions for the front and back ridget parts
         index = 0
-        acid = protein.get_head()
+        acid: Optional[Aminoacid] = protein.get_head()
         ridget_part_front = []
         ridget_part_back = []
 
@@ -349,7 +349,7 @@ class FressFold(RandomFold):
         # Create a new fold using the calculated positions
         return self._create_new_fold(protein, all_positions)
 
-    def _generate_new_fold(self, protein: Protein, start_index: int, end_index: int) -> List[Tuple[int, int, int]]:
+    def _generate_new_fold(self, protein: Protein, start_index: int, end_index: int) -> List[Tuple[int, ...]]:
         """
         Generates a new fold path for a specified section of the protein.
 
@@ -365,13 +365,14 @@ class FressFold(RandomFold):
         protein_copy = self._clear_copy()
 
         # Initialize acid and index for traversal
-        acid = protein_copy.get_head()
+        acid: Optional[Aminoacid] = protein_copy.get_head()
         index = 0
         backtracking_bool = False
 
         # Move to the starting index
         while index < start_index:
-            acid = acid.link
+            if acid is not None:
+                acid = acid.link
             index += 1
 
         path = []
@@ -381,7 +382,7 @@ class FressFold(RandomFold):
         merges = 1 if index == 0 or end_index == len(protein_copy._sequence) - 1 else 2
 
         # Handle the first index if it's at the beginning of the sequence
-        if index == 0:
+        if index == 0 and acid is not None:
             new_position = (0, 0, 0)
             acid.position = new_position
             path.append(new_position)
@@ -391,38 +392,51 @@ class FressFold(RandomFold):
         # Traverse the specified section and generate a new fold path
         
         while index < (end_index + merges):
-            if acid.predecessor:
+            if acid is not None and acid.predecessor:
                 while directions:
                     random_direction = random.choice(directions)
-                    new_position = tuple(map(add, acid.predecessor.position, random_direction))
+                    if acid and acid.predecessor and len(acid.predecessor.position) == 3:
+                        new_position = (
+                            acid.predecessor.position[0] + random_direction[0],
+                            acid.predecessor.position[1] + random_direction[1],
+                            acid.predecessor.position[2] + random_direction[2]
+                        )
                     
-                    if protein_copy.is_valid_fold(new_position):
-                        acid.position = new_position
-                        path.append(new_position)
-                        break
-                    else:
-                        print(random_direction)
-                        print(directions)
-                        # Remove direction if not valid
-                        if random_direction in directions:
-                            directions.remove(random_direction)
+                        if protein_copy.is_valid_fold(new_position):
+                            acid.position = new_position
+                            path.append(new_position)
+                            break
+                        else:
+                            print(random_direction)
+                            print(directions)
+                            # Remove direction if not valid
+                            if random_direction in directions:
+                                directions.remove(random_direction)
                 
                 if not directions:
                     print("Backtracking")
                     # Backtracking is needed
                     if len(path) > 4:
-                        avoid_direction_path = tuple(map(sub, path[index - 2], path[index - 3]))
+                        avoid_direction_path = (
+                            path[index - 2][0] - path[index - 3][0],
+                            path[index - 2][1] - path[index - 3][1],
+                            path[index - 2][2] - path[index - 3][2]
+                        )
                     else:
                         avoid_direction_path = None
                     if len(path) > 3:
-                        avoid_direction_failed_path = tuple(map(sub, path[index - 1], path[index - 2]))
+                        avoid_direction_failed_path = (
+                            path[index - 1][0] - path[index - 2][0],
+                            path[index - 1][1] - path[index - 2][1],
+                            path[index - 1][2] - path[index - 2][2]
+                        )
                     else:
                         avoid_direction_failed_path = None
                     directions = super()._get_directions()
                     
-                    if avoid_direction_path in directions:
+                    if avoid_direction_path and avoid_direction_path in directions:
                         directions.remove(avoid_direction_path)
-                    if avoid_direction_failed_path in directions:
+                    if avoid_direction_failed_path and avoid_direction_failed_path in directions:
                         directions.remove(avoid_direction_failed_path)
                     
                     index -= 1
@@ -431,14 +445,17 @@ class FressFold(RandomFold):
                     backtracking_bool = True
 
             if not backtracking_bool:
-                avoid_direction = tuple(-x for x in random_direction)
-                directions = super()._get_directions()
+                if len(random_direction) == 3:
+                    x, y, z = random_direction
+                    avoid_direction = (-x, -y, -z)
+                    directions = super()._get_directions()
 
-                if avoid_direction in directions:
-                    directions.remove(avoid_direction)
-                
-                index += 1
-                acid = acid.link
+                    if avoid_direction in directions:
+                        directions.remove(avoid_direction)
+
+                    index += 1
+                    if acid is not None:
+                        acid = acid.link
             
             backtracking_bool = False
         
@@ -462,7 +479,7 @@ class FressFold(RandomFold):
         """
         # Create a deep copy of the protein to work with
         protein_copy = self._clear_copy()
-        acid = protein_copy.get_head()
+        acid: Optional[Aminoacid] = protein_copy.get_head()
 
         index = 0 
         while acid:
@@ -470,7 +487,8 @@ class FressFold(RandomFold):
             acid.position = new_position
             protein_copy.add_to_grid(new_position, acid)
             index += 1
-            acid = acid.link
+            if acid is not None:
+                acid = acid.link
 
         return protein_copy
 
@@ -485,7 +503,7 @@ class FressFold(RandomFold):
         Returns:
         Aminoacid: The amino acid at the specified index.
         """
-        acid = protein.get_head()
+        acid: Optional[Aminoacid] = protein.get_head()
         current_index = 0
         while acid and current_index < index:
             acid = acid.link
