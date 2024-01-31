@@ -2,7 +2,6 @@ from ..classes.protein import Protein
 from .bfs import BfsFold
 import random
 from typing import List
-import time
 import numpy as np
 
 

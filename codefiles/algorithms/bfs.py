@@ -1,7 +1,6 @@
 from codefiles.classes.protein import Protein, Aminoacid
 import random
 from typing import List, Set, Tuple, Dict, Optional, Any
-import time
 import numpy as np
 
 
