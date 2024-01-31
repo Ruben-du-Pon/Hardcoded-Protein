@@ -102,7 +102,7 @@ def main():
         file_name = f"{dimension}D_{letter}.csv"
     else:
         file_name = f"{dimension}D.csv"
-    folder_paths = ["data/output/fress/", "data/output/bfs/", "data/output/fress/", "data/output/bfs/"]  # Add your folder paths
+    folder_paths = ["data/output/fress/", "data/output/bfs/", "data/output/hillclimber_data/", "data/output/annealing_data/"]  # Add your folder paths
     algorithm_names = ["Fress", "BFS", "Hill Climber", "Simulated Annealing"]
 
     data = []
