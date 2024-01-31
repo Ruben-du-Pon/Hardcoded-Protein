@@ -3,8 +3,11 @@
 import os
 import sys
 import subprocess
+import csv
 
 from codefiles.classes.protein import Protein
+from codefiles.visualization import visualization_2D
+from codefiles.visualization import visualization_3D
 
 # Dynamically get filenames without extensions from the algorithms directory
 ALGORITHM_FILES = [
@@ -82,16 +85,9 @@ def main() -> None:
 
         # Determine the file to read the protein sequence from
         if sys.argv[4].lower() == "n":
-            sequence_file = "data/input/sequences_H_P"
+            sequence_file = "data/input/sequences_H_P.csv"
         else:
-            sequence_file = "data/input/sequences_H_P_C"
-
-        # Read the protein sequence from the file
-        with open(sequence_file) as f:
-            protein_sequence = f.read().strip()
-
-        # Create a Protein object
-        protein = Protein(protein_sequence)
+            sequence_file = "data/input/sequences_H_P_C.csv"
 
         # Dynamically import the specified fold algorithm
         fold_algorithm_module = __import__(
@@ -105,13 +101,37 @@ def main() -> None:
         fold_algorithm_class = getattr(
             fold_algorithm_module, class_name)
 
-        # Create an instance of the specified fold algorithm class
-        fold_algorithm_instance = fold_algorithm_class(protein,
-                                                       dimensions,
-                                                       iterations)
-
-        # Call the run method of the specified fold algorithm instance
-        fold_algorithm_instance.run()
+        # Read the protein sequence from the file
+        with open(sequence_file, "r") as file:
+            reader = csv.reader(file)
+            line_number: int = 0
+            # Read the file line by line until an empty line is reached
+            for row in reader:
+                if not row:
+                    break
+                # Create Protein objects for each sequence
+                sequence: str = row[0]
+                test_protein: Protein = Protein(sequence)
+                # Initialize the folding algorithm class
+                fold_instance = fold_algorithm_class(test_protein, dimensions, iterations)
+                # Call the run method of the folding algorithm
+                test_protein = fold_instance.run()
+                # Set the output filenames
+                if dimensions == 2:
+                    filename = f"data/output/csv/{fold_algorithm}_{line_number}_2D.csv"
+                    plotname = f"data/output/plot/{fold_algorithm}_{line_number}_2D.png"
+                else:
+                    filename = f"data/output/csv/{fold_algorithm}_{line_number}_3D.csv"
+                    plotname = f"data/output/plot/{fold_algorithm}_{line_number}_3D.png"
+                # Write the results to a CSV file and the visualization to a file
+                test_protein.create_csv(filename)
+                if dimensions == 2:
+                    visualization_2D.plot_2d(
+                        test_protein, ("red", "blue", "green"), plotname, 'png')
+                else:
+                    visualization_3D.plot_3d(
+                        test_protein, ("red", "blue", "green"), plotname, 'png')
+                line_number += 1
 
 
 if __name__ == "__main__":
