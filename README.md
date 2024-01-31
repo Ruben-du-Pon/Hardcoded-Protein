@@ -67,7 +67,7 @@ In the two tables below is the estimation on how long each algorithm takes to fi
 | Hillclimber              |            ~0.004s            |            ~0.065s               |           ~0.083s                |            ~0.110s               |
 | Simulated Annealing      |            ~0.005s            |            ~0.060s               |           ~0.082s                |            ~0.098s               |
 | BFS with Random sampling |             ~4.2s             |             ~5.0s                |            ~7.0s                 |             ~9.0s                |
-| FRESS                    |             ~0.2s             |             ~0.6s                |            ~1.0s                 |             ~2.2s                |
+| FRESS                    |             ~0.7s             |             ~1.1s                |            ~1.5s                 |             ~2.7s                |
 ```
 
 
@@ -80,7 +80,7 @@ In the two tables below is the estimation on how long each algorithm takes to fi
 | Hillclimber              |            ~0.063s            |            ~6.43s                |            ~12.15s               |            ~11.95s               |
 | Simulated Annealing      |            ~0.097s            |            ~5.82s                |            ~10.4s                |            ~12.86                |
 | BFS with Random sampling |             ~3.5s             |            ~4.0s                 |             ~20s                 |             ~32s                 |
-| FRESS                    |             ~0.3s             |            ~0.5s                 |             ~0.5s                |             ~0.9s                |
+| FRESS                    |             ~0.8s             |            ~1.0s                 |             ~1.0s                  |             ~1.4s                |
 
 ```
 
