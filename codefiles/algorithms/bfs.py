@@ -533,11 +533,7 @@ class BfsFold:
         return protein_aminoacids
 
     def run(self) -> Protein:
-        start_time = time.time()
 
         result = self._bfsfold(self._protein, self._cut, self._step)
-
-        end_time = time.time()
-        elapsed_time = end_time - start_time
 
         return result
