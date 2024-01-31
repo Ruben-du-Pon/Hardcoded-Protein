@@ -1,7 +1,7 @@
 from ..classes.protein import Protein
 from ..classes.protein import Aminoacid
 import random
-from typing import List, Set, Tuple
+from typing import List, Set, Tuple, Optional
 import time
 import numpy as np
 
@@ -25,14 +25,16 @@ class BfsFold:
         - when_cutting (int): The length at which to start cutting the protein sequence during folding.
         - step (int): The step size to use during folding.
         """
-        self._protein = protein
-        self._sequence = protein._sequence
-        self._cut = when_cutting
-        self._step = step
-        self.dimensions = dimensions
+        self._protein: 'Protein' = protein
+        self._sequence: str = protein._sequence
+        self._cut: int = when_cutting
+        self._step: int = step
+        self.dimensions: int = dimensions
 
 
-    def _valid_combinations(self, keys, prev=None, length=2, it=0, prev_valid=set()) -> List[str]:
+    def _valid_combinations(
+        self, keys: List[str], prev: Optional[str] = None, length: int = 2, it: int = 0, prev_valid: Set[str] = set()
+    ) -> Set[str]:
         """
         Generate valid combinations of folding directions.
 
@@ -92,7 +94,7 @@ class BfsFold:
 
             return valid_combos
 
-    def _add_combinations(self, prev_valid):
+    def _add_combinations(self, prev_valid: Set[str]) -> Set[str]:
         """
         Add valid combinations based on previous valid directions.
 
@@ -136,8 +138,10 @@ class BfsFold:
 
         return new_foldings
 
-    def _create_nested_dict(self, protein: Protein, keys, depth, prev=None,
-                            pos=[(0, 0, 0)], memo=None) -> dict:
+    def _create_nested_dict(
+        self, protein: 'Protein', keys: List[str], depth: int, prev: Optional[str] = None,
+        pos: List[Tuple[int, int, int]] = [(0, 0, 0)], memo: Optional[dict] = None
+    ) -> dict:
         if memo is None:
             memo = {}
 
@@ -165,7 +169,8 @@ class BfsFold:
         return result_dict
 
     def _create_dict(
-        self, protein: Protein, protein_sequence, keys, depth, step_size, best_options=set(), posit=None
+        self, protein: 'Protein', protein_sequence: str, keys: List[str], depth: int, step_size: int,
+        best_options: Set[str] = set(), posit: Optional[List[Tuple[int, int, int]]] = None
     ) -> dict:
         """
         Create a dictionary of possible folding sequences and their corresponding scores.
@@ -272,7 +277,7 @@ class BfsFold:
 
         return score_dict
 
-    def _is_mirror_or_rotation(self, move1, move2):
+    def _is_mirror_or_rotation(self, move1: str, move2: str) -> bool:
         """
         Check if two folding moves are mirror or rotation of each other.
 
@@ -293,7 +298,7 @@ class BfsFold:
 
         return is_rotation(move1, move2) or all(mirror_dict[move1[i]] == move2[len(move2) - 1 - i] for i in range(len(move1)))
 
-    def _bfsfold(self, protein: Protein, when_cutting, step) -> Protein:
+    def _bfsfold(self, protein: 'Protein', when_cutting: int, step: int) -> 'Protein':
         """
         Perform Breadth-First Search (BFS) based folding on the given protein structure.
 
@@ -380,7 +385,9 @@ class BfsFold:
     NOTE: This function is for 'Simulated Annealing'
     """
 
-    def get_possible_foldings(self, protein: Protein, first_coordinate: Tuple[int, int, int], last_coordinate: Tuple[int, int, int]) -> List[List[Aminoacid]]:
+    def get_possible_foldings(
+        self, protein: 'Protein', first_coordinate: Tuple[int, int, int], last_coordinate: Tuple[int, int, int]
+    ) -> List[List['Aminoacid']]:
         """
         Get possible foldings between two coordinates.
 
@@ -438,7 +445,7 @@ class BfsFold:
 
         return protein_aminoacids
 
-    def run(self) -> Protein:
+    def run(self) -> 'Protein':
         """
         Run the BFS folding algorithm on the specified protein.
 
