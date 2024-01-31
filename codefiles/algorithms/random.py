@@ -28,10 +28,11 @@ class RandomFold:
         Returns a list of possible directions for folding based on the number of dimensions.
     - get_random_direction(self, directions: List[Tuple[int, int, int]]) -> Tuple[int, int, int]:
         Returns a random direction from the given list of directions.
-    """
+    """  # noqa
 
     def __init__(self, protein: Protein, dimensions: int,
-                 avoid_overlap: Optional[bool] = True, verbose: Optional[bool] = False) -> None:
+                 avoid_overlap: Optional[bool] = True,
+                 verbose: Optional[bool] = False) -> None:
         """
         Initializes a new instance of the RandomFold class.
 
@@ -43,7 +44,7 @@ class RandomFold:
 
         Raises:
         - ValueError: If the dimensions parameter is not 2 or 3.
-        """
+        """  # noqa
         if dimensions not in (2, 3):
             raise ValueError("Dimensions must be 2 or 3.")
 
@@ -55,10 +56,10 @@ class RandomFold:
     def run(self) -> Protein:
         """
         Runs the random folding algorithm and returns the folded protein.
-        
+
         Parameters:
         - None
-        
+
         Returns:
         - Protein: The folded protein.
         """
@@ -97,7 +98,7 @@ class RandomFold:
 
         Parameters:
         - max_backtracking (int): The maximum number of backtracking attempts allowed (default is 5000).
-        """
+        """  # noqa
         backtrack_count = 0
         acid: Optional[Aminoacid] = self._protein.get_head()
         if acid is not None:
@@ -109,7 +110,9 @@ class RandomFold:
 
         directions = self._get_directions()
 
-        print(f"{acid}[0]: {acid.position}") if self._verbose and acid is not None else None
+        print(
+            f"{acid}[0]: {acid.position}") \
+            if self._verbose and acid is not None else None
 
         acid_index = 1
         if acid is not None:
@@ -135,14 +138,19 @@ class RandomFold:
                 if not directions:
                     # backtracking
                     avoid_direction_path = tuple(
-                        map(sub, protein_path[acid_index - 2], protein_path[acid_index - 3]))
+                        map(sub, protein_path[acid_index - 2],
+                            protein_path[acid_index - 3]))
                     avoid_direction_failed_path = tuple(
-                        map(sub, protein_path[acid_index - 1], protein_path[acid_index - 2]))
+                        map(sub, protein_path[acid_index - 1],
+                            protein_path[acid_index - 2]))
                     directions = self._get_directions()
+
                     if avoid_direction_path in directions:
                         directions.remove(avoid_direction_path)
+
                     if avoid_direction_failed_path in directions:
                         directions.remove(avoid_direction_failed_path)
+
                     print("backtracking needed") if self._verbose else None
                     acid_index -= 1
                     backtrack_count += 1
@@ -153,7 +161,8 @@ class RandomFold:
                             current.position = (0, 0, 0)
                             current = current.link
                             while current is not None:
-                                self._protein.remove_from_grid(current.position)
+                                self._protein.remove_from_grid(
+                                    current.position)
                                 current.position = (0, 0, 0)
                                 current = current.link
 
@@ -162,7 +171,8 @@ class RandomFold:
                     acid = acid.predecessor
                     backtracking_bool = True
                     print(
-                        f"{acid}[{acid_index}]: {acid.position}") if self._verbose else None
+                        f"{acid}[{acid_index}]: {acid.position}")\
+                        if self._verbose else None
 
             if not backtracking_bool:
                 if len(random_direction) == 3:
@@ -172,7 +182,8 @@ class RandomFold:
                     if avoid_direction in directions:
                         directions.remove(avoid_direction)
                     print(
-                        f"{acid}[{acid_index}]: {acid.position}") if self._verbose else None
+                        f"{acid}[{acid_index}]: {acid.position}")\
+                        if self._verbose else None
                     acid_index += 1
                     acid = acid.link
             backtracking_bool = False
@@ -185,7 +196,7 @@ class RandomFold:
 
         Returns:
         - List[Tuple[int, int, int]]: A list of possible directions for folding.
-        """
+        """  # noqa
         if self._dimensions == 2:
             return [(1, 0, 0),
                     (-1, 0, 0),
@@ -196,7 +207,9 @@ class RandomFold:
                     (0, -1, 0), (0, 0, 1), (0, 0, -1)]
         return []
 
-    def get_random_direction(self, directions: List[Tuple[int, int, int]]) -> Tuple[int, int, int]:
+    def get_random_direction(
+        self, directions: List[Tuple[int, int, int]]
+    ) -> Tuple[int, int, int]:
         """
         Returns a random direction from the given list of directions.
 
@@ -204,8 +217,6 @@ class RandomFold:
         - directions (List[Tuple[int, int, int]]): The list of directions to choose from.
 
         Returns:
-        - Tuple[int, int, int]: A random direction from the given list of directions.
-    def get_random_direction(self, directions: List[Tuple[int, int, int]]) -> Tuple[int, int, int]:
-        """
-        """
+        - Tuple[int, int, int]: A random direction from the given list of directions. 
+        """  # noqa
         return random.choice(directions)
