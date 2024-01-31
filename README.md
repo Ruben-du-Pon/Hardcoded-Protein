@@ -8,9 +8,9 @@ This project seeks to find stable foldings for proteins. The aim is to find the 
 
 For this project we have tested several algorithms, and compared them to using a random algorithm. We started by establishing a baseline, where we ran the random algorithm 100000 times. The results of this can be found in the data/output/baseline_plots/ folder, and below in the *Results* section. We wrote 4 other algorithms, a Breadth-First Search algorithm, a Hillclimber algorithm, a Simulated Annealing algorithm and one based on Harvard research using Fragment Regrowth Energy-guided Sequential Sampling (FRESS).
 
-#### Breadth First Search algorithm
+#### Breadth First Search with Random sampling.
 
-!!! Insert description !!!
+The algorithm employs a search strategy that explores the solution space up to a specified depth in the tree, which is 6 for 2D and 4 for 3D. At the last depth, the algorithm calculates the scores of each valid folding. To enhance efficiency, it prunes the search tree by eliminating rotations, mirroring at the last depth. The algorithm selects the best-performing solution at the last level, preferring one randomly in the case of ties. The algorithm then determines the steps to take based on the performance of the current folding configuration. It explores multiple random steps and evaluates their average scores to make an informed decision. To further refine the folding, the algorithm repeats the entire process three times, allowing for varied exploration. Finally, it identifies the folding configuration with the most negative score, indicating optimal performance, and selects it as the solution to the folding problem. This comprehensive approach aims to strike a balance between thorough exploration of the solution space and efficient pruning for improved computational efficiency.
 
 #### Hillclimber algorithm
 
