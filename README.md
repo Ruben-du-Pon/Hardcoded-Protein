@@ -66,7 +66,7 @@ In the two tables below is the estimation on how long each algorithm takes to fi
 | Baseline                 |             ~1.1s             |             ~1.3s                |            ~1.5s                 |             ~2.0s                |
 | Simulated Annealing      |               ~               |              ~                   |              ~                   |              ~                   |
 | BFS with Random sampling |             ~4.2s             |             ~5.0s                |            ~7.0s                 |             ~9.0s                |
-| FRESS                    |             ~0.2s             |             ~0.6s                |               ~1.0s                |               ~2.2s              |
+| FRESS                    |             ~0.2s             |             ~0.6s                |            ~1.0s                 |             ~2.2s                |
 ```
 
 
@@ -78,7 +78,7 @@ In the two tables below is the estimation on how long each algorithm takes to fi
 | Baseline                 |             ~1.2s             |            ~1.4s                 |             ~1.5s                |             ~2.0s                |
 | Simulated Annealing      |               ~               |              ~                   |              ~                   |              ~                   |
 | BFS with Random sampling |             ~3.5s             |            ~4.0s                 |             ~20s                 |             ~32s                 |
-| FRESS                    |             ~0.3s             |             ~0.5s                |               ~0.5s                |               ~0.9s              |
+| FRESS                    |             ~0.3s             |            ~0.5s                 |             ~0.5s                  |             ~0.9s                |
 
 ```
 
