@@ -54,27 +54,30 @@ In the improvement phase of the algorithm, FRESS segments the protein into three
     <img src="data/output/baseline_plots/3D.csv/3D.csv_PPPHHPPHHPPPPPHHHHHHHPPHHPPPPHHPPHPP_plot.png" width="15%">
 </p>
 
+
+In the two tables below is the estimation on how long each algorithm takes to find a folding for a specific length displayed.
+
 ### 2D
 
 ```
-|        Algorithm         |  Estimated time, length ~10   |  Estimated time, length ~10-20   |      Avg length ~10      |      Avg length ~10-20      |
-| -------------------------| ----------------------------- | -------------------------------- | ------------------------ | --------------------------- |
-| Baseline                 |               ~               |              ~                   |            ~             |             ~               |
-| Simulated Annealing      |               ~               |              ~                   |            ~             |             ~               |
-| BFS with Random sampling |               ~4.2s               |              ~5.0s                   |            ~             |             ~               |
-| FRESS                    |               ~               |              ~                   |            ~             |             ~               |
+|        Algorithm         |  Estimated time, length ~10   |  Estimated time, length ~10-20   |  Estimated time, length ~20-30   |  Estimated time, length ~30-40   |
+| -------------------------| ----------------------------- | -------------------------------- | -------------------------------- | -------------------------------- |
+| Baseline                 |               ~               |              ~                   |
+| Simulated Annealing      |               ~               |              ~                   |
+| BFS with Random sampling |             ~4.2s             |             ~5.0s                |
+| FRESS                    |               ~               |              ~                   |
 ```
 
 
 ### 3D
 
 ```
-|        Algorithm         |  Estimated time, length ~10   |  Estimated time, length ~10-20   |      Avg length ~10      |      Avg length ~10-20      |
-| -------------------------| ----------------------------- | -------------------------------- | ------------------------ | --------------------------- |
-| Baseline                 |               ~               |              ~                   |            ~             |             ~               |
-| Simulated Annealing      |               ~               |              ~                   |            ~             |             ~               |
-| BFS with Random sampling |               ~3.5s               |              ~4.0s                   |            ~             |             ~               |
-| FRESS                    |               ~               |              ~                   |            ~             |             ~               |
+|        Algorithm         |  Estimated time, length ~10   |  Estimated time, length ~10-20   |  Estimated time, length ~20-30   |  Estimated time, length ~30-40   |
+| -------------------------| ----------------------------- | -------------------------------- | -------------------------------- | -------------------------------- |
+| Baseline                 |               ~               |              ~                   |
+| Simulated Annealing      |               ~               |              ~                   |
+| BFS with Random sampling |             ~3.5s             |            ~4.0s                 |
+| FRESS                    |               ~               |              ~                   |
 
 ```
 
