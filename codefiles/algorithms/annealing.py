@@ -3,8 +3,7 @@ import random
 import csv
 from tqdm import tqdm
 from typing import List, Optional
-# from .random import RandomFold
-from .spiral import SpiralFold
+from .random import RandomFold
 from ..classes.protein import Protein
 from .hillclimber import HillclimberFold
 
@@ -77,7 +76,7 @@ class AnnealingFold(HillclimberFold):
         print("Starting Simulated Annealing fold.")
 
         # Start with a random fold.
-        start_state = SpiralFold(self._protein, self._dimensions)
+        start_state = RandomFold(self._protein, self._dimensions)
         protein = start_state.run()
 
         # Start the highscore with the score of the random fold.

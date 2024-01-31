@@ -37,7 +37,7 @@ def main() -> None:
 
     def run_algorithm():
         # Create an instance of the class
-        instance = AlgorithmFold(protein, 2, iterations)
+        instance = AlgorithmFold(protein, 3, iterations)
         instance.run()
 
     output = f"data/output/profiles/{algorithm}.prof"
