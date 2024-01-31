@@ -132,11 +132,19 @@ def main() -> None:
 
                 # Set the output filenames
                 if dimensions == 2:
-                    filename = f"data/output/csv/{fold_algorithm}_{line_number}_2D.csv"  # noqa
-                    plotname = f"data/output/plot/{fold_algorithm}_{line_number}_2D.png"  # noqa
+                    if sys.argv[4].lower() == "n":
+                        filename = f"data/output/csv/{fold_algorithm}_{line_number}_2D.csv"  # noqa
+                        plotname = f"data/output/plot/{fold_algorithm}_{line_number}_2D.png"  # noqa
+                    elif sys.argv[4].lower() == "y":
+                        filename = f"data/output/csv/{fold_algorithm}_{line_number}_2D_C.csv"  # noqa
+                        plotname = f"data/output/plot/{fold_algorithm}_{line_number}_2D_C.png"  # noqa
                 else:
-                    filename = f"data/output/csv/{fold_algorithm}_{line_number}_3D.csv"  # noqa
-                    plotname = f"data/output/plot/{fold_algorithm}_{line_number}_3D.png"  # noqa
+                    if sys.argv[4].lower() == "n":
+                        filename = f"data/output/csv/{fold_algorithm}_{line_number}_3D.csv"  # noqa
+                        plotname = f"data/output/plot/{fold_algorithm}_{line_number}_3D.png"  # noqa
+                    elif sys.argv[4].lower() == "y":
+                        filename = f"data/output/csv/{fold_algorithm}_{line_number}_3D_C.csv"  # noqa
+                        plotname = f"data/output/plot/{fold_algorithm}_{line_number}_3D_C.png"  # noqa
 
                 # Write the results to a CSV file and the visualization to a file
                 test_protein.create_csv(filename)
