@@ -226,15 +226,15 @@ class FressFold(RandomFold):
         min_avg = min(start_avg, middle_avg, end_avg)
 
         if min_avg == start_avg and float(
-             start_non_p_count) >= avg_non_p_per_segment:
+                start_non_p_count) >= avg_non_p_per_segment:
             suggestion = "Consider making changes at the START\
                 of the protein to improve stability."
         elif min_avg == middle_avg and float(
-             middle_non_p_count) >= avg_non_p_per_segment:
+                middle_non_p_count) >= avg_non_p_per_segment:
             suggestion = "Consider making changes in the MIDDLE\
                 of the protein to improve stability."
         elif min_avg == end_avg and float(
-             end_non_p_count) >= avg_non_p_per_segment:
+                end_non_p_count) >= avg_non_p_per_segment:
             suggestion = "Consider making changes at the END\
                 of the protein to improve stability."
         else:
