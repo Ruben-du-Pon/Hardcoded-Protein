@@ -39,7 +39,7 @@ def reading_the_csv_file(file):
     return c, y, avg, amount_seq
 
 
-def plot_random(file):
+def plot_random(file, dimension):
     """
     Plot histograms for random sequences from a CSV file.
 
@@ -66,6 +66,8 @@ def plot_random(file):
 
         ax.hist(y[val - number_of_gens:val], bins=bins)
         ax.grid(True, alpha=0.5)  # Add grid lines
+        ax.set_xlabel('Stability Score')
+        ax.set_ylabel('Frequency')
         average_value = float(avg[count][-1])
         min_val = float(min(y[val - number_of_gens:val]))
         ax.axvline(average_value, color='red', linestyle='dashed',
@@ -73,7 +75,7 @@ def plot_random(file):
         ax.axvline(min_val, color='green', linestyle='dashed',
                    linewidth=2, label='Min: ' + str(min_val))
         ax.legend()
-        ax.set_title(c[count])
+        ax.set_title(f"{c[count]} - {dimension}D")
 
         # Append the Figure to the list
         lst.append(fig)
