@@ -24,11 +24,12 @@ class AnnealingFold(HillclimberFold):
 
     Methods:
     - run(): Runs the Simulated Annealing algorithm for protein folding.
-    - _check_highscore(protein: Protein) -> bool: Checks if a new protein fold is better than the current highscore.
+    - _check_highscore(protein: Protein) -> bool: Checks if a new protein fold is
+        better than the current highscore.
 
     Raises:
     - ValueError: If the specified fold algorithm is invalid.
-    """
+    """  # noqa
 
     def __init__(self, protein: Protein, dimensions: int, iterations: int,
                  scores: List[int] = [],
@@ -41,7 +42,8 @@ class AnnealingFold(HillclimberFold):
 
     def run(self) -> Protein:
         """
-        Main function that reads protein sequences from a file and generates protein folds using the specified algorithm.
+        Main function that reads protein sequences from a file and generates
+        protein folds using the specified algorithm.
 
         Usage: python main.py <fold_algorithm> <dimensions> <iterations> [C/c]
 
@@ -50,7 +52,7 @@ class AnnealingFold(HillclimberFold):
 
         Raises:
         - ValueError: If the specified fold algorithm is invalid.
-        """
+        """  # noqa
         # Give feedback that the algorithm has started.
         print("Starting Simulated Annealing fold.")
 
@@ -84,13 +86,15 @@ class AnnealingFold(HillclimberFold):
 
     def _check_highscore(self, protein: Protein) -> bool:
         """
-        Checks if the given protein has a higher score than the current highscore protein.
+        Checks if the given protein has a higher score than the current
+        highscore protein.
 
         Parameters:
         - protein (Protein): The protein to be checked.
 
         Returns:
-        - bool: True if the given protein has a higher score and should be accepted as the new highscore, False otherwise.
+        - bool: True if the given protein has a higher score and should be
+        accepted as the new highscore, False otherwise.
 
         Raises:
         - ValueError: If the specified fold algorithm is invalid.

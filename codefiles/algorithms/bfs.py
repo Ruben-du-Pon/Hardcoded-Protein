@@ -14,7 +14,8 @@ class BfsFold:
     moves_3d = {"R": (1, 0, 0), "L": (-1, 0, 0), "U": (0, 1, 0),
                 "D": (0, -1, 0), "F": (0, 0, 1), "B": (0, 0, -1)}
 
-    def __init__(self, protein: Protein, dimensions: int, when_cutting: int = 7, step: int = 1) -> None:
+    def __init__(self, protein: Protein, dimensions: int,
+                 when_cutting: int = 7, step: int = 1) -> None:
         """
         Initialize BfsFold instance.
 
@@ -170,7 +171,7 @@ class BfsFold:
         moves = BfsFold.moves_2d if self.dimensions == 2 else BfsFold.moves_3d
 
         for key in keys:
-            if prev is not None and key == BfsFold.opposite_moves.get(prev, None):
+            if prev is not None and key == BfsFold.opposite_moves.get(prev, None):  # noqa
                 continue
 
             new_pos = tuple(x + y for x, y in zip(pos[-1], moves[key]))

@@ -22,9 +22,10 @@ class HillclimberFold:
     - verbose (Optional[bool]): Whether to print verbose output during the algorithm.
 
     Methods:
-    - run(): Runs the hillclimber folding algorithm and returns the highest scoring protein fold.
+    - run(): Runs the hillclimber folding algorithm and returns the highest
+             scoring protein fold.
     - get_scores(): Returns the list of scores obtained during the algorithm.
-    """
+    """  # noqa
 
     def __init__(self, protein: Protein, dimensions: int, iterations: int,
                  scores: List[int] = [],
@@ -43,7 +44,7 @@ class HillclimberFold:
 
         Raises:
         - ValueError: If the dimensions parameter is not 2 or 3.
-        """
+        """  # noqa
         if dimensions not in (2, 3):
             raise ValueError(
                 "Please enter dimensions as 2 or 3 for 2D or 3D folding.")
@@ -57,7 +58,8 @@ class HillclimberFold:
 
     def run(self) -> Protein:
         """
-        Runs the hillclimber folding algorithm and returns the highest scoring protein fold.
+        Runs the hillclimber folding algorithm and returns the highest scoring
+        protein fold.
 
         Returns:
         - Protein: The highest scoring protein fold.
@@ -154,7 +156,8 @@ class HillclimberFold:
          Processes a snippet of the protein.
 
         Parameters:
-        - args (Tuple[Protein, Protein, Tuple[int, int, int], Tuple[int, int, int], int]):
+        - args (Tuple[Protein, Protein, Tuple[int, int, int],
+                Tuple[int, int, int], int]):
           The arguments required for processing the snippet.
 
         Returns:
