@@ -4,43 +4,32 @@ from typing import List, Tuple
 
 class SpiralFold:
     """
-    A class that folds a protein into a spiral.
+    Represents a folding algorithm that folds a protein in a spiral pattern.
 
-    Attributes
-    ----------
-    _protein : Protein
-        The protein to fold.
-    _dimensions : int
-        The dimensions of the protein.
-    _movements : List[Tuple[int, int, int]]
-        The possible movements in the grid.
-    _steps : int
-        The number of steps to take in the current direction.
+    Attributes:
+    - movements (List[Tuple[int, int, int]]): The list of movements in the spiral pattern.
 
-    Methods
-    -------
-    run() -> Protein:
-        Runs the spiral folding algorithm.
-    """
+    Methods:
+    - __init__(self, protein: Protein, dimensions: int) -> None: Initializes a
+        new instance of the SpiralFold class.
+    - run(self) -> Protein: Runs the spiral folding algorithm and returns the
+        folded protein.
+    """  # noqa
+
     movements: List[Tuple[int, int, int]] = [
         (0, 1, 0), (1, 0, 0), (0, -1, 0), (-1, 0, 0)
     ]
 
     def __init__(self, protein: Protein, dimensions: int) -> None:
         """
-        Initializes a SpiralFold object.
+        Initializes a new instance of the SpiralFold class.
 
-        Parameters
-        ----------
-        protein : Protein
-            The protein to fold.
-        dimensions : int
-            The dimensions of the protein.
+        Parameters:
+        - protein (Protein): The protein to fold.
+        - dimensions (int): The number of dimensions for folding (2 or 3).
 
-        Raises
-        ------
-        ValueError
-            If the dimensions are not 2 or 3.
+        Raises:
+        - ValueError: If the dimensions parameter is not 2 or 3.
         """
         if dimensions not in (2, 3):
             raise ValueError(
@@ -52,17 +41,13 @@ class SpiralFold:
 
     def run(self) -> Protein:
         """
-        Runs the spiral folding algorithm.
+        Runs the spiral folding algorithm and returns the folded protein.
 
-        Returns
-        -------
-        Protein
-            The folded protein.
+        Returns:
+        - Protein: The folded protein.
 
-        Raises
-        ------
-        ValueError
-            If a valid folding cannot be found for the given protein.
+        Raises:
+        - ValueError: If a valid folding for the protein cannot be found.
         """
         # Add the first amino acid to the grid.
         current = self._protein.get_head()
@@ -75,7 +60,8 @@ class SpiralFold:
         # Keep setting positions until a valid folding is found.
         while not self._protein.is_valid():
 
-            # Set the position of self._steps amino acids in the current direction.
+            # Set the position of self._steps amino acids in the current
+            # direction.
             for _ in range(self._steps):
                 current.position = tuple(
                     sum(x) for x in zip(current.predecessor.position,

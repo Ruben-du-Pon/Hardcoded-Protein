@@ -10,54 +10,31 @@ from .hillclimber import HillclimberFold
 
 class AnnealingFold(HillclimberFold):
     """
-    A class that folds a protein using a simulated annealing algorithm.
+    Represents a protein folding algorithm based on Simulated Annealing.
 
-    Attributes
-    ----------
-    _protein : Protein
-        The protein to fold.
-    _dimensions : int
-        The dimensions of the protein.
-    _iterations : int
-        The number of iterations to run the algorithm.
-    _highscore : Tuple[Protein, int]
-        The highest scoring protein and its score.
-    _verbose : bool
-        If True, print additional output.
-    _temperature : float
-        The initial temperature for the annealing process.
-    _cooling_rate : float
-        The rate at which the temperature decreases.
+    Inherits from HillclimberFold.
 
-    Methods
-    -------
-    run()
-        Runs the simulated annealing algorithm.
-    """
+    Attributes:
+    - protein (Protein): The protein to fold.
+    - dimensions (int): The number of dimensions for the protein fold (2 or 3).
+    - iterations (int): The number of iterations for the protein folding process.
+    - scores (List[int]): The list of scores obtained during the folding process.
+    - outputfile (Optional[str]): The output file to write the folding results.
+    - verbose (Optional[bool]): Flag indicating whether to print verbose output.
+
+    Methods:
+    - run(): Runs the Simulated Annealing algorithm for protein folding.
+    - _check_highscore(protein: Protein) -> bool: Checks if a new protein fold is
+        better than the current highscore.
+
+    Raises:
+    - ValueError: If the specified fold algorithm is invalid.
+    """  # noqa
 
     def __init__(self, protein: Protein, dimensions: int, iterations: int,
                  scores: List[int] = [],
                  outputfile: Optional[str] = None,
                  verbose: Optional[bool] = False) -> None:
-        """
-        Initializes an AnnealingFold object.
-
-        Parameters
-        ----------
-        protein : Protein
-            The protein to fold.
-        dimensions : int
-            The dimensions of the protein.
-        iterations : int
-            The number of iterations to run the algorithm.
-        verbose : bool, optional
-            If True, print additional output.
-
-        Raises
-        ------
-        ValueError
-            If the dimensions are not 2 or 3.
-        """
         super().__init__(protein, dimensions, iterations, scores, outputfile,
                          verbose)
         self._temperature = 10.0
@@ -65,13 +42,17 @@ class AnnealingFold(HillclimberFold):
 
     def run(self) -> Protein:
         """
-        Runs the Simulated Annealing fold algorithm.
+        Main function that reads protein sequences from a file and generates
+        protein folds using the specified algorithm.
 
-        Returns
-        -------
-        Protein
-            The highest scoring protein found.
-        """
+        Usage: python main.py <fold_algorithm> <dimensions> <iterations> [C/c]
+
+        Returns:
+        - Protein: The highest scoring protein fold.
+
+        Raises:
+        - ValueError: If the specified fold algorithm is invalid.
+        """  # noqa
         # Give feedback that the algorithm has started.
         print("Starting Simulated Annealing fold.")
 
@@ -105,18 +86,19 @@ class AnnealingFold(HillclimberFold):
 
     def _check_highscore(self, protein: Protein) -> bool:
         """
-        Checks if the current protein's score is a new highscore.
+        Checks if the given protein has a higher score than the current
+        highscore protein.
 
-        Parameters
-        ----------
-        protein : Protein
-            The protein to check.
+        Parameters:
+        - protein (Protein): The protein to be checked.
 
-        Returns
-        -------
-        bool
-            True if the current protein's score is a new highscore, False otherwise.
-        """  # noqa
+        Returns:
+        - bool: True if the given protein has a higher score and should be
+        accepted as the new highscore, False otherwise.
+
+        Raises:
+        - ValueError: If the specified fold algorithm is invalid.
+        """
         # Reset the grid.
         protein.reset_grid()
 
@@ -137,8 +119,7 @@ class AnnealingFold(HillclimberFold):
 
         # Check if the new protein is better than the old one and if it should
         # be accepted.
-        if (new_score < self._highscore[1]) \
-                and (chance > random.random()):
+        if (new_score < self._highscore[1]) and (chance > random.random()):
             self._highscore = (protein, new_score)
             return True
 

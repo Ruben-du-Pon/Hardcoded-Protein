@@ -5,25 +5,16 @@ import numpy as np
 
 
 class BfsFold:
-    opposite_moves = {
-        "R": "L", "L": "R", "U": "D", "D": "U", "F": "B", "B": "F"
-        }
-    moves_2d = {
-        "R": (1, 0, 0), "L": (-1, 0, 0), "U": (0, 1, 0), "D": (0, -1, 0)
-        }
-    moves_3d = {
-        "R": (1, 0, 0),
-        "L": (-1, 0, 0),
-        "U": (0, 1, 0),
-        "D": (0, -1, 0),
-        "F": (0, 0, 1),
-        "B": (0, 0, -1),
-    }
 
-    def __init__(
-        self, protein: Protein, dimensions: int, when_cutting: int = 7,
-        step: int = 1
-    ) -> None:
+    opposite_moves = {"R": "L", "L": "R",
+                      "U": "D", "D": "U", "F": "B", "B": "F"}
+    moves_2d = {"R": (1, 0, 0), "L": (-1, 0, 0),
+                "U": (0, 1, 0), "D": (0, -1, 0)}
+    moves_3d = {"R": (1, 0, 0), "L": (-1, 0, 0), "U": (0, 1, 0),
+                "D": (0, -1, 0), "F": (0, 0, 1), "B": (0, 0, -1)}
+
+    def __init__(self, protein: Protein, dimensions: int,
+                 when_cutting: int = 7, step: int = 1) -> None:
         """
         Initialize BfsFold instance.
 
@@ -176,10 +167,10 @@ class BfsFold:
             return {"pos": pos[-1]}
 
         result_dict = {"pos": pos[-1]}
-        moves = self.moves_2d if self.dimensions == 2 else self.moves_3d
+        moves = BfsFold.moves_2d if self.dimensions == 2 else BfsFold.moves_3d
 
         for key in keys:
-            if prev is not None and key == self.opposite_moves.get(prev, None):
+            if prev is not None and key == BfsFold.opposite_moves.get(prev, None):  # noqa
                 continue
 
             new_pos = tuple(x + y for x, y in zip(pos[-1], moves[key]))
@@ -322,16 +313,15 @@ class BfsFold:
         def is_rotation(move1: str, move2: str) -> bool:
             return any(
                 move2[i:] + move2[:i] == move1 for i in range(len(move2))
-                )
+            )
 
         if self.dimensions == 2:
             mirror_dict = {
                 "U": "D", "D": "U", "L": "R", "R": "L"
-                }
+            }
         elif self.dimensions == 3:
-            mirror_dict = {
-                "U": "D", "D": "U", "L": "R", "R": "L", "F": "B", "B": "F"
-                }
+            mirror_dict = {'U': 'D', 'D': 'U',
+                           'L': 'R', 'R': 'L', 'F': 'B', 'B': 'F'}
 
         return is_rotation(move1, move2) or all(
             mirror_dict[move1[i]] == move2[len(move2) - 1 - i]
@@ -340,7 +330,7 @@ class BfsFold:
 
     def _bfsfold(
             self, protein: "Protein", when_cutting: int, step: int
-            ) -> "Protein":
+    ) -> "Protein":
         """
         Perform Breadth-First Search (BFS) based folding on the given
         protein structure.
@@ -363,7 +353,7 @@ class BfsFold:
             move = {
                 "R": (1, 0, 0), "L": (-1, 0, 0), "U": (0, 1, 0),
                 "D": (0, -1, 0)
-                }
+            }
         elif self.dimensions == 3:
             types = {"R", "L", "U", "D", "F", "B"}
             move = {
@@ -388,15 +378,15 @@ class BfsFold:
 
         for depth in range(when_cutting, length_protein, step):
             create_d = self._create_dict(
-                protein, sequence_protein, list(types), depth,
-                step, min_keys, posit
+                protein, sequence_protein, list(
+                    types), depth, step, min_keys, posit
             )
             posit = [(0, 0, 0)]
 
             min_key = min(create_d, key=lambda k: create_d[k])
             min_keys = {
                 k for k, v in create_d.items() if v == create_d[min_key]
-                }
+            }
             unique_moves: Set[str] = set()
 
             # Check for linear transformations
@@ -406,7 +396,6 @@ class BfsFold:
                     for unique_move in unique_moves
                 ):
                     unique_moves.add(move_)
-
 
             if len(unique_moves) >= 2:
                 # Randomly select 1 of the set
@@ -418,8 +407,7 @@ class BfsFold:
             min_keys = unique_moves
 
         nested_dict = self._create_nested_dict(
-            protein, list(types), length_protein
-            )
+            protein, list(types), length_protein)
 
         amino = protein.get_head()
         if amino is not None:
@@ -445,6 +433,7 @@ class BfsFold:
     """
     NOTE: This function is for 'Simulated Annealing'
     """
+
     def get_possible_foldings(
         self,
         protein: Protein,

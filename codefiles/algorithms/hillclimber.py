@@ -11,63 +11,43 @@ from tqdm import tqdm
 
 class HillclimberFold:
     """
-    Represents a hillclimber fold algorithm for protein folding.
+    Represents a hillclimber folding algorithm for proteins.
 
-    Attributes
-    ----------
-    _protein : Protein
-        The protein to fold.
-    _dimensions : int
-        The number of dimensions to fold in.
-    _iterations : int
-        The number of iterations to run the algorithm.
-    _highscore : Tuple[Protein, int]
-        The highest scoring protein found.
-    _scores : List[int]
-        The scores of the algorithm.
-    _outputfile : Optional[str]
-        The file to write the scores to.
-    _verbose : Optional[bool]
-        Whether to print the progress of the algorithm.
+    Attributes:
+    - protein (Protein): The protein to fold.
+    - dimensions (int): The number of dimensions for folding (2 or 3).
+    - iterations (int): The number of iterations to run the algorithm.
+    - scores (List[int]): The list of scores obtained during the algorithm.
+    - outputfile (Optional[str]): The path to the output file to write the scores.
+    - verbose (Optional[bool]): Whether to print verbose output during the algorithm.
 
-    Methods
-    -------
-    run(self) -> Protein:
-    get_scores(self) -> List[int]:
-        Returns the scores of the algorithm.
-    """
+    Methods:
+    - run(): Runs the hillclimber folding algorithm and returns the highest
+             scoring protein fold.
+    - get_scores(): Returns the list of scores obtained during the algorithm.
+    """  # noqa
 
     def __init__(self, protein: Protein, dimensions: int, iterations: int,
                  scores: List[int] = [],
                  outputfile: Optional[str] = None,
                  verbose: Optional[bool] = False) -> None:
         """
-        Initializes the HillclimberFold class.
+        Initializes a new instance of the HillclimberFold class.
 
-        Parameters
-        ----------
-        protein : Protein
-            The protein to fold.
-        dimensions : int
-            The number of dimensions to fold in.
-        iterations : int
-            The number of iterations to run the algorithm.
-        scores : List[int], optional
-            The scores of the algorithm, by default [].
-        outputfile : Optional[str], optional
-            The file to write the scores to, by default None.
-        verbose : Optional[bool], optional
-            Whether to print the progress of the algorithm, by default False.
+        Parameters:
+        - protein (Protein): The protein to fold.
+        - dimensions (int): The number of dimensions for folding (2 or 3).
+        - iterations (int): The number of iterations to run the algorithm.
+        - scores (List[int]): The list of scores obtained during the algorithm.
+        - outputfile (Optional[str]): The path to the output file to write the scores.
+        - verbose (Optional[bool]): Whether to print verbose output during the algorithm.
 
-        Raises
-        ------
-        ValueError
-            If dimensions is not 2 or 3.
-        """
+        Raises:
+        - ValueError: If the dimensions parameter is not 2 or 3.
+        """  # noqa
         if dimensions not in (2, 3):
             raise ValueError(
                 "Please enter dimensions as 2 or 3 for 2D or 3D folding.")
-
         self._protein = protein
         self._dimensions = dimensions
         self._iterations = iterations
@@ -78,13 +58,16 @@ class HillclimberFold:
 
     def run(self) -> Protein:
         """
-        Runs the hillclimber fold algorithm.
+        Runs the hillclimber folding algorithm and returns the highest scoring
+        protein fold.
 
-        Returns
-        -------
-        Protein
-            The highest scoring protein found.
+        Returns:
+        - Protein: The highest scoring protein fold.
+
+        Raises:
+        - ValueError: If the specified fold algorithm is invalid.
         """
+
         # Give feedback that the algorithm has started.
         print("Starting hillclimber fold.")
 
@@ -102,9 +85,7 @@ class HillclimberFold:
 
             # Write data to file.
             if self._outputfile:
-
                 self._scores.append(next_fold.get_score())
-
                 with open(self._outputfile, "a") as file:
                     writer = csv.writer(file)
                     writer.writerow(
@@ -115,17 +96,13 @@ class HillclimberFold:
 
     def _run_experiment(self, protein: Protein) -> None:
         """
-        Runs an experiment on the protein.
+        Runs an experiment for a given protein.
 
-        Parameters
-        ----------
-        protein : Protein
-            The protein to fold.
+        Parameters:
+        - protein (Protein): The protein to run the experiment on.
 
-        Returns
-        -------
-        Protein
-            The protein with the highest score.
+        Returns:
+        - None
         """
         # Get a random snippet of the protein.
         start_position, end_position = self._get_snippet(protein)
@@ -149,17 +126,13 @@ class HillclimberFold:
 
     def _get_snippet(self, protein: Protein) -> Tuple[int, int]:
         """
-        Generates a random start and end position for a snippet of the protein.
+        Gets a random snippet of the protein.
 
-        Parameters
-        ----------
-        protein : Protein
-            The protein to fold.
+         Parameters:
+        - protein (Protein): The protein to get the snippet from.
 
-        Returns
-        -------
-        Tuple[int, int]
-            The start and end position of the snippet.
+        Returns:
+        - Tuple[int, int]: The start and end positions of the snippet.
         """
         # Get a random length.
         length = random.randint(3, len(protein))
@@ -179,6 +152,17 @@ class HillclimberFold:
                                            Tuple[int, int, int],
                                            Tuple[int, int, int], int]) -> \
             Protein:
+        """
+         Processes a snippet of the protein.
+
+        Parameters:
+        - args (Tuple[Protein, Protein, Tuple[int, int, int],
+                Tuple[int, int, int], int]):
+          The arguments required for processing the snippet.
+
+        Returns:
+        - Protein: The best protein fold obtained from processing the snippet.
+        """
         snippet, protein, start_coordinates, end_coordinates, \
             start_position = args
 
@@ -209,18 +193,13 @@ class HillclimberFold:
 
     def _check_highscore(self, protein: Protein) -> bool:
         """
-        Checks if the protein is a new highscore and updates the highscore if
-        it is.
+        Checks if the given protein is a new highscore.
 
-        Parameters
-        ----------
-        protein : Protein
-            The protein to fold.
+        Parameters:
+        - protein (Protein): The protein to check.
 
-        Returns
-        -------
-        bool
-            Whether the protein is a new highscore.
+        Returns:
+        - bool: True if the protein is a new highscore, False otherwise.
         """
         # Reset the grid.
         protein.reset_grid()
@@ -234,16 +213,13 @@ class HillclimberFold:
                 f"New highscore found: {self._highscore[1]}.") if \
                 self._verbose else None
             return True
-
         return False
 
     def get_scores(self) -> List[int]:
         """
-        Returns the scores of the algorithm.
+        Returns the list of scores.
 
-        Returns
-        -------
-        List[int]
-            The scores of the algorithm.
+        Returns:
+        - List[int]: The list of scores.
         """
         return self._scores
