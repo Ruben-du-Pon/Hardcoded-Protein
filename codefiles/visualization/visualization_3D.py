@@ -1,3 +1,13 @@
+"""
+plot_3d Function
+Date of Creation: February 1, 2024
+Description: This function generates a 3D scatter plot of amino acid positions in a given protein structure.
+             Amino acids of different types (Hydrophobic, Polar, Cysteine) are distinguished by colors.
+             The resulting plot is saved as an image file. The function assumes that the protein structure
+             has a double-linked list representation.
+Developer: Ilyass el Allali
+"""
+
 import matplotlib.pyplot as plt
 from typing import Tuple
 from ..classes.protein import Protein
@@ -106,19 +116,6 @@ def plot_3d(protein: Protein, colors: Tuple[str, str, str], filename: str, outpu
         x_max, y_max, z_max = max(x_coordinates), max(
             y_coordinates), max(z_coordinates)
 
-        if (x_min <= y_min) and (x_min <= z_min):
-            minimum = x_min
-        elif (y_min <= x_min) and (y_min <= z_min):
-            minimum = y_min
-        else:
-            minimum = z_min
-
-        if (x_max >= y_max) and (x_max >= z_max):
-            maximum = x_max
-        elif (y_max >= x_max) and (y_max >= z_max):
-            maximum = y_max
-        else:
-            maximum = z_max
 
         ax.set_xlim((x_min - 2, x_max + 2))
         ax.set_ylim((y_min - 2, y_max + 2))
@@ -233,19 +230,6 @@ def plot_3d(protein: Protein, colors: Tuple[str, str, str], filename: str, outpu
         x_max, y_max, z_max = max(x_coordinates), max(
             y_coordinates), max(z_coordinates)
 
-        if (x_min <= y_min) and (x_min <= z_min):
-            minimum = x_min
-        elif (y_min <= x_min) and (y_min <= z_min):
-            minimum = y_min
-        else:
-            minimum = z_min
-
-        if (x_max >= y_max) and (x_max >= z_max):
-            maximum = x_max
-        elif (y_max >= x_max) and (y_max >= z_max):
-            maximum = y_max
-        else:
-            maximum = z_max
 
         ax.set_xlim((x_min - 2, x_max + 2))
         ax.set_ylim((y_min - 2, y_max + 2))

@@ -1,3 +1,12 @@
+"""
+BfsFold Class
+Date of Creation: January 31, 2024
+Description: This script implements a protein folding algorithm using Breadth-First Search (BFS)
+             for 2D or 3D protein folding. The algorithm aims to find an optimal folding configuration
+             for a given protein structure using BFS to explore possible folding paths.
+Developer: Ilyass el Allali
+"""
+
 from codefiles.classes.protein import Protein, Aminoacid
 import random
 from typing import List, Set, Tuple, Dict, Optional, Any

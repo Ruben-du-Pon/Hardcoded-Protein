@@ -1,3 +1,14 @@
+"""
+Bfs_randomFold Class
+Date of Creation: January 31, 2024
+Description: This script implements a protein folding algorithm using a combination
+             of Breadth-First Search (BFS) and 'Random Sampling' for 2D or 3D protein folding.
+             The algorithm aims to find an optimal folding configuration for a given protein structure.
+             It utilizes BFS to explore possible folding paths and MCTS for refining the folding based on
+             'Random Sampling'.
+Developer: Ilyass el Allali
+"""
+
 from ..classes.protein import Protein
 from .bfs import BfsFold
 import random
@@ -223,7 +234,7 @@ class Bfs_randomFold(BfsFold):
 
         return pos
 
-    def _mcts(self, min_keys):
+    def _random_branch(self, min_keys):
         """
         Perform Monte Carlo Tree Search (MCTS)
         based folding on the given protein structure.
@@ -334,7 +345,7 @@ class Bfs_randomFold(BfsFold):
 
             for _ in range(3):
                 min_keys = self._bfsfold(self._protein, self._cut, self._step)
-                result = self._mcts(min_keys)
+                result = self._random_branch(min_keys)
                 results.append(result)
         else:
             result = super()._bfsfold(self._protein, self._cut, self._step)

@@ -10,7 +10,7 @@ For this project we have tested several algorithms, and compared them to using a
 
 #### Breadth First Search with Random sampling.
 
-The algorithm employs a search strategy that explores the solution space up to a specified depth in the tree, which is 6 for 2D and 4 for 3D. At the last depth, the algorithm calculates the scores of each valid folding. To enhance efficiency, it prunes the search tree by eliminating rotations, mirroring at the last depth. The algorithm selects the best-performing solution at the last level, preferring one randomly in the case of ties. The algorithm then determines the steps to take based on the performance of the current folding configuration. It explores multiple random steps and evaluates their average scores to make an informed decision. To further refine the folding, the algorithm repeats the entire process three times, allowing for varied exploration. Finally, it identifies the folding configuration with the most negative score, indicating optimal performance, and selects it as the solution to the folding problem. This comprehensive approach aims to strike a balance between thorough exploration of the solution space and efficient pruning for improved computational efficiency.
+The algorithm employs a search strategy that explores the solution space up to a specified depth in the tree, which is 6 for 2D and 4 for 3D. At the last depth, the algorithm calculates the scores of each valid folding. To enhance efficiency, it prunes the search tree by eliminating rotations, mirroring at the last depth. The algorithm selects the best-performing solution at the last level, preferring one randomly in the case of ties. This is then done till depth 8, and for each depth this process will be done. The algorithm then determines the steps to take based on the performance of the current folding configuration. It explores multiple random steps and evaluates their average scores to make an informed decision. To further refine the folding, the algorithm repeats the entire process three times, allowing for varied exploration. Finally, it identifies the folding configuration with the most negative score, indicating optimal performance, and selects it as the solution to the folding problem. This comprehensive approach aims to strike a balance between thorough exploration of the solution space and efficient pruning for improved computational efficiency.
 
 #### Hillclimber algorithm
 
@@ -54,27 +54,30 @@ In the improvement phase of the algorithm, FRESS segments the protein into three
     <img src="data/output/baseline_plots/3D.csv/3D.csv_PPPHHPPHHPPPPPHHHHHHHPPHHPPPPHHPPHPP_plot.png" width="15%">
 </p>
 
+
+In the two tables below is the estimation on how long each algorithm takes to find a folding for a specific length displayed.
+
 ### 2D
 
 ```
-|        Algorithm         |  Estimated time, length ~10   |  Estimated time, length ~10-20   |      Avg length ~10      |      Avg length ~10-20      |
-| -------------------------| ----------------------------- | -------------------------------- | ------------------------ | --------------------------- |
-| Baseline                 |               ~               |              ~                   |            ~             |             ~               |
-| Simulated Annealing      |               ~               |              ~                   |            ~             |             ~               |
-| BFS with Random sampling |               ~4.2s               |              ~5.0s                   |            ~             |             ~               |
-| FRESS                    |               ~               |              ~                   |            ~             |             ~               |
+|        Algorithm         |  Estimated time, length ~10   |  Estimated time, length ~10-20   |  Estimated time, length ~20-30   |  Estimated time, length ~30-40   |
+| -------------------------| ----------------------------- | -------------------------------- | -------------------------------- | -------------------------------- |
+| Baseline                 |               ~               |              ~                   |
+| Simulated Annealing      |               ~               |              ~                   |
+| BFS with Random sampling |             ~4.2s             |             ~5.0s                |
+| FRESS                    |               ~               |              ~                   |
 ```
 
 
 ### 3D
 
 ```
-|        Algorithm         |  Estimated time, length ~10   |  Estimated time, length ~10-20   |      Avg length ~10      |      Avg length ~10-20      |
-| -------------------------| ----------------------------- | -------------------------------- | ------------------------ | --------------------------- |
-| Baseline                 |               ~               |              ~                   |            ~             |             ~               |
-| Simulated Annealing      |               ~               |              ~                   |            ~             |             ~               |
-| BFS with Random sampling |               ~3.5s               |              ~4.0s                   |            ~             |             ~               |
-| FRESS                    |               ~               |              ~                   |            ~             |             ~               |
+|        Algorithm         |  Estimated time, length ~10   |  Estimated time, length ~10-20   |  Estimated time, length ~20-30   |  Estimated time, length ~30-40   |
+| -------------------------| ----------------------------- | -------------------------------- | -------------------------------- | -------------------------------- |
+| Baseline                 |               ~               |              ~                   |
+| Simulated Annealing      |               ~               |              ~                   |
+| BFS with Random sampling |             ~3.5s             |            ~4.0s                 |
+| FRESS                    |               ~               |              ~                   |
 
 ```
 
