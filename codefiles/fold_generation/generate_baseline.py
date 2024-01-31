@@ -1,7 +1,7 @@
 import csv
 import sys
-from codefiles.algorithms.random import RandomFold
-from codefiles.classes.protein import Protein
+from ..algorithms.random import RandomFold
+from ..classes.protein import Protein
 
 
 def generate_baseline(dimensions: int, C: bool) -> None:
