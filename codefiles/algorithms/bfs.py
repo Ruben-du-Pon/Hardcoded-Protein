@@ -408,7 +408,7 @@ class BfsFold:
                 ):
                     unique_moves.add(move_)
 
-            # print(len(unique_moves))
+
             if len(unique_moves) >= 2:
                 # Randomly select 1 of the set
                 unique_moves = set(random.sample(unique_moves, 1))
@@ -539,6 +539,5 @@ class BfsFold:
 
         end_time = time.time()
         elapsed_time = end_time - start_time
-        print(f"Elapsed time: {elapsed_time} seconds")
-        print(1)
+
         return result

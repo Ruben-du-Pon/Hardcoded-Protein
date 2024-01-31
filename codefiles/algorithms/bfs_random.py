@@ -75,7 +75,7 @@ class Bfs_randomFold(BfsFold):
             going_till = 8
 
         for depth in range(when_cutting, going_till, step):
-            # print(depth)
+
             create_d = self._create_dict(
                 protein, sequence_protein, types, depth, step, min_keys, posit
             )
@@ -85,12 +85,12 @@ class Bfs_randomFold(BfsFold):
             min_keys = {
                 k for k, v in create_d.items() if v == create_d[min_key]
                 }
-            # print(min_keys)
+
             unique_moves = set()
 
             # Check for linear transformations
             for move_ in min_keys:
-                # print(dir(self))
+
                 if all(
                     not self._is_mirror_or_rotation(move_, unique_move)
                     for unique_move in unique_moves
@@ -327,12 +327,12 @@ class Bfs_randomFold(BfsFold):
         return self.__create_final_protein(min_keys)
 
     def run(self) -> Protein:
-        start_time, results, min_result = time.time(), [], 0
+        results, min_result = [], 0
 
         if (len(self._protein) >= 6 and self.dimensions == 3) or (
             len(self._protein) >= 8 and self.dimensions == 2
         ):
-            # print(min_keys)
+
             for _ in range(3):
                 min_keys = self._bfsfold(self._protein, self._cut, self._step)
                 result = self._mcts(min_keys)
@@ -340,10 +340,6 @@ class Bfs_randomFold(BfsFold):
         else:
             result = super()._bfsfold(self._protein, self._cut, self._step)
             results.append(result)
-
-        end_time = time.time()  # Record the end time
-        elapsed_time = end_time - start_time
-        print(f"Elapsed time: {elapsed_time} seconds")
 
         min_prt = results[0]
 
