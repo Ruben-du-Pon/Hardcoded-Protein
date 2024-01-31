@@ -8,7 +8,7 @@ import numpy as np
 
 class Bfs_randomFold(BfsFold):
     def __init__(
-            self, protein: Protein, dimensions: int, when_cutting=6, step=1
+            self, protein: Protein, dimensions: int, when_cutting=7, step=1
             ):
         """
         Initialize MctsFold instance.
