@@ -1,4 +1,4 @@
-from typing import List, Optional, Tuple, Union
+from typing import List, Optional, Tuple
 from operator import add, sub
 from ..classes.protein import Protein
 from ..classes.aminoacid import Aminoacid
@@ -7,59 +7,42 @@ import random
 
 class RandomFold:
     """
-    Class for performing a random folding on a protein sequence.
+    Represents a random folding algorithm for proteins.
 
-    Attributes
-    ----------
-    _protein : Protein
-        The protein sequence on which the random folding is performed.
-    _dimensions : int
-        The number of dimensions for the folding (2 for 2D, 3 for 3D).
-    _avoid_overlap : Optional[bool]
-        If True, ensures that no two amino acids occupy the same position.
+    Attributes:
+    - protein (Protein): The protein to fold.
+    - dimensions (int): The number of dimensions for folding (2 or 3).
+    - avoid_overlap (Optional[bool]): Whether to avoid overlap in the folded protein (default is True).
+    - verbose (Optional[bool]): Whether to print verbose output during the algorithm (default is False).
 
-    Methods
-    -------
-    run() -> Protein:
-        Perform the random folding on the protein sequence.
-        If avoid_overlap is True, ensures that no two amino acids occupy the
-        same position by repeatedly selecting a new position until a unique one is found.
-
-    get_random_direction(directions: List[Tuple[int, int, int]]) -> Tuple[int, int, int]:
-        Get a random direction for the folding.
-        Returns a tuple representing the random direction.
-
-    set_position(acid: Aminoacid) -> None:
-        Set the position of an amino acid based on a random direction.
-        If avoid_overlap is True, ensures that no two amino acids occupy the same position.
-
-    """  # noqa
+    Methods:
+    - __init__(self, protein: Protein, dimensions: int, avoid_overlap: Optional[bool] = True, verbose: Optional[bool] = False) -> None:
+        Initializes a new instance of the RandomFold class.
+    - run(self) -> Protein:
+        Runs the random folding algorithm and returns the folded protein.
+    - set_position(self, acid: Aminoacid) -> None:
+        Sets the position of an amino acid in the folded protein.
+    - backtracking(self, max_backtracking: int = 5000) -> None:
+        Performs backtracking in case of failed folding attempts.
+    - _get_directions(self) -> List[Tuple[int, int, int]]:
+        Returns a list of possible directions for folding based on the number of dimensions.
+    - get_random_direction(self, directions: List[Tuple[int, int, int]]) -> Tuple[int, int, int]:
+        Returns a random direction from the given list of directions.
+    """
 
     def __init__(self, protein: Protein, dimensions: int,
                  avoid_overlap: Optional[bool] = True, verbose: Optional[bool] = False) -> None:
         """
-        Initialize the RandomFold object.
+        Initializes a new instance of the RandomFold class.
 
-        Parameters
-        ----------
-        protein : Protein
-            The protein structure to which the random folding algorithm is applied.
-        dimensions : int
-            Represents the dimensions of folding (2 or 3).
-        avoid_overlap : Optional[bool], default: False
-            If True, ensures that the folding algorithm avoids crossing paths.
+        Parameters:
+        - protein (Protein): The protein to fold.
+        - dimensions (int): The number of dimensions for folding (2 or 3).
+        - avoid_overlap (Optional[bool]): Whether to avoid overlap in the folded protein (default is True).
+        - verbose (Optional[bool]): Whether to print verbose output during the algorithm (default is False).
 
-        Raises
-        ------
-        ValueError
-            If dimensions is not 2 or 3.
-
-        Notes
-        -----
-        The RandomFold object is used to apply a random folding algorithm to the given protein.
-        The algorithm starts from the second amino acid in the protein sequence and adds each
-        amino acid to a grid in a random pattern.
-
+        Raises:
+        - ValueError: If the dimensions parameter is not 2 or 3.
         """
         if dimensions not in (2, 3):
             raise ValueError("Dimensions must be 2 or 3.")
@@ -71,17 +54,14 @@ class RandomFold:
 
     def run(self) -> Protein:
         """
-        Perform the random folding on the protein sequence.
-
-        If avoid_overlap is True, ensures that no two amino acids occupy the
-        same position by repeatedly selecting a new position until a unique one is found.
-
-        Returns
-        -------
-        Protein
-            The protein sequence with the random folding applied.
-        """  # noqa
-
+        Runs the random folding algorithm and returns the folded protein.
+        
+        Parameters:
+        - None
+        
+        Returns:
+        - Protein: The folded protein.
+        """
         if not self._avoid_overlap:
             current: Optional[Aminoacid] = self._protein.get_head()
             if current is not None:
@@ -98,13 +78,11 @@ class RandomFold:
 
     def set_position(self, acid: Aminoacid) -> None:
         """
-        Set the position of an amino acid based on a random direction.
+        Sets the position of an amino acid in the folded protein.
 
-        Parameters
-        ----------
-        acid : Aminoacid
-            The amino acid for which the position is set.
-        """  # noqa
+        Parameters:
+        - acid (Aminoacid): The amino acid to set the position for.
+        """
         directions = self._get_directions()
         if acid.predecessor and acid.predecessor.position:
             direction = random.choice(directions)
@@ -114,7 +92,12 @@ class RandomFold:
             self._protein.add_to_grid(new_position, acid)
 
     def backtracking(self, max_backtracking: int = 5000) -> None:
-        """Backtracking"""
+        """
+        Performs backtracking in case of failed folding attempts.
+
+        Parameters:
+        - max_backtracking (int): The maximum number of backtracking attempts allowed (default is 5000).
+        """
         backtrack_count = 0
         acid: Optional[Aminoacid] = self._protein.get_head()
         if acid is not None:
@@ -122,7 +105,7 @@ class RandomFold:
             protein_path: List[Tuple[int, int, int]] = [acid.position]
 
         for _ in range(len(self._protein._sequence) - 1):
-            protein_path.append((0,0,0))
+            protein_path.append((0, 0, 0))
 
         directions = self._get_directions()
 
@@ -197,6 +180,12 @@ class RandomFold:
         print(protein_path) if self._verbose else None
 
     def _get_directions(self) -> List[Tuple[int, int, int]]:
+        """
+        Returns a list of possible directions for folding based on the number of dimensions.
+
+        Returns:
+        - List[Tuple[int, int, int]]: A list of possible directions for folding.
+        """
         if self._dimensions == 2:
             return [(1, 0, 0),
                     (-1, 0, 0),
@@ -209,16 +198,14 @@ class RandomFold:
 
     def get_random_direction(self, directions: List[Tuple[int, int, int]]) -> Tuple[int, int, int]:
         """
-        Get a random direction for the folding.
+        Returns a random direction from the given list of directions.
 
-        Parameters
-        ----------
-        directions : List[Tuple[int, int, int]]
-            The list of available directions.
+        Parameters:
+        - directions (List[Tuple[int, int, int]]): The list of directions to choose from.
 
-        Returns
-        -------
-        Tuple[int, int, int]
-            A tuple representing the random direction.
+        Returns:
+        - Tuple[int, int, int]: A random direction from the given list of directions.
+    def get_random_direction(self, directions: List[Tuple[int, int, int]]) -> Tuple[int, int, int]:
+        """
         """
         return random.choice(directions)
