@@ -20,10 +20,10 @@ def generate_bfs(dimensions: int, C: bool) -> None:
     # Set the input and output filenames
     if C:
         filename: str = "data/input/sequences_H_P_C.csv"
-        outputfile: str = f"data/output/fress/{dimensions}D_C.csv"
+        outputfile: str = f"data/output/bfs/{dimensions}D_C.csv"
     else:
         filename: str = "data/input/sequences_H_P.csv"
-        outputfile: str = f"data/output/fress/{dimensions}D.csv"
+        outputfile: str = f"data/output/bfs/{dimensions}D.csv"
 
     # Empty the output file
     with open(outputfile, "w") as file:
