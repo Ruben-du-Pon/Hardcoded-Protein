@@ -1,4 +1,4 @@
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, Union
 from operator import add, sub
 from ..classes.protein import Protein
 from ..classes.aminoacid import Aminoacid
@@ -83,12 +83,14 @@ class RandomFold:
         """  # noqa
 
         if not self._avoid_overlap:
-            current = self._protein.get_head()
-            self._protein.add_to_grid(current.position, current)
+            current: Optional[Aminoacid] = self._protein.get_head()
+            if current is not None:
+                self._protein.add_to_grid(current.position, current)
 
             while current:
                 self.set_position(current)
-                current = current.link
+                if current is not None:
+                    current = current.link
         else:
             self.backtracking()
 
@@ -114,22 +116,24 @@ class RandomFold:
     def backtracking(self, max_backtracking: int = 5000) -> None:
         """Backtracking"""
         backtrack_count = 0
-        acid = self._protein.get_head()
-        self._protein.add_to_grid(acid.position, acid)
+        acid: Optional[Aminoacid] = self._protein.get_head()
+        if acid is not None:
+            self._protein.add_to_grid(acid.position, acid)
+            protein_path: List[Tuple[int, int, int]] = [acid.position]
 
-        protein_path = [acid.position]
         for _ in range(len(self._protein._sequence) - 1):
-            protein_path.append(None)
+            protein_path.append((0,0,0))
 
         directions = self._get_directions()
 
-        print(f"{acid}[0]: {acid.position}") if self._verbose else None
+        print(f"{acid}[0]: {acid.position}") if self._verbose and acid is not None else None
 
         acid_index = 1
-        acid = acid.link
+        if acid is not None:
+            acid = acid.link
         backtracking_bool = False
 
-        while acid_index < len(self._protein._sequence):
+        while acid_index < len(self._protein._sequence) and acid is not None:
             if acid.predecessor:
                 while directions:
                     random_direction = random.choice(directions)
@@ -160,16 +164,17 @@ class RandomFold:
                     acid_index -= 1
                     backtrack_count += 1
                     if backtrack_count > max_backtracking:
-                        current = self._protein.get_head()
-                        self._protein.remove_from_grid(current.position)
-                        current.position = (0, 0, 0)
-                        current = current.link
-                        while current is not None:
+                        current: Optional[Aminoacid] = self._protein.get_head()
+                        if current is not None:
                             self._protein.remove_from_grid(current.position)
                             current.position = (0, 0, 0)
                             current = current.link
+                            while current is not None:
+                                self._protein.remove_from_grid(current.position)
+                                current.position = (0, 0, 0)
+                                current = current.link
 
-                        return self.backtracking(self._protein)
+                            return self.backtracking()
                     self._protein.remove_from_grid(acid.position)
                     acid = acid.predecessor
                     backtracking_bool = True
@@ -177,14 +182,16 @@ class RandomFold:
                         f"{acid}[{acid_index}]: {acid.position}") if self._verbose else None
 
             if not backtracking_bool:
-                avoid_direction = tuple(-x for x in random_direction)
-                directions = self._get_directions()
-                if avoid_direction in directions:
-                    directions.remove(avoid_direction)
-                print(
-                    f"{acid}[{acid_index}]: {acid.position}") if self._verbose else None
-                acid_index += 1
-                acid = acid.link
+                if len(random_direction) == 3:
+                    x, y, z = random_direction
+                    avoid_direction = (-x, -y, -z)
+                    directions = self._get_directions()
+                    if avoid_direction in directions:
+                        directions.remove(avoid_direction)
+                    print(
+                        f"{acid}[{acid_index}]: {acid.position}") if self._verbose else None
+                    acid_index += 1
+                    acid = acid.link
             backtracking_bool = False
 
         print(protein_path) if self._verbose else None

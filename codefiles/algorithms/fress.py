@@ -220,7 +220,7 @@ class FressFold(RandomFold):
                 math.floor(len(self._protein._sequence) * 2 / 3),
                 len(self._protein._sequence) - 1
             )
-        print(f"refold: {refold_range}")
+        print(f"refold: {refold_range}") if self._verbose else None
         # Return the refolded protein based on the calculated range
         return self._refold_section(input_protein, refold_range, 20* len(input_protein._sequence))
         
