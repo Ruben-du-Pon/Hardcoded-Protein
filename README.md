@@ -1,5 +1,81 @@
 # Hardcoded Protein
 
+## Introduction
+
+This project seeks to find stable foldings for proteins. The aim is to find the folding with the lowest stability score. A protein consists of amino acids, which can be Polar (P) or Hydrophobic (H). Some proteins will contain the special aminoacid Cysteine (C). When two H acids are directly adjacent and not connected to each other, they form hydrogen bonds which increase the stability of the folding by -1. Cystein creates extra strong hydrogen bonds, so when two C acids are directly adjacent and not connected to each other they increase the stability score by -5. A C and an H acid which are adjacent will increase the stability score by -1. 
+
+### Method
+
+For this project we have tested several algorithms, and compared them to using a random algorithm. We started by establishing a baseline, where we ran the random algorithm 100000 times. The results of this can be found in the data/output/baseline_plots/ folder, and below in the *Results* section. We wrote 4 other algorithms, a Breadth-First Search algorithm, a Hillclimber algorithm, a Simulated Annealing algorithm and one based on Harvard research using Fragment Regrowth Energy-guided Sequential Sampling (FRESS).
+
+#### Breadth First Search algorithm
+
+!!! Insert description !!!
+
+#### Hillclimber algorithm
+
+For the Hilclimber algorithm we randomly selected a part of the protein between 3 and 10 acids long, and used a BFS to find all possible foldings for this part with the given start and end positions. Then we checked if this resulted in a valid fold, i.e., a fold with no overlap. If this resulted in a better score the new folding was accepted. A big downside of the Hillclimber algorithm is that it is very sensitive to getting 'stuck' in a local minimum, where any change to the protein results in a worse score, but an overall better score is possible. To solve this we also implemented a Simulated Annealing algorithm.
+
+#### Simulated Annealing algorithm
+
+The Simulated Annealing (SA) algorithm works exactly the same as the Hillclimber algorithm, with one key difference: where a Hillclimber accepts only improvements, with a SA algorithm there is a chance to accept a change also when it leads to a worse score. The chance for accepting a new folding is given by 2<sup>(old score - new score)/temperature</sup>. The larger the temperature, the bigger the chance that a larger regression is accepted. The temperature is decreased with each iteration, resulting in a Hillclimber situation after a certain number of iterations, depending on the cooling rate. For our SA algorithm we chose a starting temperature of 10 (meaning a regression of 10 stability points had a 50% chance of being accepted), and a cooling rate of 0.0025.
+
+#### FRESS algorithm
+
+## Results
+
+### Baseline
+
+<p style="text-align: center;">
+    <img src="data/output/baseline_plots/2D_C.csv/2D_C.csv_CPPCHPPCHPPCPPHHHHHHCCPCHPPCPCHPPHPC_plot.png" width="15%">
+    <img src="data/output/baseline_plots/2D_C.csv/2D_C.csv_HCPHPCPHPCHCHPHPPPHPPPHPPPPHPCPHPPPHPHHHCCHCHCHCHH_plot.png" width="15%">
+    <img src="data/output/baseline_plots/2D_C.csv/2D_C.csv_HCPHPHPHCHHHHPCCPPHPPPHPPPPCPPPHPPPHPHHHHCHPHPHPHH_plot.png" width="15%">
+    <img src="data/output/baseline_plots/2D_C.csv/2D_C.csv_PPCHHPPCHPPPPCHHHHCHHPPHHPPPPHHPPHPP_plot.png" width="15%">
+    <img src="data/output/baseline_plots/2D.csv/2D.csv_HHPHHHPH_plot.png" width="15%">
+    <img src="data/output/baseline_plots/2D.csv/2D.csv_HHPHHHPHPHHHPH_plot.png" width="15%">
+</p>
+<p style="text-align: center;">
+    <img src="data/output/baseline_plots/2D.csv/2D.csv_HHPHPHPHPHHHHPHPPPHPPPHPPPPHPPPHPPPHPHHHHPHPHPHPHH_plot.png" width="15%">
+    <img src="data/output/baseline_plots/2D.csv/2D.csv_HPHPPHHPHPPHPHHPPHPH_plot.png" width="15%">
+    <img src="data/output/baseline_plots/2D.csv/2D.csv_PPPHHPPHHPPPPPHHHHHHHPPHHPPPPHHPPHPP_plot.png" width="15%">
+    <img src="data/output/baseline_plots/3D_C.csv/3D_C.csv_CPPCHPPCHPPCPPHHHHHHCCPCHPPCPCHPPHPC_plot.png" width="15%">
+    <img src="data/output/baseline_plots/3D_C.csv/3D_C.csv_HCPHPCPHPCHCHPHPPPHPPPHPPPPHPCPHPPPHPHHHCCHCHCHCHH_plot.png" width="15%">
+    <img src="data/output/baseline_plots/3D_C.csv/3D_C.csv_HCPHPHPHCHHHHPCCPPHPPPHPPPPCPPPHPPPHPHHHHCHPHPHPHH_plot.png" width="15%">
+</p>
+<p style="text-align: center;">
+    <img src="data/output/baseline_plots/3D_C.csv/3D_C.csv_PPCHHPPCHPPPPCHHHHCHHPPHHPPPPHHPPHPP_plot.png" width="15%">
+    <img src="data/output/baseline_plots/3D.csv/3D.csv_HHPHHHPH_plot.png" width="15%">
+    <img src="data/output/baseline_plots/3D.csv/3D.csv_HHPHHHPHPHHHPH_plot.png" width="15%">
+    <img src="data/output/baseline_plots/3D.csv/3D.csv_HHPHPHPHPHHHHPHPPPHPPPHPPPPHPPPHPPPHPHHHHPHPHPHPHH_plot.png" width="15%">
+    <img src="data/output/baseline_plots/3D.csv/3D.csv_HPHPPHHPHPPHPHHPPHPH_plot.png" width="15%">
+    <img src="data/output/baseline_plots/3D.csv/3D.csv_PPPHHPPHHPPPPPHHHHHHHPPHHPPPPHHPPHPP_plot.png" width="15%">
+</p>
+
+### 2D
+
+```
+|        Algorithm         |  Estimated time, length ~10   |  Estimated time, length ~10-20   |      Avg length ~10      |      Avg length ~10-20      |
+| -------------------------| ----------------------------- | -------------------------------- | ------------------------ | --------------------------- |
+| Baseline                 |               ~               |              ~                   |            ~             |             ~               |
+| Simulated Annealing      |               ~               |              ~                   |            ~             |             ~               |
+| BFS with Random sampling |               ~               |              ~                   |            ~             |             ~               |
+| FRESS                    |               ~               |              ~                   |            ~             |             ~               |
+```
+
+
+### 3D
+
+```
+|        Algorithm         |  Estimated time, length ~10   |  Estimated time, length ~10-20   |      Avg length ~10      |      Avg length ~10-20      |
+| -------------------------| ----------------------------- | -------------------------------- | ------------------------ | --------------------------- |
+| Baseline                 |               ~               |              ~                   |            ~             |             ~               |
+| Simulated Annealing      |               ~               |              ~                   |            ~             |             ~               |
+| BFS with Random sampling |               ~               |              ~                   |            ~             |             ~               |
+| FRESS                    |               ~               |              ~                   |            ~             |             ~               |
+
+```
+
+
 ## Usage
 
 First install requirements using
@@ -18,27 +94,3 @@ where `<fold_algorithm>` is the filename (without .py) of one of the algorithms 
 
 
 Below follows a table on the estimate time to run a certain algorithm in 2D or 3D based on the length of the protein itself.
-
-## 2D
-
-```
-|        Algorithm         |  Estimated time, length ~10   |  Estimated time, length ~10-20   |      Avg length ~10      |      Avg length ~10-20      |
-| -------------------------| ----------------------------- | -------------------------------- | ------------------------ | --------------------------- |
-| Baseline                 |               ~               |              ~                   |            ~             |             ~               |
-| Simulated Annealing      |               ~               |              ~                   |            ~             |             ~               |
-| BFS with Random sampling |               ~               |              ~                   |            ~             |             ~               |
-| FRESS                    |               ~               |              ~                   |            ~             |             ~               |
-```
-
-
-## 3D
-
-```
-|        Algorithm         |  Estimated time, length ~10   |  Estimated time, length ~10-20   |      Avg length ~10      |      Avg length ~10-20      |
-| -------------------------| ----------------------------- | -------------------------------- | ------------------------ | --------------------------- |
-| Baseline                 |               ~               |              ~                   |            ~             |             ~               |
-| Simulated Annealing      |               ~               |              ~                   |            ~             |             ~               |
-| BFS with Random sampling |               ~               |              ~                   |            ~             |             ~               |
-| FRESS                    |               ~               |              ~                   |            ~             |             ~               |
-
-```
