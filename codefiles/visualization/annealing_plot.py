@@ -1,7 +1,7 @@
 import os
-from codefiles.visualization.visualization_algorithms import plot_random
+from codefiles.visualization.visualization_algorithms import plot_line
 
-folder_path = "data/output/hillclimber_data/"
+folder_path = "data/output/annealing_data/"
 
 # List all files in the folder
 files = os.listdir(folder_path)
@@ -13,7 +13,7 @@ lst_ = []
 for csv_ in csv_files:
     file_path = os.path.join(folder_path, csv_)
     with open(file_path) as file:
-        lst_.append(plot_random(file))
+        lst_.append(plot_line(file))
 
 output_path = 'data/output/annealing_data/plots/'
 os.makedirs(output_path, exist_ok=True)
