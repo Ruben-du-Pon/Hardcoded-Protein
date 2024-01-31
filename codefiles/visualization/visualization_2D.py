@@ -1,3 +1,13 @@
+"""
+plot_2d Function
+Date of Creation: February 1, 2024
+Description: This function generates a 2D scatter plot of amino acid positions in a given protein structure.
+             Amino acids of different types (Hydrophobic, Polar, Cysteine) are distinguished by colors.
+             The resulting plot is saved as an image file. The function assumes that the protein structure
+             has a double-linked list representation.
+Developer: Ilyass el Allali
+"""
+
 import matplotlib.pyplot as plt
 from typing import Tuple
 from ..classes.protein import Protein
