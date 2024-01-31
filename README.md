@@ -90,10 +90,7 @@ pip install -r requirements.txt
 Then run the program by running
 
 ```bash
-python main.py <fold_algorithm> <dimensions> [C/c]
+python main.py <fold_algorithm> <dimensions> <iterations> <y/n> ['generate']"
 ```
 
-where `<fold_algorithm>` is the filename (without .py) of one of the algorithms in the code/algorithms folder, `<dimensions>` is either 2 or 3 for 2D or 3D folding, respectively, and the optional argument `[C]` adds the Cysteine aminoacid proteins. This will generate csv files using the codefiles/fold_generation/generate_<algorithm>.py file of the specified algorithm. 
-
-
-Below follows a table on the estimate time to run a certain algorithm in 2D or 3D based on the length of the protein itself.
+where `<fold_algorithm>` is the filename (without .py) of one of the algorithms in the code/algorithms folder, `<dimensions>` is either 2 or 3 for 2D or 3D folding, respectively, `<iterations>` is the number of iterations that the algorithm should be run, `<y/n>` is whether ("y") or not ("n") to include the Cysteine protein, and the optional "generate" argument can be used to generate the csv data.
