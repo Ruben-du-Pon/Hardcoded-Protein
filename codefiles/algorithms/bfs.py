@@ -21,23 +21,30 @@ class BfsFold:
         Parameters:
         - protein (Protein): The protein structure to be folded.
         - dimensions (int): Folding done in 2D or 3D.
-        - when_cutting (int): The length at which to start cutting the protein sequence during folding.
+        - when_cutting (int): The length at which to start cutting
+                              the protein sequence during folding.
         - step (int): The step size to use during folding.
         """
-        self._protein: 'Protein' = protein
+        self._protein: "Protein" = protein
         self._sequence: str = protein._sequence
         self._cut: int = when_cutting
         self._step: int = step
         self.dimensions: int = dimensions
 
     def _valid_combinations(
-            self, keys: List[str], prev: Optional[str] = None, length: int = 2, it: int = 0,
-            prev_valid: Set[str] = set()) -> Set[str]:
+        self,
+        keys: List[str],
+        prev: Optional[str] = None,
+        length: int = 2,
+        it: int = 0,
+        prev_valid: Set[str] = set(),
+    ) -> Set[str]:
         """
         Generate valid combinations of folding directions.
 
         Parameters:
-        - keys (list): The possible folding directions (e.g., ["R", "L", "U", "D"]).
+        - keys (list): The possible folding directions
+                       (e.g., ["R", "L", "U", "D"]).
         - prev (str): The direction of the previous fold step.
         - length (int): The desired length of the folding sequence.
         - it (int): Current iteration index.
@@ -47,7 +54,7 @@ class BfsFold:
         """
         if self.dimensions == 2:
             if it == length:
-                return {''}
+                return {""}
 
             valid_combos = set()
 
@@ -69,12 +76,11 @@ class BfsFold:
 
         elif self.dimensions == 3:
             if it == length:
-                return {''}
+                return {""}
 
             valid_combos = set()
 
             for key in keys:
-
                 if (
                     (key == "R" and prev == "L")
                     or (key == "L" and prev == "R")
@@ -129,7 +135,7 @@ class BfsFold:
                     types.remove("F")
 
             for direction in types:
-                new_foldings.add(prev+direction)
+                new_foldings.add(prev + direction)
 
             if self.dimensions == 2:
                 types = {"R", "L", "U", "D"}
@@ -139,10 +145,16 @@ class BfsFold:
         return new_foldings
 
     def _create_nested_dict(
-        self, protein: Protein, keys: List[str], depth: int, prev: Optional[str] = None,
-        pos: List[Tuple[int, int, int]] = [(0, 0, 0)], memo: Optional[Dict[Tuple[int, Optional[str], Tuple[int, int, int]], Dict[str, Any]]] = None
+        self,
+        protein: Protein,
+        keys: List[str],
+        depth: int,
+        prev: Optional[str] = None,
+        pos: List[Tuple[int, ...]] = [(0, 0, 0)],
+        memo: Optional[
+            Dict[Tuple[int, Optional[str], Tuple[int, ...]], Dict[str, Any]]
+        ] = None,
     ) -> Dict[str, Any]:
-
         if memo is None:
             memo = {}
 
@@ -163,7 +175,8 @@ class BfsFold:
 
             new_pos = tuple(x + y for x, y in zip(pos[-1], moves[key]))
             nested_result = self._create_nested_dict(
-                protein, keys, depth - 1, key, pos + [new_pos], memo)
+                protein, keys, depth - 1, key, pos + [new_pos], memo
+            )
             result_dict[key] = nested_result
 
         memo[(depth, prev, pos[-1])] = result_dict
@@ -171,8 +184,14 @@ class BfsFold:
         return result_dict
 
     def _create_dict(
-        self, protein: Protein, protein_sequence: str, keys: List[str], depth: int, step_size: int,
-        best_options: Set[str] = set(), posit: Optional[List[Tuple[int, int, int]]] = None
+        self,
+        protein: Protein,
+        protein_sequence: str,
+        keys: List[str],
+        depth: int,
+        step_size: int,
+        best_options: Set[str] = set(),
+        posit: Optional[List[Tuple[int, int, int]]] = None,
     ) -> Dict[str, int]:
         seq, score_dict, pos = "", {}, [(0, 0, 0)]
 
@@ -187,7 +206,10 @@ class BfsFold:
         for steps in valid_combos:
             if len(best_options) != 0:
                 for option in best_options:
-                    if option in steps[: depth - step_size + 1] and len(steps) > len(option):
+                    if option in steps[
+                        : depth - step_size + 1] and len(steps) > len(
+                        option
+                    ):
                         prt = Protein(protein_sequence[: depth + 1])
                         current = prt.get_head()
                         if posit:
@@ -200,7 +222,8 @@ class BfsFold:
                                 current = current.link
 
                             dict_ = self._create_nested_dict(
-                                protein, keys, 2, pos=[posit[-1]])
+                                protein, keys, 2, pos=[posit[-1]]
+                            )
 
                             for step in steps[-1]:
                                 dict_ = dict_[step]
@@ -286,24 +309,36 @@ class BfsFold:
         Returns:
         - bool: True if mirror or rotation, False otherwise.
         """
-        def is_rotation(move1, move2):
-            return any(move2[i:] + move2[:i] == move1 for i in range(len(move2)))
+
+        def is_rotation(move1: str, move2: str) -> bool:
+            return any(
+                move2[i:] + move2[:i] == move1 for i in range(len(move2))
+            )
 
         if self.dimensions == 2:
-            mirror_dict = {'U': 'D', 'D': 'U', 'L': 'R', 'R': 'L'}
+            mirror_dict = {
+                "U": "D", "D": "U", "L": "R", "R": "L"
+            }
         elif self.dimensions == 3:
             mirror_dict = {'U': 'D', 'D': 'U',
                            'L': 'R', 'R': 'L', 'F': 'B', 'B': 'F'}
 
-        return is_rotation(move1, move2) or all(mirror_dict[move1[i]] == move2[len(move2) - 1 - i] for i in range(len(move1)))
+        return is_rotation(move1, move2) or all(
+            mirror_dict[move1[i]] == move2[len(move2) - 1 - i]
+            for i in range(len(move1))
+        )
 
-    def _bfsfold(self, protein: 'Protein', when_cutting: int, step: int) -> 'Protein':
+    def _bfsfold(
+            self, protein: "Protein", when_cutting: int, step: int
+    ) -> "Protein":
         """
-        Perform Breadth-First Search (BFS) based folding on the given protein structure.
+        Perform Breadth-First Search (BFS) based folding on the given
+        protein structure.
 
         Parameters:
         - protein (Protein): The protein structure to be folded.
-        - when_cutting (int): The length at which to start cutting the protein sequence during folding.
+        - when_cutting (int): The length at which to start cutting the
+        protein sequence during folding.
         - step (int): The step size to use during folding.
         - dimension (int): The dimension of the protein folding (default is 2).
 
@@ -315,12 +350,20 @@ class BfsFold:
         sequence_protein = protein._sequence
         if self.dimensions == 2:
             types = {"R", "L", "U", "D"}
-            move = {"R": (1, 0, 0), "L": (-1, 0, 0),
-                    "U": (0, 1, 0), "D": (0, -1, 0)}
+            move = {
+                "R": (1, 0, 0), "L": (-1, 0, 0), "U": (0, 1, 0),
+                "D": (0, -1, 0)
+            }
         elif self.dimensions == 3:
             types = {"R", "L", "U", "D", "F", "B"}
-            move = {"R": (1, 0, 0), "L": (-1, 0, 0), "U": (0, 1, 0),
-                    "D": (0, -1, 0), "F": (0, 0, 1), "B": (0, 0, -1)}
+            move = {
+                "R": (1, 0, 0),
+                "L": (-1, 0, 0),
+                "U": (0, 1, 0),
+                "D": (0, -1, 0),
+                "F": (0, 0, 1),
+                "B": (0, 0, -1),
+            }
         min_keys: Set[str] = set()
 
         if self.dimensions == 2:
@@ -341,16 +384,19 @@ class BfsFold:
             posit = [(0, 0, 0)]
 
             min_key = min(create_d, key=lambda k: create_d[k])
-            min_keys = {k for k, v in create_d.items() if v ==
-                        create_d[min_key]}
+            min_keys = {
+                k for k, v in create_d.items() if v == create_d[min_key]
+            }
             unique_moves: Set[str] = set()
 
             # Check for linear transformations
             for move_ in min_keys:
-                if all(not self._is_mirror_or_rotation(move_, unique_move) for unique_move in unique_moves):
+                if all(
+                    not self._is_mirror_or_rotation(move_, unique_move)
+                    for unique_move in unique_moves
+                ):
                     unique_moves.add(move_)
 
-            # print(len(unique_moves))
             if len(unique_moves) >= 2:
                 # Randomly select 1 of the set
                 unique_moves = set(random.sample(unique_moves, 1))
@@ -389,7 +435,10 @@ class BfsFold:
     """
 
     def get_possible_foldings(
-        self, protein: Protein, first_coordinate: Tuple[int, int, int], last_coordinate: Tuple[int, int, int]
+        self,
+        protein: Protein,
+        first_coordinate: Tuple[int, int, int],
+        last_coordinate: Tuple[int, int, int],
     ) -> List[List[Optional[Aminoacid]]]:
         """
         Get possible foldings between two coordinates.
@@ -400,12 +449,24 @@ class BfsFold:
         - last_coordinate (Tuple[int, int, int]): Ending coordinate.
 
         Returns:
-        - List[List[Aminoacid]]: List of possible foldings between the coordinates.
+        - List[List[Aminoacid]]: List of possible foldings
+        between the coordinates.
         """
-        valid_foldings, proteins, aminoacids, protein_aminoacids, length = [
-        ], [], [], [], len(protein)
-        move = {"R": (1, 0, 0), "L": (-1, 0, 0), "U": (0, 1, 0),
-                "D": (0, -1, 0), "F": (0, 0, 1), "B": (0, 0, -1)}
+        valid_foldings, proteins, aminoacids, protein_aminoacids, length = (
+            [],
+            [],
+            [],
+            [],
+            len(protein),
+        )
+        move = {
+            "R": (1, 0, 0),
+            "L": (-1, 0, 0),
+            "U": (0, 1, 0),
+            "D": (0, -1, 0),
+            "F": (0, 0, 1),
+            "B": (0, 0, -1),
+        }
 
         if self.dimensions == 2:
             types = list({"R", "L", "U", "D"})
@@ -413,16 +474,18 @@ class BfsFold:
             types = list({"R", "L", "U", "D", "F", "B"})
 
         possible_foldings = self._valid_combinations(
-            keys=types, prev=None, length=length-1)
+            keys=types, prev=None, length=length - 1
+        )
         dict_fold = self._create_nested_dict(
-            protein, types, length, prev=None, pos=[first_coordinate])
+            protein, types, length, prev=None, pos=[first_coordinate]
+        )
 
         for folding in possible_foldings:
             dict_ = dict_fold
             for step in folding:
                 dict_ = dict_[step]
 
-            if dict_['pos'] == last_coordinate:
+            if dict_["pos"] == last_coordinate:
                 valid_foldings.append(folding)
 
         for folding in valid_foldings:
@@ -434,10 +497,13 @@ class BfsFold:
         for direction in folding:
             if current is not None and current.link is not None:
                 current = current.link
-                # Check if the link is not None before accessing its predecessor
+                # Check if the link is not None before
+                # accessing its predecessor
                 if current.predecessor is not None:
                     current.position = tuple(
-                        np.array(current.predecessor.position) + np.array(move[direction]))
+                        np.array(current.predecessor.position)
+                        + np.array(move[direction])
+                    )
 
             proteins.append(prt)
 
@@ -455,12 +521,7 @@ class BfsFold:
         return protein_aminoacids
 
     def run(self) -> Protein:
-        start_time = time.time()
 
         result = self._bfsfold(self._protein, self._cut, self._step)
 
-        end_time = time.time()
-        elapsed_time = end_time - start_time
-        print(f"Elapsed time: {elapsed_time} seconds")
-        print(1)
         return result

@@ -61,7 +61,7 @@ In the improvement phase of the algorithm, FRESS segments the protein into three
 | -------------------------| ----------------------------- | -------------------------------- | ------------------------ | --------------------------- |
 | Baseline                 |               ~               |              ~                   |            ~             |             ~               |
 | Simulated Annealing      |               ~               |              ~                   |            ~             |             ~               |
-| BFS with Random sampling |               ~               |              ~                   |            ~             |             ~               |
+| BFS with Random sampling |               ~4.2s               |              ~5.0s                   |            ~             |             ~               |
 | FRESS                    |               ~               |              ~                   |            ~             |             ~               |
 ```
 
@@ -73,7 +73,7 @@ In the improvement phase of the algorithm, FRESS segments the protein into three
 | -------------------------| ----------------------------- | -------------------------------- | ------------------------ | --------------------------- |
 | Baseline                 |               ~               |              ~                   |            ~             |             ~               |
 | Simulated Annealing      |               ~               |              ~                   |            ~             |             ~               |
-| BFS with Random sampling |               ~               |              ~                   |            ~             |             ~               |
+| BFS with Random sampling |               ~3.5s               |              ~4.0s                   |            ~             |             ~               |
 | FRESS                    |               ~               |              ~                   |            ~             |             ~               |
 
 ```
