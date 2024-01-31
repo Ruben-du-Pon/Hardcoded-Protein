@@ -22,6 +22,9 @@ The Simulated Annealing (SA) algorithm works exactly the same as the Hillclimber
 
 #### FRESS algorithm
 
+The FRESS (Fragment Regrowth Energy-guided Sequential Sampling) algorithm enhances protein folding by iteratively refining a protein's structure for better stability. Initially, it generates a random protein fold, ensuring no overlap in the structure. The algorithm then analyzes each amino acid's connections, focusing on points without negative stability scores as targets for improvement.
+In the improvement phase of the algorithm, FRESS segments the protein into three parts: start, middle, and end. It assesses each segment for its stability contribution and non-polar amino acid count. Based on this analysis, it suggests changes in the segment with the least contributions to the stability of the protein. The algorithm then refolds this segment, randomly trying new folds and retaining those that enhance stability. The process iterates, refining the protein structure towards a more stable form until no improvement is suggested by the algorithm.
+
 ## Results
 
 ### Baseline
