@@ -1,7 +1,7 @@
 from .aminoacid import Aminoacid
 from operator import sub
 import csv
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Optional, Union
 
 
 class Protein:
@@ -72,10 +72,10 @@ class Protein:
         self._sequence: str = sequence
         self._list: List[Aminoacid] = []
         self._grid: Dict[Tuple[int, int, int], Aminoacid] = {}
-        self._head: Aminoacid = self.__create_double_linked_list()
+        self._head: Optional[Aminoacid] = self.__create_double_linked_list()
         self._score: int = 0
 
-    def __create_double_linked_list(self) -> Aminoacid:
+    def __create_double_linked_list(self) -> Optional[Aminoacid]:
         """
         Create a double-linked list based on the provided amino acid sequence.
 
@@ -151,7 +151,7 @@ class Protein:
         # counted twice
         return (self._score // 2)
 
-    def get_folding(self) -> List[Dict[str, int]]:
+    def get_folding(self) -> List[Dict[str, Union[str, int]]]:
         """
         Get the folding information of the protein.
 
@@ -161,7 +161,7 @@ class Protein:
             A list of dictionaries containing amino acid types and folding directions,
             with a final entry for the stability score.
         """
-        folding = []
+        folding: List[Dict[str, Union[str, int]]] = []
         current = self._head
 
         # Return empty list if the protein is empty
@@ -258,7 +258,7 @@ class Protein:
         """
         return position not in self._grid
 
-    def get_head(self) -> Aminoacid:
+    def get_head(self) -> Optional[Aminoacid]:
         """
         Get the head of the double-linked list representing the protein structure.
 
@@ -269,7 +269,7 @@ class Protein:
         """
         return self._head
 
-    def get_tail(self) -> Aminoacid:
+    def get_tail(self) -> Optional[Aminoacid]:
         """
         Get the tail of the double-linked list representing the protein structure.
 
@@ -278,9 +278,11 @@ class Protein:
         Aminoacid
             The tail of the double-linked list.
         """
-        current = self._head.link
-        while current.link is not None:
-            current = current.link
+        if self._head is not None:
+            current: Optional[Aminoacid] = self._head.link
+            if current is not None:
+                while current.link is not None:
+                    current = current.link
 
         return current
 
@@ -368,7 +370,7 @@ class Protein:
 
     def __getstate__(self) -> Tuple[str, List[Aminoacid],
                                     Dict[Tuple[int, int, int], Aminoacid],
-                                    Aminoacid, int]:
+                                    Optional[Aminoacid], int]:
         """
         Return state values to be pickled.
 
