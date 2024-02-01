@@ -16,7 +16,7 @@ def main() -> None:
     annealing_plot.main()
 
     # Plot the results
-    # results_plot.main()
+    results_plot.main()
 
 
 if __name__ == "__main__":
