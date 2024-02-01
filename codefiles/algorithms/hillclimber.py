@@ -147,10 +147,7 @@ class HillclimberFold:
         - Tuple[int, int]: The start and end positions of the snippet.
         """
         # Get a random length.
-        length = random.randint(3, len(protein))
-
-        # Set length to a maximum of 10.
-        length = min(length, 10)
+        length = random.randint(3, 10)
 
         # Get a random start position.
         start_position = random.randint(0, len(protein) - length)
