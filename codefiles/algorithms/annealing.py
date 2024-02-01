@@ -50,7 +50,7 @@ class AnnealingFold(HillclimberFold):
         super().__init__(protein, dimensions, iterations, scores, outputfile,
                          verbose)
         self._temperature = 10.0
-        self._cooling_rate = 0.0025
+        self._cooling_rate = 0.00475
 
     def run(self) -> Protein:
         """
@@ -80,7 +80,7 @@ class AnnealingFold(HillclimberFold):
             next_fold = copy.deepcopy(self._highscore[0])
             self._run_experiment(next_fold)
             self._temperature *= 1 - self._cooling_rate
-            self._temperature = max(1, self._temperature)
+            self._temperature = max(0.0000001, self._temperature)
 
             # Write data to file.
             if self._outputfile:

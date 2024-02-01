@@ -7,9 +7,10 @@ Description: This script implements a protein folding algorithm using Breadth-Fi
 Developer: Ilyass el Allali
 """
 
+from functools import lru_cache
 from codefiles.classes.protein import Protein, Aminoacid
 import random
-from typing import List, Set, Tuple, Dict, Optional, Any
+from typing import Iterable, List, Set, Tuple, Dict, Optional, Any
 import numpy as np
 
 
@@ -40,13 +41,13 @@ class BfsFold:
         self._step: int = step
         self.dimensions: int = dimensions
 
+    @lru_cache(maxsize=None)
     def _valid_combinations(
         self,
         keys: List[str],
         prev: Optional[str] = None,
         length: int = 2,
         it: int = 0,
-        prev_valid: Set[str] = set(),
     ) -> Set[str]:
         """
         Generate valid combinations of folding directions.
@@ -156,7 +157,7 @@ class BfsFold:
     def _create_nested_dict(
         self,
         protein: Protein,
-        keys: List[str],
+        keys: Iterable[str],
         depth: int,
         prev: Optional[str] = None,
         pos: List[Tuple[int, ...]] = [(0, 0, 0)],
@@ -478,9 +479,9 @@ class BfsFold:
         }
 
         if self.dimensions == 2:
-            types = list({"R", "L", "U", "D"})
+            types = ("R", "L", "U", "D")
         elif self.dimensions == 3:
-            types = list({"R", "L", "U", "D", "F", "B"})
+            types = ("R", "L", "U", "D", "F", "B")
 
         possible_foldings = self._valid_combinations(
             keys=types, prev=None, length=length - 1

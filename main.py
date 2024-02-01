@@ -86,7 +86,7 @@ def main() -> None:
         subprocess.run(["python3",
                         f"codefiles/fold_generation/generate_{fold_algorithm}.py",  # noqa
                         str(dimensions),
-                        "t" if sys.argv[4].lower == "y" else "f"],
+                        "t" if sys.argv[4].lower() == "y" else "f"],
                        env=env)
 
     elif len(sys.argv) == 5:
