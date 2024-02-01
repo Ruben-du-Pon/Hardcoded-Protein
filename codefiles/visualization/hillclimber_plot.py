@@ -1,6 +1,7 @@
 import os
 from codefiles.visualization.visualization_algorithms import plot_line
 
+
 def main() -> None:
     """
     Main function that runs the program.
@@ -17,7 +18,7 @@ def main() -> None:
     for csv_ in csv_files:
         file_path = os.path.join(folder_path, csv_)
         with open(file_path) as file:
-            lst_.append(plot_line
+            lst_.append(plot_line(file))
     output_path = 'data/output/hillclimber_data/plots/'
     os.makedirs(output_path, exist_ok=True)
 
@@ -27,10 +28,12 @@ def main() -> None:
         for plot in plots:
             title = plot.get_axes()[0].get_title()
             figure_name = f"{figure_title}_{title}_plot.png"
-            figure_path = os.path.join(output_path+figure_title+"/", figure_name)
+            figure_path = os.path.join(
+                output_path+figure_title+"/", figure_name)
             plot.savefig(figure_path)
             print(f"Saved plot: {figure_path}")
         index += 1
+
 
 if __name__ == "__main__":
     main()
