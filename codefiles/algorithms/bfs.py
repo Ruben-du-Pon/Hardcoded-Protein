@@ -41,7 +41,7 @@ class BfsFold:
         self._step: int = step
         self.dimensions: int = dimensions
 
-    @lru_cache(maxsize=None)
+
     def _valid_combinations(
         self,
         keys: List[str],
@@ -211,7 +211,7 @@ class BfsFold:
         if best_options != set():
             valid_combos = self._add_combinations(best_options)
         else:
-            valid_combos = self._valid_combinations(keys, length=depth)
+            valid_combos = self._valid_combinations(list(keys), length=depth)
 
         for steps in valid_combos:
             if len(best_options) != 0:
